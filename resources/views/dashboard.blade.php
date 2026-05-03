@@ -28,7 +28,7 @@
                 @endphp
                 <article class="mom-card mom-card-interactive px-5 py-4">
                     <p class="mom-micro">{{ $kpi['label'] }}</p>
-                    <p class="mt-2 flex flex-wrap items-baseline gap-x-16">
+                    <p class="mt-2 flex flex-wrap items-baseline gap-x-24">
                         <span class="mom-metric shrink-0 leading-none">{{ $kpi['value'] }}</span>
                         <span
                             class="shrink-0 text-[11px] font-medium tracking-[0.12em] normal-case leading-normal"
