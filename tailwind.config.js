@@ -20,6 +20,11 @@ export default {
             },
             borderRadius: {
                 mom: '22px',
+                'mom-sm': '10px',
+                'mom-md': '16px',
+                'mom-lg': '22px',
+                'mom-xl': '28px',
+                'mom-pill': '999px',
             },
             transitionTimingFunction: {
                 premium: 'cubic-bezier(0.22, 1, 0.36, 1)',
@@ -32,6 +37,7 @@ export default {
             boxShadow: {
                 'mom-surface': 'var(--shadow-surface)',
                 'mom-elevated': 'var(--shadow-elevated)',
+                'mom-hover': 'var(--shadow-hover)',
                 'mom-glow': 'var(--shadow-glow)',
                 'mom-inner': 'var(--shadow-inner)',
             },

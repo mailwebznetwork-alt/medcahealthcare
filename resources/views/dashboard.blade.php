@@ -2,7 +2,7 @@
     page-title="Dashboard Overview"
     welcome-line="Welcome back — intelligence surfaces update in near real-time."
 >
-    <div class="mom-reveal mx-auto max-w-[1600px] space-y-8">
+    <div class="mom-reveal w-full max-w-full space-y-8">
         {{-- Mobile heading --}}
         <div class="space-y-1 md:hidden">
             <h1 class="mom-title-page">Dashboard Overview</h1>
@@ -78,7 +78,7 @@
                         <p class="mom-micro">Live stream</p>
                         <h2 class="mom-section-title mt-2">Real-time activity</h2>
                     </div>
-                    <span class="rounded-full border border-[rgba(212,169,95,0.22)] bg-[rgba(212,169,95,0.08)] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-mom-gold">Live</span>
+                    <span class="mom-live-pulse rounded-mom-pill border border-[rgba(212,169,95,0.22)] bg-[rgba(212,169,95,0.08)] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-mom-gold">Live</span>
                 </div>
                 <ul class="mt-6 space-y-5">
                     @foreach ([
@@ -140,7 +140,7 @@
                     <h2 class="mom-section-title">System status</h2>
                     <i data-lucide="activity" class="h-[18px] w-[18px] text-[var(--text-muted)]"></i>
                 </div>
-                <div class="mom-table mt-6 overflow-hidden rounded-xl border border-[rgba(255,255,255,0.045)]">
+                <div class="mom-table mt-6 overflow-hidden rounded-mom-md border border-[rgba(255,255,255,0.045)]">
                     <table class="w-full text-left text-[13px]">
                         <thead class="bg-[rgba(255,255,255,0.02)] text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
                             <tr>
@@ -168,9 +168,9 @@
             </div>
         </section>
 
-        {{-- Bottom editorial grid --}}
-        <section class="grid grid-cols-1 gap-6 xl:grid-cols-12">
-            <div class="mom-card p-6 xl:col-span-5">
+        {{-- Bottom editorial grid — 10-column mathematics: 3 + 3 + 2 + 2 --}}
+        <section class="grid grid-cols-1 gap-6 xl:grid-cols-10">
+            <div class="mom-card p-6 xl:col-span-3">
                 <div class="flex flex-wrap items-center justify-between gap-4">
                     <div>
                         <p class="mom-micro">Directory</p>
@@ -178,12 +178,12 @@
                     </div>
                     <button
                         type="button"
-                        class="rounded-full border border-[rgba(255,255,255,0.045)] px-4 py-2 text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)] transition-all duration-320 ease-premium hover:border-[rgba(212,169,95,0.16)] hover:text-[var(--text-primary)]"
+                        class="rounded-mom-pill border border-[rgba(255,255,255,0.045)] px-4 py-2 text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)] transition-all duration-320 ease-premium hover:border-[rgba(212,169,95,0.16)] hover:text-[var(--text-primary)]"
                     >
                         View all
                     </button>
                 </div>
-                <div class="mom-table mt-6 overflow-hidden rounded-xl border border-[rgba(255,255,255,0.045)]">
+                <div class="mom-table mt-6 overflow-hidden rounded-mom-md border border-[rgba(255,255,255,0.045)]">
                     <table class="w-full text-left text-[13px]">
                         <thead class="bg-[rgba(255,255,255,0.02)] text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
                             <tr>
@@ -235,38 +235,36 @@
                 </div>
             </div>
 
-            <div class="space-y-6 xl:col-span-4">
-                <div class="mom-card p-6">
-                    <h2 class="mom-section-title">KPI scorecard</h2>
-                    <dl class="mt-6 space-y-5">
-                        @foreach ([['North star', '0.74', 'QoQ momentum'], ['Retention', '94.2%', 'Rolling 90d'], ['Risk index', 'Low', 'Governance']] as [$k, $v, $sub])
-                            <div class="flex items-start justify-between gap-4 border-b border-[rgba(255,255,255,0.045)] pb-5 last:border-0 last:pb-0">
-                                <div>
-                                    <dt class="text-[13px] font-medium text-[var(--text-primary)]">{{ $k }}</dt>
-                                    <dd class="mom-subtext mt-1">{{ $sub }}</dd>
-                                </div>
-                                <dd class="text-lg font-semibold tabular-nums text-mom-gold">{{ $v }}</dd>
+            <div class="mom-card flex flex-col p-6 xl:col-span-2">
+                <h2 class="mom-section-title">KPI scorecard</h2>
+                <dl class="mt-6 flex flex-1 flex-col justify-between space-y-5">
+                    @foreach ([['North star', '0.74', 'QoQ momentum'], ['Retention', '94.2%', 'Rolling 90d'], ['Risk index', 'Low', 'Governance']] as [$k, $v, $sub])
+                        <div class="flex items-start justify-between gap-3 border-b border-[rgba(255,255,255,0.045)] pb-5 last:border-0 last:pb-0">
+                            <div class="min-w-0">
+                                <dt class="text-[13px] font-medium text-[var(--text-primary)]">{{ $k }}</dt>
+                                <dd class="mom-subtext mt-1">{{ $sub }}</dd>
                             </div>
-                        @endforeach
-                    </dl>
-                </div>
+                            <dd class="shrink-0 text-base font-semibold tabular-nums text-mom-gold">{{ $v }}</dd>
+                        </div>
+                    @endforeach
+                </dl>
+            </div>
 
-                <div class="mom-card p-6">
-                    <h2 class="mom-section-title">Quick actions</h2>
-                    <div class="mt-6 grid grid-cols-2 gap-4">
-                        @foreach ([['sparkles', 'Compose insight'], ['shield-check', 'Policies'], ['database', 'Connectors'], ['gauge', 'Latency']] as [$icon, $lbl])
-                            <button
-                                type="button"
-                                class="mom-card-interactive flex flex-col items-start gap-3 rounded-mom border border-[rgba(255,255,255,0.045)] bg-[rgba(255,255,255,0.02)] p-4 text-left shadow-none transition-all duration-320 ease-premium hover:border-[rgba(212,169,95,0.16)]"
-                            >
-                                <span class="flex h-10 w-10 items-center justify-center rounded-xl border border-[rgba(212,169,95,0.22)] bg-[rgba(212,169,95,0.08)] text-mom-gold">
-                                    <i data-lucide="{{ $icon }}" class="h-[18px] w-[18px]"></i>
-                                </span>
-                                <span class="text-[13px] font-medium text-[var(--text-primary)]">{{ $lbl }}</span>
-                                <span class="mom-micro text-[var(--text-muted)]">Premium surface</span>
-                            </button>
-                        @endforeach
-                    </div>
+            <div class="mom-card flex flex-col p-6 xl:col-span-2">
+                <h2 class="mom-section-title">Quick actions</h2>
+                <div class="mt-6 grid flex-1 grid-cols-1 gap-3 sm:grid-cols-2">
+                    @foreach ([['sparkles', 'Compose insight'], ['shield-check', 'Policies'], ['database', 'Connectors'], ['gauge', 'Latency']] as [$icon, $lbl])
+                        <button
+                            type="button"
+                            class="mom-card-interactive flex flex-col items-start gap-2 rounded-mom-md border border-[rgba(255,255,255,0.045)] bg-[rgba(255,255,255,0.02)] p-3 text-left shadow-none transition-all duration-320 ease-premium hover:border-[rgba(212,169,95,0.16)]"
+                        >
+                            <span class="flex h-9 w-9 items-center justify-center rounded-mom-sm border border-[rgba(212,169,95,0.22)] bg-[rgba(212,169,95,0.08)] text-mom-gold">
+                                <i data-lucide="{{ $icon }}" class="h-[16px] w-[16px]"></i>
+                            </span>
+                            <span class="text-[13px] font-medium leading-snug text-[var(--text-primary)]">{{ $lbl }}</span>
+                            <span class="mom-micro text-[var(--text-muted)]">Execute</span>
+                        </button>
+                    @endforeach
                 </div>
             </div>
         </section>

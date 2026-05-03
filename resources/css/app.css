@@ -22,7 +22,7 @@
     }
 
     .mom-body-text {
-        @apply text-sm text-[var(--text-secondary)];
+        @apply text-sm font-normal text-[var(--text-secondary)];
     }
 
     .mom-subtext {

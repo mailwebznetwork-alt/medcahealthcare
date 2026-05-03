@@ -63,7 +63,7 @@
                             <li>
                                 <a
                                     href="{{ route('dashboard') }}"
-                                    class="mom-nav-active flex items-center gap-3 rounded-mom px-3 py-2.5 text-sm font-medium text-mom-gold transition-all duration-320 ease-premium"
+                                    class="mom-nav-active flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-mom-gold transition-all duration-320 ease-premium"
                                 >
                                     <i data-lucide="layout-dashboard" class="h-[18px] w-[18px] shrink-0"></i>
                                     <span>Dashboard</span>
@@ -72,7 +72,7 @@
                             <li>
                                 <a
                                     href="#"
-                                    class="flex items-center gap-3 rounded-mom px-3 py-2.5 text-[var(--text-secondary)] transition-all duration-320 ease-premium hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+                                    class="flex items-center gap-3 rounded-full px-3 py-2.5 text-[var(--text-secondary)] transition-all duration-320 ease-premium hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] hover:shadow-[0_0_22px_rgba(212,169,95,0.06)]"
                                 >
                                     <i data-lucide="line-chart" class="h-[18px] w-[18px] shrink-0 opacity-80"></i>
                                     <span class="text-sm font-medium">Analytics</span>
@@ -87,7 +87,7 @@
                             <li>
                                 <a
                                     href="#"
-                                    class="flex items-center gap-3 rounded-mom px-3 py-2.5 text-[var(--text-secondary)] transition-all duration-320 ease-premium hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+                                    class="flex items-center gap-3 rounded-full px-3 py-2.5 text-[var(--text-secondary)] transition-all duration-320 ease-premium hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] hover:shadow-[0_0_22px_rgba(212,169,95,0.06)]"
                                 >
                                     <i data-lucide="users" class="h-[18px] w-[18px] shrink-0 opacity-80"></i>
                                     <span class="text-sm font-medium">Users</span>
@@ -96,7 +96,7 @@
                             <li>
                                 <a
                                     href="#"
-                                    class="flex items-center gap-3 rounded-mom px-3 py-2.5 text-[var(--text-secondary)] transition-all duration-320 ease-premium hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+                                    class="flex items-center gap-3 rounded-full px-3 py-2.5 text-[var(--text-secondary)] transition-all duration-320 ease-premium hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] hover:shadow-[0_0_22px_rgba(212,169,95,0.06)]"
                                 >
                                     <i data-lucide="folder-kanban" class="h-[18px] w-[18px] shrink-0 opacity-80"></i>
                                     <span class="text-sm font-medium">Projects</span>
@@ -111,7 +111,7 @@
                             <li>
                                 <a
                                     href="#"
-                                    class="flex items-center gap-3 rounded-mom px-3 py-2.5 text-[var(--text-secondary)] transition-all duration-320 ease-premium hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+                                    class="flex items-center gap-3 rounded-full px-3 py-2.5 text-[var(--text-secondary)] transition-all duration-320 ease-premium hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] hover:shadow-[0_0_22px_rgba(212,169,95,0.06)]"
                                 >
                                     <i data-lucide="sparkles" class="h-[18px] w-[18px] shrink-0 opacity-80"></i>
                                     <span class="text-sm font-medium">AI Studio</span>
@@ -120,7 +120,7 @@
                             <li>
                                 <a
                                     href="#"
-                                    class="flex items-center gap-3 rounded-mom px-3 py-2.5 text-[var(--text-secondary)] transition-all duration-320 ease-premium hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+                                    class="flex items-center gap-3 rounded-full px-3 py-2.5 text-[var(--text-secondary)] transition-all duration-320 ease-premium hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] hover:shadow-[0_0_22px_rgba(212,169,95,0.06)]"
                                 >
                                     <i data-lucide="file-chart-column" class="h-[18px] w-[18px] shrink-0 opacity-80"></i>
                                     <span class="text-sm font-medium">Reports</span>
@@ -132,7 +132,7 @@
 
                 <div class="border-t border-[rgba(255,255,255,0.045)] p-4">
                     <div
-                        class="rounded-mom border border-[rgba(255,255,255,0.045)] bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01))] p-4 shadow-mom-inner"
+                        class="rounded-mom-lg border border-[rgba(255,255,255,0.045)] bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01))] p-6 shadow-mom-inner"
                         style="box-shadow: var(--shadow-inner), 0 0 36px rgba(212,169,95,0.05);"
                     >
                         <div class="flex items-start gap-3">
@@ -174,7 +174,7 @@
             <div class="flex min-w-0 flex-1 flex-col lg:ml-0">
                 {{-- Topbar --}}
                 <header
-                    class="sticky top-0 z-30 flex h-[72px] items-center gap-6 border-b border-[rgba(255,255,255,0.045)] bg-[rgba(7,7,7,0.72)] px-6 shadow-mom-surface backdrop-blur-xl backdrop-saturate-150 lg:px-8"
+                    class="sticky top-0 z-30 flex h-[72px] items-center gap-6 border-b border-[rgba(255,255,255,0.045)] bg-[rgba(7,7,7,0.68)] px-8 shadow-mom-surface backdrop-blur-xl backdrop-saturate-150"
                 >
                     <button
                         type="button"
@@ -236,7 +236,7 @@
                     </div>
                 </header>
 
-                <main class="flex-1 px-6 py-8 lg:px-8">
+                <main class="flex-1 px-8 py-8">
                     {{ $slot }}
                 </main>
             </div>

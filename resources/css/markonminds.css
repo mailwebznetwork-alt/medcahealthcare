@@ -1,5 +1,6 @@
 /**
  * MarkOnMinds — strict design token engine (CSS variables only + layered rendering).
+ * Reference image is source of truth — tokens MUST NOT drift.
  */
 
 :root {
@@ -22,11 +23,18 @@
     --danger: #e25c5c;
     --warning: #e2b85c;
 
-    --border-soft: rgba(255, 255, 255, 0.05);
+    --border-soft: rgba(255, 255, 255, 0.045);
     --border-fade: rgba(255, 255, 255, 0.025);
+
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 22px;
+    --radius-xl: 28px;
+    --radius-pill: 999px;
 
     --shadow-surface: 0 10px 30px rgba(0, 0, 0, 0.35);
     --shadow-elevated: 0 20px 50px rgba(0, 0, 0, 0.45);
+    --shadow-hover: 0 30px 60px rgba(0, 0, 0, 0.55);
     --shadow-glow: 0 0 40px rgba(212, 169, 95, 0.08);
     --shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 
@@ -54,9 +62,10 @@ body.mom-body::before {
     z-index: 0;
     pointer-events: none;
     background:
-        radial-gradient(ellipse 85% 55% at 12% -5%, rgba(212, 169, 95, 0.09), transparent 58%),
-        radial-gradient(ellipse 70% 45% at 88% 15%, rgba(212, 169, 95, 0.035), transparent 55%),
-        radial-gradient(ellipse 90% 60% at 48% 35%, rgba(255, 255, 255, 0.025), transparent 62%);
+        radial-gradient(ellipse 78% 52% at 8% 0%, rgba(212, 169, 95, 0.095), transparent 58%),
+        radial-gradient(ellipse 65% 48% at 52% 42%, rgba(212, 169, 95, 0.045), transparent 62%),
+        radial-gradient(ellipse 72% 55% at 92% 12%, rgba(212, 169, 95, 0.032), transparent 56%),
+        radial-gradient(ellipse 95% 65% at 48% 32%, rgba(255, 255, 255, 0.028), transparent 58%);
 }
 
 body.mom-body::after {
@@ -65,18 +74,21 @@ body.mom-body::after {
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    background: radial-gradient(circle at 50% 40%, transparent 32%, rgba(0, 0, 0, 0.62) 100%);
+    background:
+        radial-gradient(circle at 50% 38%, transparent 26%, rgba(0, 0, 0, 0.58) 100%),
+        radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.18), transparent 62%);
 }
 
-/* Matte noise texture */
+/* Matte noise texture — asset-driven (spec) */
 .mom-noise {
     position: fixed;
     inset: 0;
     z-index: 1;
     pointer-events: none;
-    opacity: 0.017;
+    opacity: 0.012;
     mix-blend-mode: soft-light;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-image: url('/images/noise.png');
+    background-repeat: repeat;
 }
 
 /* ---- Scrollbar (sidebar) ---- */
@@ -87,10 +99,10 @@ body.mom-body::after {
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
     background: #1e293b;
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
 }
 
-/* ---- Premium card shell ---- */
+/* ---- Premium card shell (exact stack) ---- */
 
 .mom-card {
     background:
@@ -103,7 +115,7 @@ body.mom-body::after {
         0 0 40px rgba(212, 169, 95, 0.03);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    border-radius: 22px;
+    border-radius: var(--radius-lg);
     border: var(--border-default);
     transition:
         transform var(--mom-transition),
@@ -116,8 +128,8 @@ body.mom-body::after {
     border: var(--border-hover);
     box-shadow:
         var(--shadow-inner),
-        var(--shadow-surface),
-        0 0 48px rgba(212, 169, 95, 0.09);
+        var(--shadow-hover),
+        0 0 52px rgba(212, 169, 95, 0.1);
 }
 
 /* Utilities referenced by Tailwind @apply extensions */
@@ -147,6 +159,13 @@ body.mom-body::after {
     border: var(--border-default);
 }
 
+.elevated-surface {
+    background-color: var(--bg-elevated);
+    border: var(--border-default);
+    box-shadow: var(--shadow-surface), var(--shadow-glow);
+    border-radius: var(--radius-lg);
+}
+
 /* Sidebar active bloom */
 
 .mom-nav-active {
@@ -156,6 +175,7 @@ body.mom-body::after {
         rgba(212, 169, 95, 0.05)
     );
     border: 1px solid rgba(212, 169, 95, 0.22);
+    border-radius: var(--radius-pill);
     box-shadow:
         0 0 28px rgba(212, 169, 95, 0.12),
         inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -174,8 +194,22 @@ body.mom-body::after {
     }
 }
 
+@keyframes mom-glow-pulse {
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(212, 169, 95, 0.22);
+    }
+    50% {
+        box-shadow: 0 0 22px 0 rgba(212, 169, 95, 0.35);
+    }
+}
+
 .mom-reveal {
     animation: mom-fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.mom-live-pulse {
+    animation: mom-glow-pulse 3.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
 }
 
 /* KPI sparkline (inline SVG helper) */
@@ -203,7 +237,7 @@ body.mom-body::after {
     background: rgba(18, 18, 18, 0.92) !important;
     border: 1px solid rgba(212, 169, 95, 0.22) !important;
     backdrop-filter: blur(12px);
-    border-radius: 12px !important;
+    border-radius: var(--radius-md) !important;
     box-shadow: var(--shadow-elevated) !important;
 }
 
