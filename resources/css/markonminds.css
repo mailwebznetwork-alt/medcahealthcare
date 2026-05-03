@@ -18,13 +18,16 @@
     /* Topbar scrim (matches --bg-app) */
     --bg-topbar-scrim: rgba(22, 16, 12, 0.86);
 
-    /* Matte brown surfaces (cards, panels, modal, nested UI) */
-    --bg-card-matte: #1a1410;
-    --bg-card-matte-deep: #14100d;
-    --bg-card-matte-raised: #221b15;
-    --bg-card-table-head: rgba(48, 40, 33, 0.55);
-    --bg-card-track: rgba(40, 33, 27, 0.65);
-    --bg-card-nested: rgba(52, 44, 36, 0.45);
+    /**
+     * Matte coffee / dark brown foreground (cards, modal, nested UI).
+     * Warmer chroma than shell so KPI + chart panels read as coffee, not charcoal.
+     */
+    --bg-card-matte: #241911;
+    --bg-card-matte-deep: #1a120d;
+    --bg-card-matte-raised: #2f2419;
+    --bg-card-table-head: rgba(68, 52, 38, 0.58);
+    --bg-card-track: rgba(58, 44, 32, 0.72);
+    --bg-card-nested: rgba(78, 60, 44, 0.48);
 
     --accent-gold: #d4a95f;
     --accent-gold-soft: rgba(212, 169, 95, 0.12);
@@ -244,13 +247,14 @@ body.mom-body::after {
 
 .mom-card {
     background:
-        linear-gradient(180deg, rgba(255, 244, 230, 0.045), rgba(255, 244, 230, 0.014)),
-        radial-gradient(circle at top left, rgba(212, 169, 95, 0.09), transparent 48%),
+        linear-gradient(165deg, rgba(98, 68, 46, 0.2) 0%, rgba(42, 30, 22, 0.12) 42%, transparent 68%),
+        linear-gradient(180deg, rgba(72, 52, 36, 0.22), rgba(32, 22, 16, 0.55)),
+        radial-gradient(ellipse 95% 80% at 8% 0%, rgba(212, 169, 95, 0.075), transparent 52%),
         var(--bg-card-matte);
     box-shadow:
         var(--shadow-inner),
-        var(--shadow-surface),
-        0 0 40px rgba(212, 169, 95, 0.03);
+        0 12px 32px rgba(14, 8, 4, 0.42),
+        0 0 40px rgba(212, 169, 95, 0.04);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border-radius: var(--radius-lg);
@@ -366,13 +370,13 @@ body.mom-body::after {
 }
 
 .mom-table tbody tr:hover {
-    background-color: rgba(62, 52, 42, 0.22);
+    background-color: rgba(88, 68, 50, 0.28);
 }
 
 /* ApexCharts container polish */
 
 .mom-apex .apexcharts-tooltip {
-    background: rgba(26, 20, 16, 0.94) !important;
+    background: rgba(36, 26, 18, 0.95) !important;
     border: 1px solid rgba(212, 169, 95, 0.22) !important;
     backdrop-filter: blur(12px);
     border-radius: var(--radius-md) !important;

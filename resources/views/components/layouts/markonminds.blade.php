@@ -163,42 +163,6 @@
                         </ul>
                     </div>
                 </nav>
-
-                <div class="border-t border-[rgba(255,255,255,0.045)] p-4">
-                    <div class="mom-card p-6">
-                        <div class="flex items-start gap-3">
-                            <div
-                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[rgba(212,169,95,0.22)] bg-[rgba(212,169,95,0.08)] text-xs font-semibold tracking-wide text-mom-gold"
-                                aria-hidden="true"
-                            >
-                                {{ $initials ?: 'AU' }}
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <p class="truncate text-sm font-semibold text-[var(--text-primary)]">{{ $user->name }}</p>
-                                <p class="truncate text-[13px] text-[var(--text-secondary)]">{{ $user->email }}</p>
-                                <div class="mt-3 flex items-center gap-2">
-                                    <a
-                                        href="{{ route('profile.edit') }}"
-                                        class="mom-subtext inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[var(--text-muted)] transition-colors duration-320 ease-premium hover:text-[var(--text-secondary)]"
-                                    >
-                                        <i data-lucide="settings" class="h-3.5 w-3.5"></i>
-                                        Settings
-                                    </a>
-                                    <form method="POST" action="{{ route('logout') }}" class="inline">
-                                        @csrf
-                                        <button
-                                            type="submit"
-                                            class="mom-subtext inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[var(--text-muted)] transition-colors duration-320 ease-premium hover:text-[var(--danger)]"
-                                        >
-                                            <i data-lucide="log-out" class="h-3.5 w-3.5"></i>
-                                            Log out
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </aside>
 
             {{-- Main column: neutral app canvas; warm text scope optional --}}
@@ -237,12 +201,72 @@
                         </label>
                     </div>
 
-                    <div class="flex shrink-0 items-center">
-                        <div
-                            class="flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(212,169,95,0.22)] bg-[rgba(212,169,95,0.08)] text-xs font-semibold text-mom-gold"
-                            aria-hidden="true"
+                    <div
+                        class="relative shrink-0"
+                        x-data="{ profileOpen: false }"
+                        @keydown.escape.window="profileOpen = false"
+                    >
+                        <button
+                            type="button"
+                            class="flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(212,169,95,0.22)] bg-[rgba(212,169,95,0.08)] text-xs font-semibold text-mom-gold transition-all duration-320 ease-premium hover:border-[rgba(212,169,95,0.35)] hover:shadow-[0_0_20px_rgba(212,169,95,0.12)]"
+                            @click="profileOpen = ! profileOpen"
+                            x-bind:aria-expanded="profileOpen"
+                            aria-haspopup="true"
+                            aria-controls="mom-profile-menu"
+                            aria-label="{{ __('Account menu') }}"
                         >
-                            {{ $initials ?: 'AU' }}
+                            <span aria-hidden="true">{{ $initials ?: 'AU' }}</span>
+                        </button>
+
+                        <div
+                            id="mom-profile-menu"
+                            x-show="profileOpen"
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0 translate-y-1"
+                            x-transition:enter-end="opacity-100 translate-y-0"
+                            x-transition:leave="transition ease-in duration-150"
+                            x-transition:leave-start="opacity-100 translate-y-0"
+                            x-transition:leave-end="opacity-0 translate-y-1"
+                            @click.outside="profileOpen = false"
+                            class="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-[min(18rem,calc(100vw-2.5rem))] rounded-mom-lg border border-[rgba(255,255,255,0.045)] bg-[var(--bg-card-matte)] p-4 shadow-mom-elevated ring-1 ring-[rgba(212,169,95,0.06)]"
+                            style="display: none;"
+                            role="menu"
+                            aria-orientation="vertical"
+                        >
+                            <div class="flex items-start gap-3 border-b border-[rgba(255,255,255,0.045)] pb-4">
+                                <div
+                                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[rgba(212,169,95,0.22)] bg-[rgba(212,169,95,0.08)] text-xs font-semibold tracking-wide text-mom-gold"
+                                    aria-hidden="true"
+                                >
+                                    {{ $initials ?: 'AU' }}
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="truncate text-sm font-semibold text-[var(--text-primary)]">{{ $user->name }}</p>
+                                    <p class="truncate text-[13px] text-[var(--text-secondary)]">{{ $user->email }}</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+                                <a
+                                    href="{{ route('profile.edit') }}"
+                                    role="menuitem"
+                                    class="mom-subtext inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-[var(--text-muted)] transition-colors duration-320 ease-premium hover:text-[var(--text-secondary)]"
+                                    @click="profileOpen = false"
+                                >
+                                    <i data-lucide="settings" class="h-3.5 w-3.5 shrink-0"></i>
+                                    {{ __('Settings') }}
+                                </a>
+                                <form method="POST" action="{{ route('logout') }}" class="inline">
+                                    @csrf
+                                    <button
+                                        type="submit"
+                                        role="menuitem"
+                                        class="mom-subtext inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-[var(--text-muted)] transition-colors duration-320 ease-premium hover:text-[var(--danger)]"
+                                    >
+                                        <i data-lucide="log-out" class="h-3.5 w-3.5 shrink-0"></i>
+                                        {{ __('Log out') }}
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </header>

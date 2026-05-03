@@ -115,7 +115,7 @@ function mountAnalyticsChart() {
             hover: {
                 size: 4,
                 colors: [gold],
-                strokeColors: '#1a1410',
+                strokeColors: '#1a120d',
                 strokeWidth: 2,
             },
         },
@@ -155,7 +155,7 @@ function mountTrafficDonut() {
         stroke: {
             show: true,
             width: 2,
-            colors: ['#1a1410'],
+            colors: ['#1a120d'],
         },
         plotOptions: {
             pie: {

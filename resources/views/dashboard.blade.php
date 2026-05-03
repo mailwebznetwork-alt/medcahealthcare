@@ -21,15 +21,23 @@
                 ['label' => 'Conversion', 'value' => '3.28%', 'delta' => '+0.6%', 'path' => 'M0,20 L20,16 L40,24 L58,12 L78,18 L96,8 L120,14'],
                 ['label' => 'Avg. session', 'value' => '4m 12s', 'delta' => '−2.1%', 'path' => 'M0,14 L22,20 L42,10 L62,18 L82,8 L102,14 L120,6'],
             ] as $kpi)
+                @php
+                    $deltaFirst = mb_substr((string) $kpi['delta'], 0, 1);
+                    $kpiDeltaPositive = $deltaFirst === '+';
+                    $kpiDeltaNegative = $deltaFirst === '-' || $deltaFirst === "\u{2212}";
+                @endphp
                 <article class="mom-card mom-card-interactive px-5 py-4">
                     <p class="mom-micro">{{ $kpi['label'] }}</p>
-                    <p class="mom-metric mt-2 leading-none">
-                        <span>{{ $kpi['value'] }}</span><span
+                    <p class="mt-2 flex flex-wrap items-baseline gap-x-3">
+                        <span class="mom-metric leading-none">{{ $kpi['value'] }}</span>
+                        <span
+                            class="mom-micro normal-case"
                             @class([
-                                'text-[var(--success)]' => str_starts_with($kpi['delta'], '+'),
-                                'text-[var(--danger)]' => ! str_starts_with($kpi['delta'], '+'),
+                                '!text-[var(--success)]' => $kpiDeltaPositive,
+                                '!text-[var(--danger)]' => $kpiDeltaNegative,
+                                '!text-[var(--text-muted)]' => ! $kpiDeltaPositive && ! $kpiDeltaNegative,
                             ])
-                        > ({{ $kpi['delta'] }})</span>
+                        >({{ $kpi['delta'] }})</span>
                     </p>
                     <svg viewBox="0 0 120 36" class="mt-3 h-7 w-full" preserveAspectRatio="none" aria-hidden="true">
                         <defs>
