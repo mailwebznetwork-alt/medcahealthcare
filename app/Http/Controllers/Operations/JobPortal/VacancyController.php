@@ -1,0 +1,142 @@
+<?php
+
+namespace App\Http\Controllers\Operations\JobPortal;
+
+use App\Enums\EmploymentType;
+use App\Enums\VacancyVisibility;
+use App\Enums\VacancyWorkflowStatus;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Operations\StoreVacancyRequest;
+use App\Http\Requests\Operations\UpdateVacancyRequest;
+use App\Models\Vacancy;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
+class VacancyController extends Controller
+{
+    public function __construct()
+    {
+        $this->authorizeResource(Vacancy::class, 'vacancy');
+    }
+
+    public function index(Request $request): View
+    {
+        $query = Vacancy::query()->orderBy('sort_order')->orderByDesc('updated_at');
+
+        if ($request->filled('q')) {
+            $term = '%'.$request->string('q')->trim().'%';
+            $query->where(function ($q) use ($term): void {
+                $q->where('title', 'like', $term)
+                    ->orWhere('department', 'like', $term)
+                    ->orWhere('city', 'like', $term)
+                    ->orWhere('pin_code', 'like', $term);
+            });
+        }
+
+        if ($request->filled('workflow_status')) {
+            $query->where('workflow_status', $request->string('workflow_status'));
+        }
+
+        if ($request->filled('visibility')) {
+            $query->where('visibility', $request->string('visibility'));
+        }
+
+        if ($request->filled('employment_type')) {
+            $query->where('employment_type', $request->string('employment_type'));
+        }
+
+        $vacancies = $query->paginate(15)->withQueryString();
+
+        return view('operations.job-portal.vacancies.index', compact('vacancies'));
+    }
+
+    public function create(): View
+    {
+        $vacancy = new Vacancy([
+            'employment_type' => EmploymentType::FullTime,
+            'visibility' => VacancyVisibility::Public,
+            'workflow_status' => VacancyWorkflowStatus::Draft,
+            'is_active' => true,
+            'sort_order' => 0,
+            'country_code' => 'IN',
+            'salary_currency' => 'INR',
+        ]);
+
+        return view('operations.job-portal.vacancies.create', compact('vacancy'));
+    }
+
+    public function store(StoreVacancyRequest $request): RedirectResponse
+    {
+        $data = $request->validated();
+        $data['slug'] = Vacancy::generateUniqueSlug(
+            $data['title'],
+            $data['city'] ?? null,
+            $data['pin_code'] ?? null
+        );
+
+        $vacancy = new Vacancy($data);
+        $this->syncPublishedTimestamp($vacancy);
+        $vacancy->save();
+
+        return redirect()
+            ->route('operations.job-portal.vacancies.edit', $vacancy)
+            ->with('status', 'vacancy-created');
+    }
+
+    public function show(Vacancy $vacancy): View
+    {
+        return view('operations.job-portal.vacancies.show', compact('vacancy'));
+    }
+
+    public function edit(Vacancy $vacancy): View
+    {
+        return view('operations.job-portal.vacancies.edit', compact('vacancy'));
+    }
+
+    public function update(UpdateVacancyRequest $request, Vacancy $vacancy): RedirectResponse
+    {
+        $vacancy->fill($request->validated());
+        $this->syncPublishedTimestamp($vacancy);
+        $vacancy->save();
+
+        return redirect()
+            ->route('operations.job-portal.vacancies.edit', $vacancy)
+            ->with('status', 'vacancy-updated');
+    }
+
+    public function destroy(Vacancy $vacancy): RedirectResponse
+    {
+        $vacancy->delete();
+
+        return redirect()
+            ->route('operations.job-portal.vacancies.index')
+            ->with('status', 'vacancy-deleted');
+    }
+
+    public function duplicate(Request $request, Vacancy $vacancy): RedirectResponse
+    {
+        $this->authorize('create', Vacancy::class);
+        $this->authorize('view', $vacancy);
+        $copy = $vacancy->duplicateAsDraft();
+
+        return redirect()
+            ->route('operations.job-portal.vacancies.edit', $copy)
+            ->with('status', 'vacancy-duplicated');
+    }
+
+    private function syncPublishedTimestamp(Vacancy $vacancy): void
+    {
+        if ($vacancy->workflow_status === VacancyWorkflowStatus::Published) {
+            if ($vacancy->published_at === null) {
+                $vacancy->published_at = now();
+            }
+
+            return;
+        }
+
+        if ($vacancy->workflow_status === VacancyWorkflowStatus::Draft) {
+            $vacancy->published_at = null;
+        }
+    }
+}
