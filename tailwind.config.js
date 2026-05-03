@@ -48,6 +48,7 @@ export default {
                 'mom-elevated': 'var(--bg-elevated)',
                 'mom-hover': 'var(--bg-hover)',
                 'mom-gold': 'var(--accent-gold)',
+                'mom-wordmark': 'var(--mom-wordmark)',
                 'mom-primary': 'var(--text-primary)',
                 'mom-secondary': 'var(--text-secondary)',
                 'mom-muted': 'var(--text-muted)',
@@ -57,7 +58,7 @@ export default {
             },
             backgroundImage: {
                 'mom-sidebar-edge':
-                    'linear-gradient(180deg, rgba(160,135,80,0.04) 0%, transparent 38%)',
+                    'linear-gradient(180deg, rgba(212,169,95,0.04) 0%, transparent 38%)',
             },
         },
     },

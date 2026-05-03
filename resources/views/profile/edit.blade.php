@@ -2,7 +2,7 @@
     :page-title="__('Profile')"
     :welcome-line="__('Manage your identity, credentials, and account lifecycle.')"
 >
-    <div class="w-full max-w-full space-y-0">
+    <div class="w-full max-w-full">
         <div class="mom-card p-6">
             @include('profile.partials.update-profile-information-form')
         </div>
