@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\PinCode;
 use App\Models\User;
+use App\Policies\PinCodePolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Pagination\Paginator;
@@ -26,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(User::class, UserPolicy::class);
+        Gate::policy(PinCode::class, PinCodePolicy::class);
 
         Paginator::useTailwind();
 

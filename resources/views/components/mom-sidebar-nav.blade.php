@@ -24,7 +24,7 @@
             @if ($node['type'] === 'link')
                 @php
                     $active = $node['key'] === \App\ModuleAccess::OPERATIONS
-                        ? request()->routeIs('modules.operations', 'operations.job-portal.*')
+                        ? request()->routeIs('modules.operations', 'operations.job-portal.*', 'operations.pin-codes.*')
                         : request()->routeIs($node['route']);
                 @endphp
                 <li>

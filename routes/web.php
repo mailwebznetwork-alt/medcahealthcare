@@ -7,6 +7,8 @@ use App\Http\Controllers\Operations\JobPortal\ApplicationController;
 use App\Http\Controllers\Operations\JobPortal\JobPortalDashboardController;
 use App\Http\Controllers\Operations\JobPortal\VacancyController;
 use App\Http\Controllers\Operations\OperationsHubController;
+use App\Http\Controllers\Operations\PinCodes\PinCodeController;
+use App\Http\Controllers\Operations\PinCodes\PinCodeImportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserManagement\UserController;
@@ -40,6 +42,19 @@ Route::middleware(['auth', 'active', 'verified', 'module:operations'])->group(fu
         Route::post('vacancies/{vacancy}/duplicate', [VacancyController::class, 'duplicate'])->name('vacancies.duplicate');
         Route::resource('vacancies', VacancyController::class);
         Route::resource('applications', ApplicationController::class)->only(['index', 'show', 'update']);
+    });
+
+    Route::prefix('operations/pin-codes')->name('operations.pin-codes.')->group(function () {
+        Route::get('/', [PinCodeController::class, 'index'])->name('index');
+        Route::get('import', [PinCodeImportController::class, 'create'])->name('import.create');
+        Route::post('import', [PinCodeImportController::class, 'store'])->name('import.store');
+        Route::get('create', [PinCodeController::class, 'create'])->name('create');
+        Route::post('/', [PinCodeController::class, 'store'])->name('store');
+        Route::get('{pin_code}/edit', [PinCodeController::class, 'edit'])->name('edit');
+        Route::put('{pin_code}', [PinCodeController::class, 'update'])->name('update');
+        Route::delete('{pin_code}', [PinCodeController::class, 'destroy'])->name('destroy');
+        Route::patch('{pin_code}/activate', [PinCodeController::class, 'activate'])->name('activate');
+        Route::patch('{pin_code}/deactivate', [PinCodeController::class, 'deactivate'])->name('deactivate');
     });
 });
 

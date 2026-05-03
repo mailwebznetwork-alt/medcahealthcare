@@ -5,7 +5,7 @@
     <div class="mom-card p-8">
         <h2 class="mom-title-page text-xl">{{ __('Operations command center') }}</h2>
         <p class="mom-body-text mt-3 max-w-2xl text-[var(--text-secondary)]">
-            {{ __('Use the Operations panel on the right to open Job Portal and move between overview, vacancies, and applications.') }}
+            {{ __('Use the Operations panel on the right for Job Portal (hiring) and Pin Codes (coverage, serviceability, and local SEO metadata).') }}
         </p>
     </div>
 </x-app-layout>
