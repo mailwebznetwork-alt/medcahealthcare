@@ -15,21 +15,6 @@
         @endforeach
     </div>
 
-    <div class="mt-10 flex flex-wrap gap-3">
-        <a
-            href="{{ route('operations.job-portal.vacancies.create') }}"
-            class="inline-flex items-center justify-center rounded-mom-md border border-[rgba(212,169,95,0.28)] bg-[linear-gradient(180deg,rgba(212,169,95,0.22),rgba(212,169,95,0.12))] px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-[#0a0a0a] shadow-[0_0_24px_rgba(212,169,95,0.15)] transition-all duration-320 ease-premium hover:border-[rgba(212,169,95,0.4)] hover:shadow-[0_0_32px_rgba(212,169,95,0.22)]"
-        >{{ __('Create vacancy') }}</a>
-        <a
-            href="{{ route('operations.job-portal.vacancies.index') }}"
-            class="inline-flex items-center justify-center rounded-mom-md border border-[rgba(255,255,255,0.045)] bg-[rgba(255,255,255,0.03)] px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-[var(--text-secondary)] shadow-mom-inner transition-all duration-320 ease-premium hover:border-[rgba(212,169,95,0.16)] hover:text-[var(--text-primary)]"
-        >{{ __('Manage vacancies') }}</a>
-        <a
-            href="{{ route('operations.job-portal.applications.index') }}"
-            class="inline-flex items-center justify-center rounded-mom-md border border-[rgba(255,255,255,0.045)] bg-[rgba(255,255,255,0.03)] px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-[var(--text-secondary)] shadow-mom-inner transition-all duration-320 ease-premium hover:border-[rgba(212,169,95,0.16)] hover:text-[var(--text-primary)]"
-        >{{ __('Review applications') }}</a>
-    </div>
-
     <div class="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
         <div class="mom-card overflow-hidden p-0">
             <div class="border-b border-[rgba(255,255,255,0.045)] px-5 py-4">
