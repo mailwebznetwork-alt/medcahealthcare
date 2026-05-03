@@ -237,27 +237,7 @@
                         </label>
                     </div>
 
-                    <div class="flex shrink-0 items-center gap-3">
-                        <button
-                            type="button"
-                            class="hidden rounded-full border border-[rgba(255,255,255,0.045)] px-4 py-2 text-xs font-semibold uppercase tracking-wide text-mom-gold shadow-mom-inner transition-all duration-320 ease-premium hover:border-[rgba(212,169,95,0.28)] hover:shadow-[0_0_28px_rgba(212,169,95,0.1)] md:inline-flex"
-                        >
-                            Suspend System
-                        </button>
-                        <button
-                            type="button"
-                            class="flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(255,255,255,0.045)] text-[var(--text-secondary)] transition-all duration-320 ease-premium hover:border-[rgba(212,169,95,0.16)] hover:text-[var(--text-primary)]"
-                            aria-label="Notifications"
-                        >
-                            <i data-lucide="bell" class="h-[18px] w-[18px]"></i>
-                        </button>
-                        <button
-                            type="button"
-                            class="flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(255,255,255,0.045)] text-[var(--text-secondary)] transition-all duration-320 ease-premium hover:border-[rgba(212,169,95,0.16)] hover:text-[var(--text-primary)]"
-                            aria-label="Theme"
-                        >
-                            <i data-lucide="moon" class="h-[18px] w-[18px]"></i>
-                        </button>
+                    <div class="flex shrink-0 items-center">
                         <div
                             class="flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(212,169,95,0.22)] bg-[rgba(212,169,95,0.08)] text-xs font-semibold text-mom-gold"
                             aria-hidden="true"

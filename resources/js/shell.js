@@ -1,7 +1,6 @@
 import { createIcons } from 'lucide';
 import {
     Activity,
-    Bell,
     ChevronRight,
     CircleUser,
     Database,
@@ -12,7 +11,6 @@ import {
     LayoutDashboard,
     LineChart,
     LogOut,
-    Moon,
     Orbit,
     PanelLeft,
     Search,
@@ -25,7 +23,6 @@ import {
 
 const lucideIcons = {
     Activity,
-    Bell,
     ChevronRight,
     CircleUser,
     Database,
@@ -36,7 +33,6 @@ const lucideIcons = {
     LayoutDashboard,
     LineChart,
     LogOut,
-    Moon,
     Orbit,
     PanelLeft,
     Search,
