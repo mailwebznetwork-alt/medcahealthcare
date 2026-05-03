@@ -71,7 +71,7 @@
                     <span class="text-lg font-semibold tracking-tight text-mom-gold">MarkOnMinds</span>
                 </div>
 
-                <nav class="custom-scrollbar flex flex-1 flex-col gap-8 overflow-y-auto px-4 py-8">
+                <nav class="custom-scrollbar flex flex-1 flex-col gap-0 overflow-y-auto px-4 py-8">
                     <div>
                         <p class="mom-micro mb-3 px-3">Main</p>
                         <ul class="space-y-1">
@@ -111,6 +111,8 @@
                         </ul>
                     </div>
 
+                    <hr class="mom-nav-divider" aria-hidden="true" />
+
                     <div>
                         <p class="mom-micro mb-3 px-3">Operations</p>
                         <ul class="space-y-1">
@@ -134,6 +136,8 @@
                             </li>
                         </ul>
                     </div>
+
+                    <hr class="mom-nav-divider" aria-hidden="true" />
 
                     <div>
                         <p class="mom-micro mb-3 px-3">Insights</p>
@@ -225,7 +229,7 @@
                             <input
                                 type="search"
                                 placeholder="Search intelligence, entities, signals…"
-                                class="w-full rounded-full border border-[rgba(255,255,255,0.045)] bg-[rgba(16,16,16,0.85)] py-2.5 pl-11 pr-24 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] shadow-mom-inner outline-none ring-offset-0 transition-all duration-320 ease-premium focus:border-[rgba(212,169,95,0.28)] focus:shadow-[0_0_24px_rgba(212,169,95,0.12)]"
+                                class="w-full rounded-full border border-[rgba(255,255,255,0.045)] bg-[rgba(28,20,14,0.88)] py-2.5 pl-11 pr-24 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] shadow-mom-inner outline-none ring-offset-0 transition-all duration-320 ease-premium focus:border-[rgba(212,169,95,0.28)] focus:shadow-[0_0_24px_rgba(212,169,95,0.12)]"
                             />
                             <kbd
                                 class="pointer-events-none absolute right-3 hidden rounded-md border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] px-2 py-0.5 font-mono text-[11px] text-[var(--text-muted)] sm:inline-block"

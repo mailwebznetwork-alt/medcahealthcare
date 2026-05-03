@@ -6,9 +6,9 @@
     page-title="Dashboard Overview"
     welcome-line="Welcome back — intelligence surfaces update in near real-time."
 >
-    <div class="mom-reveal w-full max-w-full space-y-8">
+    <div class="mom-reveal w-full max-w-full space-y-0">
         {{-- Mobile heading --}}
-        <div class="space-y-1 md:hidden">
+        <div class="space-y-1 pb-8 md:hidden md:pb-0">
             <h1 class="mom-title-page">Dashboard Overview</h1>
             <p class="mom-subtext">Welcome back — intelligence surfaces update in near real-time.</p>
         </div>
@@ -36,7 +36,7 @@
                         <defs>
                             <linearGradient id="spark-fill-{{ $loop->index }}" x1="0" x2="0" y1="0" y2="1">
                                 <stop offset="0%" stop-color="#d4a95f" stop-opacity="0.2" />
-                                <stop offset="100%" stop-color="#0f0c08" stop-opacity="0" />
+                                <stop offset="100%" stop-color="#16100c" stop-opacity="0" />
                             </linearGradient>
                         </defs>
                         <path
@@ -58,6 +58,8 @@
                 </article>
             @endforeach
         </section>
+
+        <hr class="mom-section-separator" aria-hidden="true" />
 
         {{-- Analytics + activity --}}
         <section class="grid grid-cols-1 gap-6 lg:grid-cols-12">
@@ -107,6 +109,8 @@
                 </ul>
             </aside>
         </section>
+
+        <hr class="mom-section-separator" aria-hidden="true" />
 
         {{-- Services, traffic, status --}}
         <section class="grid grid-cols-1 gap-6 xl:grid-cols-12">
@@ -171,6 +175,8 @@
                 </div>
             </div>
         </section>
+
+        <hr class="mom-section-separator" aria-hidden="true" />
 
         {{-- Bottom editorial grid — 10-column mathematics: 3 + 3 + 2 + 2 --}}
         <section class="grid grid-cols-1 gap-6 xl:grid-cols-10">
