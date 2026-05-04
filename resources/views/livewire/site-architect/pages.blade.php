@@ -8,13 +8,14 @@
     @if ($mode === 'list')
         <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
             <h2 class="text-lg font-semibold text-[var(--text-primary)]">{{ __('Pages') }}</h2>
-            <button
-                type="button"
-                wire:click="startCreate"
-                class="rounded-mom-chrome border border-[rgba(197,160,89,0.28)] bg-[rgba(197,160,89,0.1)] px-4 py-2 text-sm font-medium text-mom-gold"
+            <a
+                href="{{ route('site-architect.pages.index') }}?create=1"
+                wire:click.prevent="startCreate"
+                role="button"
+                class="inline-flex cursor-pointer rounded-mom-chrome border border-[rgba(197,160,89,0.28)] bg-[rgba(197,160,89,0.1)] px-4 py-2 text-sm font-medium text-mom-gold no-underline"
             >
                 {{ __('Create page') }}
-            </button>
+            </a>
         </div>
 
         <div class="mom-card overflow-x-auto p-0">

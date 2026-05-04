@@ -48,6 +48,7 @@
         <link href="https://fonts.bunny.net/css?family=noto-sans:400,500,600,700&display=swap" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @livewireStyles
     </head>
     <body
         class="mom-body font-sans antialiased text-[var(--text-primary)]"
@@ -191,5 +192,6 @@
         </div>
 
         @stack('scripts')
+        @livewireScripts
     </body>
 </html>

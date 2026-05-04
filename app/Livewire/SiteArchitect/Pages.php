@@ -17,6 +17,13 @@ class Pages extends Component
     use AuthorizesRequests;
     use WithPagination;
 
+    public function mount(): void
+    {
+        if (request()->query('create') === '1') {
+            $this->startCreate();
+        }
+    }
+
     public string $mode = 'list';
 
     public ?int $editingId = null;
