@@ -248,7 +248,7 @@
             </div>
             <div class="md:col-span-2">
                 <x-input-label for="schema_json" :value="__('Schema JSON')" variant="mom" />
-                <textarea id="schema_json" name="schema_json" rows="14" class="mt-2 block w-full rounded-mom-chrome border border-[rgba(255,255,255,0.045)] bg-[rgba(28,22,18,0.75)] px-3 py-2.5 font-mono text-xs text-[var(--text-primary)] shadow-mom-inner" placeholder='{"@context":"https://schema.org","@type":"Service"}'>{{ $schemaJsonPretty }}</textarea>
+                <textarea id="schema_json" name="schema_json" rows="14" class="mt-2 block w-full rounded-mom-chrome border border-[rgba(255,255,255,0.045)] bg-[rgba(28,22,18,0.75)] px-3 py-2.5 font-mono text-xs text-[var(--text-primary)] shadow-mom-inner" placeholder='{"@@context":"https://schema.org","@@type":"Service"}'>{{ $schemaJsonPretty }}</textarea>
                 <x-input-error class="mt-2" :messages="$errors->get('schema_json')" />
             </div>
         </div>
@@ -267,7 +267,7 @@
                 autocomplete="off"
             />
             <div class="custom-scrollbar max-h-72 overflow-y-auto rounded-mom-chrome border border-[rgba(255,255,255,0.045)] bg-[rgba(0,0,0,0.12)] p-3">
-                @foreach ($pinCodes as $pc)
+                @forelse ($pinCodes as $pc)
                     @php $blob = strtolower($pc->pincode.' '.$pc->area_name.' '.$pc->city.' '.(string) $pc->locality); @endphp
                     <label
                         class="flex cursor-pointer gap-3 rounded px-2 py-1.5 hover:bg-[var(--bg-hover)]"
@@ -288,7 +288,12 @@
                             @endif
                         </span>
                     </label>
-                @endforeach
+                @empty
+                    <p class="mom-subtext text-sm">
+                        {{ __('No pin codes in the directory yet. Add or import pin codes first, then return here.') }}
+                        <a href="{{ route('operations.pin-codes.directory') }}" class="text-[var(--accent)] underline underline-offset-2">{{ __('Open pin code directory') }}</a>
+                    </p>
+                @endforelse
             </div>
         </div>
     </section>
