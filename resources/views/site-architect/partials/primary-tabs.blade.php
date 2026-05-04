@@ -19,5 +19,5 @@
             'border-mom-gold text-mom-gold' => $blogsActive,
             'border-transparent text-[var(--text-secondary)] hover:border-[var(--border-panel-soft)] hover:text-[var(--text-primary)]' => ! $blogsActive,
         ])
-    >{{ __('Blog') }}</a>
+    >{{ __('Blogs') }}</a>
 </nav>
