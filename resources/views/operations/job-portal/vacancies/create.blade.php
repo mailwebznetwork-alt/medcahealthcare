@@ -1,4 +1,4 @@
-<x-operations.workspace>
+﻿<x-operations.workspace>
     <h2 class="mom-section-title mb-8">{{ __('Create vacancy') }}</h2>
     <form method="post" action="{{ route('operations.job-portal.vacancies.store') }}" class="space-y-8">
         @csrf

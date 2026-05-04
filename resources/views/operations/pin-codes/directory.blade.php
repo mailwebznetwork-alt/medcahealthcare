@@ -1,4 +1,4 @@
-<x-operations.workspace>
+﻿<x-operations.workspace>
     <h2 class="mom-section-title mb-8">{{ __('Directory') }}</h2>
 
     @if (session('status') === 'pin-code-created')

@@ -1,4 +1,4 @@
-<x-operations.workspace>
+﻿<x-operations.workspace>
     <h2 class="mom-section-title mb-2">{{ __('Bulk import') }}</h2>
     <p class="mom-subtext mb-8 max-w-3xl text-[var(--text-secondary)]">
         {{ __('Upload a UTF-8 CSV (Excel: Save As CSV). Preview the first rows, confirm, then track outcomes in history below.') }}

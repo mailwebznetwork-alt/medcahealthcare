@@ -1,4 +1,4 @@
-<x-operations.workspace>
+﻿<x-operations.workspace>
     <h2 class="mom-section-title mb-8">{{ __('Edit vacancy') }}</h2>
     @if (session('status') === 'vacancy-created' || session('status') === 'vacancy-updated' || session('status') === 'vacancy-duplicated')
         <p class="mom-body-text mb-6 text-[var(--success)]" role="status">{{ __('Vacancy saved.') }}</p>

@@ -1,4 +1,4 @@
-@props(['variant' => 'default'])
+﻿@props(['variant' => 'default'])
 
 @php
     $baseClass = match ($variant) {

@@ -1,4 +1,4 @@
-<x-operations.workspace>
+﻿<x-operations.workspace>
     <h2 class="mom-section-title mb-8">{{ __('Add pin code') }}</h2>
     <form method="post" action="{{ route('operations.pin-codes.store') }}" class="space-y-8">
         @csrf

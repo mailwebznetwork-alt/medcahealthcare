@@ -1,4 +1,4 @@
-@php
+﻿@php
     /** @var \App\Models\PinCode $pinCode */
 @endphp
 

@@ -1,4 +1,4 @@
-@foreach (\App\ModuleAccess::labelsForForm() as $key => $meta)
+﻿@foreach (\App\ModuleAccess::labelsForForm() as $key => $meta)
     @php
         $disabled = $user?->isRootSuperAdmin() ?? false;
         $checked = $user ? $user->hasModuleAccess($key) : false;

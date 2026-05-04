@@ -1,4 +1,4 @@
-<section>
+﻿<section>
     <header>
         <h2 class="mom-section-title">
             {{ __('Profile Information') }}
