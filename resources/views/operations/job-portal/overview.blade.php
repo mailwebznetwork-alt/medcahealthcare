@@ -17,19 +17,19 @@
 
     <div class="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
         <div class="mom-card overflow-hidden p-0">
-            <div class="border-b border-[rgba(255,255,255,0.045)] px-5 py-4">
+            <div class="border-b border-[var(--border-panel-soft)] px-5 py-4">
                 <h3 class="mom-section-title text-base">{{ __('Recent vacancies') }}</h3>
                 <p class="mom-subtext mt-1">{{ __('Latest updates across your hiring catalog.') }}</p>
             </div>
             @if ($recentVacancies->isEmpty())
                 <p class="mom-body-text p-6 text-[var(--text-muted)]">{{ __('No vacancies yet.') }}</p>
             @else
-                <ul class="divide-y divide-[rgba(255,255,255,0.045)]" role="list">
+                <ul class="divide-y divide-[var(--border-panel-soft)]" role="list">
                     @foreach ($recentVacancies as $vacancy)
                         <li class="flex flex-wrap items-center justify-between gap-3 px-5 py-3 text-[13px]">
                             <div class="min-w-0">
                                 <p class="truncate font-medium text-[var(--text-primary)]">{{ $vacancy->title }}</p>
-                                <p class="mom-micro mt-0.5">{{ $vacancy->city }} · {{ $vacancy->workflow_status->label() }}</p>
+                                <p class="mom-subtext mt-0.5 text-[var(--text-muted)]">{{ $vacancy->city }} · {{ $vacancy->workflow_status->label() }}</p>
                             </div>
                             <a href="{{ route('operations.job-portal.vacancies.edit', $vacancy) }}" class="shrink-0 text-mom-gold hover:underline">{{ __('Open') }}</a>
                         </li>
@@ -39,19 +39,19 @@
         </div>
 
         <div class="mom-card overflow-hidden p-0">
-            <div class="border-b border-[rgba(255,255,255,0.045)] px-5 py-4">
+            <div class="border-b border-[var(--border-panel-soft)] px-5 py-4">
                 <h3 class="mom-section-title text-base">{{ __('Recent applications') }}</h3>
                 <p class="mom-subtext mt-1">{{ __('Newest candidates entering the pipeline.') }}</p>
             </div>
             @if ($recentApplications->isEmpty())
                 <p class="mom-body-text p-6 text-[var(--text-muted)]">{{ __('No applications yet.') }}</p>
             @else
-                <ul class="divide-y divide-[rgba(255,255,255,0.045)]" role="list">
+                <ul class="divide-y divide-[var(--border-panel-soft)]" role="list">
                     @foreach ($recentApplications as $application)
                         <li class="flex flex-wrap items-center justify-between gap-3 px-5 py-3 text-[13px]">
                             <div class="min-w-0">
                                 <p class="truncate font-medium text-[var(--text-primary)]">{{ $application->full_name }}</p>
-                                <p class="mom-micro mt-0.5">
+                                <p class="mom-subtext mt-0.5 text-[var(--text-muted)]">
                                     {{ $application->vacancy?->title ?? __('Unknown role') }} · {{ $application->pipeline_status->label() }}
                                 </p>
                             </div>
