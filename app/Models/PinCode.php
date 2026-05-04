@@ -6,6 +6,7 @@ use Database\Factories\PinCodeFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
 
 #[Fillable([
@@ -65,5 +66,14 @@ class PinCode extends Model
         }
 
         return $slug;
+    }
+
+    /**
+     * @return BelongsToMany<Service, $this>
+     */
+    public function services(): BelongsToMany
+    {
+        return $this->belongsToMany(Service::class, 'service_pincodes')
+            ->withTimestamps();
     }
 }

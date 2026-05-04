@@ -25,7 +25,7 @@
         $resolvedWelcome = match (true) {
             request()->routeIs('profile.*') => __('Account security and identity preferences.'),
             request()->routeIs('settings.*') => __('Workspace configuration and preferences.'),
-            request()->routeIs('operations.job-portal.*', 'operations.pin-codes.*', 'modules.operations') => __('Run-state, hiring, coverage, and operational management workspace.'),
+            request()->routeIs('operations.job-portal.*', 'operations.pin-codes.*', 'operations.services.*', 'modules.operations') => __('Run-state, hiring, coverage, and operational management workspace.'),
             request()->routeIs('user-management.*') => __('People, access, and directory control.'),
             request()->routeIs('modules.*') => __('Focused module workspace.'),
             default => __('Welcome back — here is your intelligence snapshot.'),
@@ -42,6 +42,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'MarkOnMinds') }} — {{ $resolvedTitle }}</title>
+        @stack('head')
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=noto-sans:400,500,600,700&display=swap" rel="stylesheet" />

@@ -9,6 +9,7 @@ use App\Http\Controllers\Operations\JobPortal\VacancyController;
 use App\Http\Controllers\Operations\OperationsHubController;
 use App\Http\Controllers\Operations\PinCodes\PinCodeController;
 use App\Http\Controllers\Operations\PinCodes\PinCodeImportController;
+use App\Http\Controllers\Operations\Services\ServiceController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserManagement\UserController;
@@ -45,6 +46,17 @@ Route::middleware(['auth', 'active', 'verified', 'module:operations'])->group(fu
         Route::post('vacancies/{vacancy}/duplicate', [VacancyController::class, 'duplicate'])->name('vacancies.duplicate');
         Route::resource('vacancies', VacancyController::class);
         Route::resource('applications', ApplicationController::class)->only(['index', 'show', 'update']);
+    });
+
+    Route::prefix('operations/services')->name('operations.services.')->group(function () {
+        Route::get('/', [ServiceController::class, 'index'])->name('index');
+        Route::get('create', [ServiceController::class, 'create'])->name('create');
+        Route::post('/', [ServiceController::class, 'store'])->name('store');
+        Route::get('{service}/duplicate', [ServiceController::class, 'duplicate'])->name('duplicate');
+        Route::get('{service}/preview', [ServiceController::class, 'preview'])->name('preview');
+        Route::get('{service}/edit', [ServiceController::class, 'edit'])->name('edit');
+        Route::put('{service}', [ServiceController::class, 'update'])->name('update');
+        Route::delete('{service}', [ServiceController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('operations/pin-codes')->name('operations.pin-codes.')->group(function () {

@@ -62,7 +62,7 @@
             @foreach ($orderedLinks as $navNode)
                 @php
                     $active = $navNode['key'] === ModuleAccess::OPERATIONS
-                        ? request()->routeIs('modules.operations', 'operations.job-portal.*', 'operations.pin-codes.*')
+                        ? request()->routeIs('modules.operations', 'operations.job-portal.*', 'operations.pin-codes.*', 'operations.services.*')
                         : request()->routeIs($navNode['route']);
                 @endphp
                 <li class="list-none py-3 first:pt-0 last:pb-0">
