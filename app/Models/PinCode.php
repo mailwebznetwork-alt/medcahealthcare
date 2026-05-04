@@ -76,4 +76,14 @@ class PinCode extends Model
         return $this->belongsToMany(Service::class, 'service_pincodes')
             ->withTimestamps();
     }
+
+    /**
+     * @return BelongsToMany<Page, $this>
+     */
+    public function pages(): BelongsToMany
+    {
+        return $this->belongsToMany(Page::class, 'page_pin_codes')
+            ->withPivot(['serviceability', 'delivery_charge', 'location_keywords'])
+            ->withTimestamps();
+    }
 }

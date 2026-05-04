@@ -24,6 +24,7 @@ class ModuleSurfaceController extends Controller
 
         return view('modules.surface', [
             'title' => $meta['label'],
+            'moduleKey' => $key,
         ]);
     }
 }

@@ -13,6 +13,8 @@ use App\Http\Controllers\Operations\Services\ServiceController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserManagement\UserController;
+use App\Models\Page;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -25,6 +27,12 @@ Route::post('/careers/{slug}/apply', [CareersController::class, 'storeApplicatio
     ->middleware('throttle:10,1')
     ->name('careers.apply');
 
+Route::get('/p/{page:slug}', function (Page $page) {
+    abort_unless($page->is_active, 404);
+
+    return view('layouts.app', ['page' => $page]);
+})->name('pages.public');
+
 Route::middleware(['auth', 'active', 'verified', 'module:dashboard'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 });
@@ -33,6 +41,15 @@ Route::middleware(['auth', 'active', 'verified', 'module:site_architect'])->grou
     Route::get('/site-architect', [ModuleSurfaceController::class, 'show'])
         ->defaults('momModule', 'site_architect')
         ->name('modules.site-architect');
+
+    Route::prefix('site-architect')->name('site-architect.')->group(function () {
+        Route::view('/pages', 'site-architect.pages-shell')->name('pages.index');
+        Route::get('/pages/{page}/preview', function (Page $page) {
+            Gate::authorize('view', $page);
+
+            return view('layouts.app', ['page' => $page]);
+        })->name('pages.preview');
+    });
 });
 
 Route::middleware(['auth', 'active', 'verified', 'module:operations'])->group(function () {

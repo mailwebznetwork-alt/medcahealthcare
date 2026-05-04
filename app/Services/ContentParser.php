@@ -10,32 +10,41 @@ class ContentParser
 {
     public static function parse(?string $content): string
     {
-        if ($content === null || $content === '') {
+        if ($content === null || trim($content) === '') {
             return '';
         }
 
-        $content = preg_replace_callback('/\{\{module:(.*?)\}\}/', function (array $matches): string {
-            $slug = trim($matches[1]);
-            $class = config('modules.'.$slug);
+        $result = preg_replace_callback(
+            '/\{\{\s*(block|module)\s*:\s*([^}]+?)\s*\}\}/',
+            function (array $matches): string {
+                $type = strtolower(trim($matches[1]));
+                $slug = trim($matches[2]);
 
-            if (! is_string($class) || $class === '' || ! class_exists($class)) {
+                if ($type === 'module') {
+                    $class = config('modules.'.$slug);
+
+                    if (! is_string($class) || $class === '' || ! class_exists($class)) {
+                        return '';
+                    }
+
+                    return Livewire::mount($class);
+                }
+
+                if ($type === 'block') {
+                    $block = Block::query()->where('slug', $slug)->first();
+
+                    if ($block === null || ! is_string($block->blade_html) || $block->blade_html === '') {
+                        return '';
+                    }
+
+                    return Blade::render($block->blade_html, []);
+                }
+
                 return '';
-            }
+            },
+            $content
+        );
 
-            return Livewire::mount($class);
-        }, $content);
-
-        $content = preg_replace_callback('/\{\{block:(.*?)\}\}/', function (array $matches): string {
-            $slug = trim($matches[1]);
-            $block = Block::query()->where('slug', $slug)->first();
-
-            if ($block === null || ! is_string($block->blade_html) || $block->blade_html === '') {
-                return '';
-            }
-
-            return Blade::render($block->blade_html, []);
-        }, $content);
-
-        return $content ?? '';
+        return $result ?? '';
     }
 }

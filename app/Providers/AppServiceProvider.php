@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Page;
 use App\Models\PinCode;
 use App\Models\Service;
 use App\Models\User;
+use App\Policies\PagePolicy;
 use App\Policies\PinCodePolicy;
 use App\Policies\ServicePolicy;
 use App\Policies\UserPolicy;
@@ -61,6 +63,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(PinCode::class, PinCodePolicy::class);
         Gate::policy(Service::class, ServicePolicy::class);
+        Gate::policy(Page::class, PagePolicy::class);
 
         Paginator::useTailwind();
 
