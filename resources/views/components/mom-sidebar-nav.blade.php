@@ -1,86 +1,160 @@
-@props([
+﻿@props([
     'user',
 ])
 
 @php
     /** @var \App\Models\User $user */
+    use App\ModuleAccess;
+
     $nodes = $user->visibleSidebarNodes();
+    $nodesByKey = collect($nodes)->keyBy('key');
+
+    $sectionKeys = [
+        [
+            ModuleAccess::DASHBOARD,
+            ModuleAccess::SITE_ARCHITECT,
+            ModuleAccess::OPERATIONS,
+        ],
+        [
+            ModuleAccess::MARKETING,
+            ModuleAccess::GROWTH_CENTER,
+        ],
+        [
+            ModuleAccess::USER_MANAGEMENT,
+            ModuleAccess::SECURITY,
+        ],
+        [
+            ModuleAccess::SETTINGS,
+        ],
+    ];
+
+    $assignedKeys = collect($sectionKeys)->flatten()->all();
 @endphp
 
 <nav
-    class="mom-sidebar-nav-scroll flex min-h-0 flex-1 flex-col gap-0 overflow-y-auto px-4 py-8"
+    class="mom-sidebar-nav-scroll flex min-h-0 flex-1 flex-col overflow-y-auto px-3 py-6"
     role="navigation"
     aria-label="{{ __('Application') }}"
     data-mom-nav-root
 >
-    <ul class="space-y-1">
-        @foreach ($nodes as $node)
-            @if ($node['type'] === 'link' && $node['key'] === 'settings')
-                <li class="list-none px-3 py-2" aria-hidden="true">
-                    <hr class="mom-nav-divider mom-nav-divider--sidebar" />
-                </li>
-            @endif
+    @php $sectionRendered = false; @endphp
+    @foreach ($sectionKeys as $keys)
+        @php
+            $sectionNodes = collect($keys)
+                ->map(fn (string $key) => $nodesByKey->get($key))
+                ->filter()
+                ->values();
+        @endphp
+        @if ($sectionNodes->isEmpty())
+            @continue
+        @endif
 
-            @if ($node['type'] === 'link')
+        @if ($sectionRendered)
+            <hr class="mom-sidebar-section-divider" aria-hidden="true" />
+        @endif
+
+        <ul class="flex flex-col gap-y-3" role="list">
+            @foreach ($sectionNodes as $navNode)
+                @if ($navNode['type'] !== 'link')
+                    @continue
+                @endif
+
                 @php
-                    $active = $node['key'] === \App\ModuleAccess::OPERATIONS
+                    $active = $navNode['key'] === ModuleAccess::OPERATIONS
                         ? request()->routeIs('modules.operations', 'operations.job-portal.*', 'operations.pin-codes.*')
-                        : request()->routeIs($node['route']);
+                        : request()->routeIs($navNode['route']);
                 @endphp
-                <li>
+                <li class="list-none">
                     <a
-                        href="{{ route($node['route']) }}"
+                        href="{{ route($navNode['route']) }}"
                         @class([
                             'mom-nav-active flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-mom-gold transition-all duration-320 ease-premium' => $active,
                             'flex items-center gap-3 rounded-full px-3 py-2.5 text-sm font-medium text-[var(--text-secondary)] transition-all duration-320 ease-premium hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] hover:shadow-[0_0_22px_rgba(197,160,89,0.06)]' => ! $active,
                         ])
                     >
                         <i
-                            data-lucide="{{ $node['icon'] }}"
+                            data-lucide="{{ $navNode['icon'] }}"
                             class="h-[18px] w-[18px] shrink-0 {{ $active ? '' : 'opacity-80' }}"
                         ></i>
-                        <span>{{ __($node['label']) }}</span>
+                        <span class="truncate">{{ __($navNode['label']) }}</span>
                     </a>
                 </li>
-                @if ($node['key'] === 'dashboard')
-                    <li class="list-none px-3 py-2" aria-hidden="true">
-                        <hr class="mom-nav-divider mom-nav-divider--sidebar" />
-                    </li>
-                @endif
-                @if ($node['key'] === \App\ModuleAccess::OPERATIONS)
-                    <li class="list-none px-3 py-2" aria-hidden="true">
-                        <hr class="mom-nav-divider mom-nav-divider--sidebar" />
-                    </li>
-                @endif
-            @else
-                <li class="pt-2 first:pt-0">
-                    <p class="mom-micro mb-2 px-3">{{ __($node['label']) }}</p>
-                    <ul class="space-y-1 border-l border-[rgba(255,255,255,0.06)] pl-3" role="group" aria-label="{{ __($node['label']) }}">
-                        @foreach ($node['children'] as $child)
-                            @php
-                                $childActive = isset($child['pattern'])
-                                    ? request()->routeIs($child['pattern'])
-                                    : request()->routeIs($child['route']);
-                            @endphp
-                            <li>
-                                <a
-                                    href="{{ route($child['route']) }}"
-                                    @class([
-                                        'mom-nav-active flex items-center gap-3 rounded-r-full px-3 py-2 text-sm font-medium text-mom-gold transition-all duration-320 ease-premium' => $childActive,
-                                        'flex items-center gap-3 rounded-r-full px-3 py-2 text-sm font-medium text-[var(--text-secondary)] transition-all duration-320 ease-premium hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]' => ! $childActive,
-                                    ])
-                                >
-                                    <i
-                                        data-lucide="{{ $child['icon'] }}"
-                                        class="h-[17px] w-[17px] shrink-0 {{ $childActive ? '' : 'opacity-80' }}"
-                                    ></i>
-                                    <span>{{ __($child['label']) }}</span>
-                                </a>
-                            </li>
-                        @endforeach
-                    </ul>
+            @endforeach
+        </ul>
+
+        @php $sectionRendered = true; @endphp
+    @endforeach
+
+    @php
+        $orphanLinks = collect($nodes)->filter(
+            fn (array $n) => $n['type'] === 'link' && ! in_array($n['key'], $assignedKeys, true)
+        );
+    @endphp
+    @if ($orphanLinks->isNotEmpty())
+        @if ($sectionRendered)
+            <hr class="mom-sidebar-section-divider" aria-hidden="true" />
+        @endif
+        <ul class="flex flex-col gap-y-3" role="list">
+            @foreach ($orphanLinks as $navNode)
+                @php
+                    $active = $navNode['key'] === ModuleAccess::OPERATIONS
+                        ? request()->routeIs('modules.operations', 'operations.job-portal.*', 'operations.pin-codes.*')
+                        : request()->routeIs($navNode['route']);
+                @endphp
+                <li class="list-none">
+                    <a
+                        href="{{ route($navNode['route']) }}"
+                        @class([
+                            'mom-nav-active flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-mom-gold transition-all duration-320 ease-premium' => $active,
+                            'flex items-center gap-3 rounded-full px-3 py-2.5 text-sm font-medium text-[var(--text-secondary)] transition-all duration-320 ease-premium hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] hover:shadow-[0_0_22px_rgba(197,160,89,0.06)]' => ! $active,
+                        ])
+                    >
+                        <i
+                            data-lucide="{{ $navNode['icon'] }}"
+                            class="h-[18px] w-[18px] shrink-0 {{ $active ? '' : 'opacity-80' }}"
+                        ></i>
+                        <span class="truncate">{{ __($navNode['label']) }}</span>
+                    </a>
                 </li>
-            @endif
-        @endforeach
-    </ul>
+            @endforeach
+        </ul>
+        @php $sectionRendered = true; @endphp
+    @endif
+
+    @foreach ($nodes as $navNode)
+        @if ($navNode['type'] !== 'group')
+            @continue
+        @endif
+        @if ($sectionRendered)
+            <hr class="mom-sidebar-section-divider" aria-hidden="true" />
+        @endif
+        <div class="flex flex-col gap-y-3">
+            <p class="mom-micro px-3">{{ __($navNode['label']) }}</p>
+            <ul class="flex flex-col gap-y-3" role="group" aria-label="{{ __($navNode['label']) }}">
+                @foreach ($navNode['children'] as $child)
+                    @php
+                        $childActive = isset($child['pattern'])
+                            ? request()->routeIs($child['pattern'])
+                            : request()->routeIs($child['route']);
+                    @endphp
+                    <li class="list-none">
+                        <a
+                            href="{{ route($child['route']) }}"
+                            @class([
+                                'mom-nav-active flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-mom-gold transition-all duration-320 ease-premium' => $childActive,
+                                'flex items-center gap-3 rounded-full px-3 py-2.5 text-sm font-medium text-[var(--text-secondary)] transition-all duration-320 ease-premium hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]' => ! $childActive,
+                            ])
+                        >
+                            <i
+                                data-lucide="{{ $child['icon'] }}"
+                                class="h-[18px] w-[18px] shrink-0 {{ $childActive ? '' : 'opacity-80' }}"
+                            ></i>
+                            <span class="truncate">{{ __($child['label']) }}</span>
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+        @php $sectionRendered = true; @endphp
+    @endforeach
 </nav>

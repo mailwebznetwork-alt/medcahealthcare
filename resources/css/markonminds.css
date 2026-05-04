@@ -405,6 +405,17 @@ body.mom-body::after {
     margin: 0.65rem 0;
 }
 
+/**
+ * Sidebar — section break between grouped nav lists (structured, calm rhythm).
+ */
+.mom-sidebar-section-divider {
+    display: block;
+    width: 100%;
+    margin: 12px 0;
+    border: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
 /* ---- Premium card shell (exact stack) ---- */
 
 .mom-card {
