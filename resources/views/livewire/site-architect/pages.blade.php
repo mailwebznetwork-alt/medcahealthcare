@@ -115,19 +115,24 @@
                 <p class="mom-subtext mb-4 max-w-2xl">{{ __('Order defines page structure. Blocks hold Blade/HTML; modules resolve via config.') }}</p>
 
                 <div class="flex flex-wrap gap-2">
-                    <button type="button" wire:click="openBlockModal(null)" class="rounded-mom-chrome border border-[var(--border-panel-soft)] px-3 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-hover)]">
+                    <button type="button" wire:click="addBlock" class="rounded-mom-chrome border border-[var(--border-panel-soft)] px-3 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-hover)]">
                         {{ __('Add block') }}
                     </button>
                     <div class="flex flex-wrap items-center gap-2">
-                        <select wire:model="module_choice" class="rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[var(--bg-card-matte)] px-3 py-2 text-sm text-[var(--text-primary)]">
+                        <select wire:model.live="module_choice" class="rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[var(--bg-card-matte)] px-3 py-2 text-sm text-[var(--text-primary)]">
                             <option value="">{{ __('Insert module…') }}</option>
                             @foreach ($modules as $m)
                                 <option value="{{ $m }}">{{ $m }}</option>
                             @endforeach
                         </select>
-                        <button type="button" wire:click="appendModule" class="rounded-mom-chrome border border-[var(--border-panel-soft)] px-3 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-hover)]">{{ __('Add module line') }}</button>
+                        <button type="button" wire:click="appendModule" wire:loading.attr="disabled" class="rounded-mom-chrome border border-[var(--border-panel-soft)] px-3 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-hover)] disabled:opacity-50">{{ __('Add module line') }}</button>
                     </div>
-                    @error('module_choice') <span class="text-xs text-[var(--danger)]">{{ $message }}</span> @enderror
+                    @if (count($modules) === 0)
+                        <p class="mt-2 text-xs text-[var(--text-muted)]">{{ __('No modules registered in config/modules.php.') }}</p>
+                    @else
+                        <p class="mt-2 text-xs text-[var(--text-muted)]">{{ __('Pick a module from the list, then click Add module line.') }}</p>
+                    @endif
+                    @error('module_choice') <span class="mt-2 block text-xs text-[var(--danger)]">{{ $message }}</span> @enderror
                 </div>
 
                 <ul class="mt-6 space-y-2">

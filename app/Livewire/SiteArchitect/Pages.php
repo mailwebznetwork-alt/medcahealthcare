@@ -318,8 +318,22 @@ class Pages extends Component
         $page->update(['is_active' => ! $page->is_active]);
     }
 
-    public function openBlockModal(?string $slug = null): void
+    /**
+     * Opens the block modal for a new block (no Livewire `null` argument — wire passes strings badly).
+     */
+    public function addBlock(): void
     {
+        $this->openBlockModal(null);
+    }
+
+    public function openBlockModal(mixed $slug = null): void
+    {
+        if ($slug === null || $slug === '' || (is_string($slug) && strtolower($slug) === 'null')) {
+            $slug = null;
+        } elseif (! is_string($slug)) {
+            $slug = (string) $slug;
+        }
+
         $this->blockEditingSlug = $slug;
         if ($slug !== null) {
             $block = Block::query()->where('slug', $slug)->firstOrFail();
