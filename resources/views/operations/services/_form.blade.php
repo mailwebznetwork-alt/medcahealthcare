@@ -271,7 +271,7 @@
                     @php $blob = strtolower($pc->pincode.' '.$pc->area_name.' '.$pc->city.' '.(string) $pc->locality); @endphp
                     <label
                         class="flex cursor-pointer gap-3 rounded px-2 py-1.5 hover:bg-[var(--bg-hover)]"
-                        x-show="q.trim() === '' || @js($blob).includes(q.toLowerCase())"
+                        x-show='q.trim() === "" || {{ json_encode($blob) }}.toLowerCase().includes(q.toLowerCase())'
                     >
                         <input
                             type="checkbox"
