@@ -2,6 +2,13 @@
     :page-title="__('Settings')"
     :welcome-line="__('Integrations workspace for platform and channel connections.')"
 >
+    @if (session('status'))
+        <p class="mom-body-text mb-6 text-[var(--success)]" role="status">{{ session('status') }}</p>
+    @endif
+    @if ($errors->has('integration'))
+        <p class="mom-body-text mb-6 text-[var(--danger)]" role="alert">{{ $errors->first('integration') }}</p>
+    @endif
+
     <section class="mom-card p-6">
         <div class="flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -41,7 +48,26 @@
                     </div>
                 </dl>
 
-                <div class="mt-5 flex flex-wrap gap-2">
+                <form method="post" action="{{ route('admin.settings.integrations.update', $integration->name) }}" class="mt-5 space-y-3">
+                    @csrf
+                    <input type="hidden" name="is_enabled" value="{{ $integration->is_enabled ? '1' : '0' }}">
+                    @foreach (($fieldMap[$integration->name] ?? []) as $field)
+                        <label class="block">
+                            <span class="mom-micro mb-1 block">{{ str_replace('_', ' ', $field) }}</span>
+                            <input
+                                type="{{ str_contains($field, 'token') || str_contains($field, 'key') || str_contains($field, 'secret') ? 'password' : 'text' }}"
+                                name="credentials[{{ $field }}]"
+                                class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]"
+                                value="{{ old("credentials.$field") }}"
+                                autocomplete="off"
+                            >
+                        </label>
+                    @endforeach
+
+                    <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Save') }}</button>
+                </form>
+
+                <div class="mt-4 flex flex-wrap gap-2">
                     <a
                         href="{{ route('admin.settings.integrations.show', $integration->name) }}"
                         target="_blank"
@@ -62,7 +88,7 @@
             </article>
         @empty
             <article class="mom-card p-6 md:col-span-2 xl:col-span-3">
-                <p class="mom-body-text text-[var(--text-muted)]">{{ __('No integrations found. Run migrations and refresh this page.') }}</p>
+                <p class="mom-body-text text-[var(--text-muted)]">{{ __('No integrations found.') }}</p>
             </article>
         @endforelse
     </section>

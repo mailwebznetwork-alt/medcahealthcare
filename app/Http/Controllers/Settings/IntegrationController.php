@@ -54,7 +54,7 @@ class IntegrationController extends Controller
         return $this->ok('Integration fetched successfully.', $this->toResponse($integration));
     }
 
-    public function update(Request $request, string $name): JsonResponse
+    public function update(Request $request, string $name)
     {
         $integration = $this->findByName($name);
         if (! $integration instanceof Integration) {
@@ -68,6 +68,13 @@ class IntegrationController extends Controller
         ]);
 
         if ($validator->fails()) {
+            if (! $request->expectsJson()) {
+                return redirect()
+                    ->route('settings.index')
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed.',
@@ -89,16 +96,28 @@ class IntegrationController extends Controller
                 sprintf('Integration "%s" updated by user %d.', $integration->name, (int) auth()->id())
             );
 
+            if (! $request->expectsJson()) {
+                return redirect()
+                    ->route('settings.index')
+                    ->with('status', __('Integration ":name" updated successfully.', ['name' => $integration->name]));
+            }
+
             return $this->ok('Integration updated successfully.', $this->toResponse($integration->fresh()));
         } catch (\Throwable $exception) {
             Log::error('Integration update failed.', ['name' => $name, 'error' => $exception->getMessage()]);
             $this->activityLogService->log('integration_update_failed', 'integrations', sprintf('Integration "%s" update failed.', $name));
 
+            if (! $request->expectsJson()) {
+                return redirect()
+                    ->route('settings.index')
+                    ->withErrors(['integration' => __('Integration update failed.')]);
+            }
+
             return $this->error('Integration update failed.', 500);
         }
     }
 
-    public function toggle(string $name): JsonResponse
+    public function toggle(Request $request, string $name)
     {
         $integration = $this->findByName($name);
         if (! $integration instanceof Integration) {
@@ -114,6 +133,15 @@ class IntegrationController extends Controller
                 sprintf('Integration "%s" set to %s by user %d.', $integration->name, $integration->is_enabled ? 'enabled' : 'disabled', (int) auth()->id())
             );
 
+            if (! $request->expectsJson()) {
+                return redirect()
+                    ->route('settings.index')
+                    ->with('status', __('Integration ":name" has been :state.', [
+                        'name' => $integration->name,
+                        'state' => $integration->is_enabled ? __('enabled') : __('disabled'),
+                    ]));
+            }
+
             return $this->ok('Integration toggled successfully.', [
                 'name' => $integration->name,
                 'is_enabled' => $integration->is_enabled,
@@ -122,11 +150,17 @@ class IntegrationController extends Controller
             Log::error('Integration toggle failed.', ['name' => $name, 'error' => $exception->getMessage()]);
             $this->activityLogService->log('integration_toggle_failed', 'integrations', sprintf('Integration "%s" toggle failed.', $name));
 
+            if (! $request->expectsJson()) {
+                return redirect()
+                    ->route('settings.index')
+                    ->withErrors(['integration' => __('Integration toggle failed.')]);
+            }
+
             return $this->error('Integration toggle failed.', 500);
         }
     }
 
-    public function testConnection(string $name): JsonResponse
+    public function testConnection(Request $request, string $name)
     {
         $integration = $this->findByName($name);
         if (! $integration instanceof Integration) {
@@ -149,6 +183,21 @@ class IntegrationController extends Controller
             'integrations',
             sprintf('Integration "%s" test result: %s.', $name, $result['message'])
         );
+
+        if (! $request->expectsJson()) {
+            if ($result['success']) {
+                return redirect()
+                    ->route('settings.index')
+                    ->with('status', __('Integration ":name" test passed.', ['name' => $name]));
+            }
+
+            return redirect()
+                ->route('settings.index')
+                ->withErrors(['integration' => __('Integration ":name" test failed: :message', [
+                    'name' => $name,
+                    'message' => $result['message'],
+                ])]);
+        }
 
         return response()->json($result, $result['success'] ? 200 : 422);
     }
