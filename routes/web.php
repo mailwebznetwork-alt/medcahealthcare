@@ -20,6 +20,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Settings\IntegrationController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserManagement\UserController;
+use App\Http\Controllers\WorkspaceSearchController;
 use App\Models\Blog;
 use App\Models\Lead;
 use App\Models\Page;
@@ -228,6 +229,10 @@ Route::middleware(['auth', 'admin', 'throttle:60,1'])->prefix('/admin/settings/i
     Route::post('/{name}/test', [IntegrationController::class, 'testConnection'])->name('test');
     Route::delete('/{name}', [IntegrationController::class, 'destroy'])->name('destroy');
     Route::post('/google-business-profile/reviews/sync', [IntegrationController::class, 'syncGoogleReviews'])->name('google-business-profile.sync-reviews');
+});
+
+Route::middleware(['auth', 'active', 'verified', 'auto.logout'])->group(function () {
+    Route::get('/workspace/search', WorkspaceSearchController::class)->name('workspace.search');
 });
 
 Route::middleware(['auth', 'active', 'auto.logout'])->group(function () {

@@ -103,19 +103,33 @@
                     </div>
 
                     <div class="mx-auto hidden max-w-md flex-1 px-4 md:flex">
-                        <label class="relative flex w-full items-center">
-                            <span class="pointer-events-none absolute left-4 text-[var(--text-muted)]">
-                                <i data-lucide="search" class="h-[18px] w-[18px]"></i>
-                            </span>
-                            <input
-                                type="search"
-                                placeholder="Search intelligence, entities, signals…"
-                                class="w-full rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[color:rgba(28,22,22,0.92)] py-2.5 pl-11 pr-24 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] shadow-mom-inner outline-none ring-offset-0 transition-all duration-320 ease-premium focus:border-[rgba(197,160,89,0.35)] focus:shadow-[0_0_24px_rgba(197,160,89,0.12)]"
-                            />
-                            <kbd
-                                class="pointer-events-none absolute right-3 hidden rounded-md border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] px-2 py-0.5 font-mono text-[11px] text-[var(--text-muted)] sm:inline-block"
-                            >⌘ K</kbd>
-                        </label>
+                        <form
+                            method="get"
+                            action="{{ route('workspace.search') }}"
+                            role="search"
+                            aria-label="{{ __('Search workspace') }}"
+                            class="relative flex w-full items-center"
+                        >
+                            <label class="relative flex w-full items-center">
+                                <span class="pointer-events-none absolute left-4 text-[var(--text-muted)]">
+                                    <i data-lucide="search" class="h-[18px] w-[18px]"></i>
+                                </span>
+                                <input
+                                    id="workspace-global-search-q"
+                                    name="q"
+                                    type="search"
+                                    value="{{ request()->routeIs('workspace.search') ? (string) request('q', '') : '' }}"
+                                    minlength="2"
+                                    maxlength="120"
+                                    placeholder="{{ __('Search pages, leads, services…') }}"
+                                    autocomplete="off"
+                                    class="w-full rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[color:rgba(28,22,22,0.92)] py-2.5 pl-11 pr-24 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] shadow-mom-inner outline-none ring-offset-0 transition-all duration-320 ease-premium focus:border-[rgba(197,160,89,0.35)] focus:shadow-[0_0_24px_rgba(197,160,89,0.12)]"
+                                />
+                                <kbd
+                                    class="pointer-events-none absolute right-3 hidden rounded-md border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] px-2 py-0.5 font-mono text-[11px] text-[var(--text-muted)] sm:inline-block"
+                                >⌘ K</kbd>
+                            </label>
+                        </form>
                     </div>
 
                     <div
@@ -196,5 +210,19 @@
 
         @stack('scripts')
         @livewireScripts
+        <script>
+            document.addEventListener('keydown', function (e) {
+                if (!(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== 'k') {
+                    return;
+                }
+                var input = document.getElementById('workspace-global-search-q');
+                if (!input || input.offsetParent === null) {
+                    return;
+                }
+                e.preventDefault();
+                input.focus();
+                input.select?.();
+            });
+        </script>
     </body>
 </html>
