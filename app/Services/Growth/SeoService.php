@@ -58,17 +58,34 @@ class SeoService
 
         $profile->save();
 
+        $sameAs = array_values(array_unique(array_filter($data['same_as'] ?? [])));
+        $gmbProfileUrl = $data['google_business_profile_url'] ?? null;
+        if (is_string($gmbProfileUrl) && $gmbProfileUrl !== '' && filter_var($gmbProfileUrl, FILTER_VALIDATE_URL)) {
+            if (! in_array($gmbProfileUrl, $sameAs, true)) {
+                $sameAs[] = $gmbProfileUrl;
+            }
+        }
+
+        $entityPayload = [
+            'organization_name' => $data['organization_name'],
+            'logo' => $data['logo'] ?? null,
+            'same_as' => $sameAs,
+            'meta_title' => $data['meta_title'] ?? null,
+            'meta_description' => $data['meta_description'] ?? null,
+            'og_image_url' => $data['og_image_url'] ?? null,
+            'custom_json_ld' => $data['custom_json_ld'] ?? null,
+            'google_place_id' => $data['google_place_id'] ?? null,
+            'google_business_profile_url' => $data['google_business_profile_url'] ?? null,
+            'has_map_url' => $data['has_map_url'] ?? null,
+        ];
+
+        if (array_key_exists('entity_faqs', $data)) {
+            $entityPayload['entity_faqs'] = $data['entity_faqs'];
+        }
+
         return SeoEntity::query()->updateOrCreate(
             ['business_profile_id' => $profile->id],
-            [
-                'organization_name' => $data['organization_name'],
-                'logo' => $data['logo'] ?? null,
-                'same_as' => $data['same_as'] ?? [],
-                'meta_title' => $data['meta_title'] ?? null,
-                'meta_description' => $data['meta_description'] ?? null,
-                'og_image_url' => $data['og_image_url'] ?? null,
-                'custom_json_ld' => $data['custom_json_ld'] ?? null,
-            ]
+            $entityPayload
         );
     }
 

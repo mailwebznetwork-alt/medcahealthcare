@@ -108,6 +108,15 @@
 
         $postal = $address === [] ? null : array_merge(['@type' => 'PostalAddress'], $address);
 
+        $identifier = null;
+        if ($gEntity !== null && filled($gEntity->google_place_id)) {
+            $identifier = [
+                '@type' => 'PropertyValue',
+                'propertyID' => 'Google Place ID',
+                'value' => $gEntity->google_place_id,
+            ];
+        }
+
         $org = array_filter([
             '@context' => 'https://schema.org',
             '@type' => 'MedicalOrganization',
@@ -117,6 +126,8 @@
             'image' => $gEntity?->og_image_url,
             'telephone' => $gBusiness?->phone_e164 ?? $gBusiness?->phone,
             'sameAs' => $sameAsList,
+            'hasMap' => $gEntity?->has_map_url,
+            'identifier' => $identifier,
             'address' => $postal,
         ], function (mixed $v): bool {
             if ($v === null || $v === '') {
@@ -132,6 +143,33 @@
     @endphp
     @if ($org !== [])
         <script type="application/ld+json">{!! json_encode($org, $jsonFlags) !!}</script>
+    @endif
+@endif
+
+@if ($gEntity !== null && is_array($gEntity->entity_faqs) && count($gEntity->entity_faqs) > 0)
+    @php
+        $faqMain = [];
+        foreach ($gEntity->entity_faqs as $row) {
+            if (! is_array($row) || empty($row['question']) || empty($row['answer'])) {
+                continue;
+            }
+            $faqMain[] = [
+                '@type' => 'Question',
+                'name' => $row['question'],
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => $row['answer'],
+                ],
+            ];
+        }
+        $faqLd = [
+            '@context' => 'https://schema.org',
+            '@type' => 'FAQPage',
+            'mainEntity' => $faqMain,
+        ];
+    @endphp
+    @if (count($faqMain) > 0)
+        <script type="application/ld+json">{!! json_encode($faqLd, $jsonFlags) !!}</script>
     @endif
 @endif
 

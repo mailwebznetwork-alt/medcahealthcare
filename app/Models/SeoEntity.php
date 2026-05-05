@@ -15,6 +15,10 @@ class SeoEntity extends Model
         'meta_description',
         'og_image_url',
         'custom_json_ld',
+        'google_place_id',
+        'google_business_profile_url',
+        'has_map_url',
+        'entity_faqs',
     ];
 
     protected function casts(): array
@@ -22,6 +26,7 @@ class SeoEntity extends Model
         return [
             'same_as' => 'array',
             'custom_json_ld' => 'array',
+            'entity_faqs' => 'array',
         ];
     }
 }

@@ -22,14 +22,14 @@ class GeoController extends Controller
             return response(['data' => GeoLocation::query()->latest('id')->first()]);
         }
 
-        return redirect()->route('growth-center.competitors.index', ['tab' => 'geo']);
+        return redirect()->route('growth-center.competitors.index', ['tab' => 'seo']);
     }
 
     public function storeLocation(StoreGeoRequest $request): RedirectResponse
     {
         $this->geoService->saveLocation($request->validated());
 
-        return redirect()->route('growth-center.competitors.index', ['tab' => 'geo'])
+        return redirect()->route('growth-center.competitors.index', ['tab' => 'seo'])
             ->with('status', __('Geo location saved.'));
     }
 
@@ -39,14 +39,14 @@ class GeoController extends Controller
             return response(['data' => GrowthPincode::query()->latest('id')->limit(100)->get()]);
         }
 
-        return redirect()->route('growth-center.competitors.index', ['tab' => 'geo']);
+        return redirect()->route('growth-center.competitors.index', ['tab' => 'seo']);
     }
 
     public function storePincode(StorePincodeRequest $request): RedirectResponse
     {
         $this->geoService->addPincode($request->validated());
 
-        return redirect()->route('growth-center.competitors.index', ['tab' => 'geo'])
+        return redirect()->route('growth-center.competitors.index', ['tab' => 'seo'])
             ->with('status', __('Pincode added.'));
     }
 
@@ -54,7 +54,7 @@ class GeoController extends Controller
     {
         $this->geoService->updatePincode($id, $request->validated());
 
-        return redirect()->route('growth-center.competitors.index', ['tab' => 'geo'])
+        return redirect()->route('growth-center.competitors.index', ['tab' => 'seo'])
             ->with('status', __('Pincode updated.'));
     }
 }

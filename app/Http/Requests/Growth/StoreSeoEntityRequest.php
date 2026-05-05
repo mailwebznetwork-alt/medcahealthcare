@@ -29,6 +29,13 @@ class StoreSeoEntityRequest extends FormRequest
             'city' => ['nullable', 'string', 'max:120'],
             'region' => ['nullable', 'string', 'max:64'],
             'postal_code' => ['nullable', 'string', 'max:32'],
+            'google_place_id' => ['nullable', 'string', 'max:256'],
+            'google_business_profile_url' => ['nullable', 'url', 'max:2048'],
+            'has_map_url' => ['nullable', 'url', 'max:2048'],
+            'entity_faqs' => ['nullable', 'array', 'max:40'],
+            'entity_faqs.*.question' => ['required', 'string', 'max:500'],
+            'entity_faqs.*.answer' => ['required', 'string', 'max:8000'],
+            'entity_faqs_json' => ['nullable', 'string'],
             'custom_json_ld_raw' => ['nullable', 'string'],
         ];
     }
@@ -51,6 +58,51 @@ class StoreSeoEntityRequest extends FormRequest
             $decoded = json_decode($raw, true);
             if (! is_array($decoded)) {
                 $validator->errors()->add('custom_json_ld_raw', __('JSON-LD must be a JSON array or object.'));
+            }
+        });
+
+        $validator->after(function (Validator $validator): void {
+            $raw = $this->input('entity_faqs_json');
+            if (! is_string($raw) || trim($raw) === '') {
+                return;
+            }
+
+            json_decode($raw);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $validator->errors()->add('entity_faqs_json', __('Must be valid JSON.'));
+
+                return;
+            }
+
+            $decoded = json_decode($raw, true);
+            if (! is_array($decoded)) {
+                $validator->errors()->add('entity_faqs_json', __('FAQs must be a JSON array.'));
+
+                return;
+            }
+
+            if (count($decoded) > 40) {
+                $validator->errors()->add('entity_faqs_json', __('A maximum of 40 FAQ items is allowed.'));
+
+                return;
+            }
+
+            foreach ($decoded as $index => $row) {
+                if (! is_array($row)) {
+                    $validator->errors()->add('entity_faqs_json', __('Each FAQ must be an object with question and answer.'));
+
+                    return;
+                }
+                if (! isset($row['question'], $row['answer']) || ! is_string($row['question']) || ! is_string($row['answer'])) {
+                    $validator->errors()->add('entity_faqs_json', __('Each FAQ needs string question and answer keys.'));
+
+                    return;
+                }
+                if (strlen($row['question']) > 500 || strlen($row['answer']) > 8000) {
+                    $validator->errors()->add('entity_faqs_json', __('FAQ question or answer exceeds maximum length.'));
+
+                    return;
+                }
             }
         });
     }
@@ -79,6 +131,38 @@ class StoreSeoEntityRequest extends FormRequest
         }
 
         $this->merge(['same_as' => $urls]);
+
+        if (! $this->has('entity_faqs_json')) {
+            return;
+        }
+
+        $faqRaw = $this->input('entity_faqs_json');
+        if (! is_string($faqRaw) || trim($faqRaw) === '') {
+            $this->merge(['entity_faqs' => []]);
+
+            return;
+        }
+
+        $faqDecoded = json_decode($faqRaw, true);
+        if (! is_array($faqDecoded)) {
+            return;
+        }
+
+        $normalized = [];
+        foreach ($faqDecoded as $row) {
+            if (! is_array($row) || ! isset($row['question'], $row['answer'])) {
+                continue;
+            }
+            if (! is_string($row['question']) || ! is_string($row['answer'])) {
+                continue;
+            }
+            $normalized[] = [
+                'question' => $row['question'],
+                'answer' => $row['answer'],
+            ];
+        }
+
+        $this->merge(['entity_faqs' => $normalized]);
     }
 
     /**
@@ -95,7 +179,11 @@ class StoreSeoEntityRequest extends FormRequest
             $data['custom_json_ld'] = null;
         }
 
-        unset($data['custom_json_ld_raw'], $data['same_as_json']);
+        unset($data['custom_json_ld_raw'], $data['same_as_json'], $data['entity_faqs_json']);
+
+        if (isset($data['entity_faqs']) && is_array($data['entity_faqs']) && $data['entity_faqs'] === []) {
+            $data['entity_faqs'] = null;
+        }
 
         return $data;
     }

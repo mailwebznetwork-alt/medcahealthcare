@@ -22,6 +22,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class CompetitorPageController extends Controller
 {
@@ -31,8 +32,15 @@ class CompetitorPageController extends Controller
         private readonly GeoService $geoService
     ) {}
 
-    public function __invoke(Request $request): View
+    public function __invoke(Request $request): View|SymfonyResponse
     {
+        if ($request->query('tab') === 'geo') {
+            return redirect()->route('growth-center.competitors.index', array_merge(
+                $request->except('tab'),
+                ['tab' => 'seo']
+            ));
+        }
+
         $competitors = Competitor::query()
             ->withCount(['keywords', 'leads'])
             ->orderByDesc('is_intercept_target')
@@ -64,7 +72,7 @@ class CompetitorPageController extends Controller
         }
 
         $activeTab = (string) $request->query('tab', 'competitors');
-        $allowedTabs = ['war-room', 'seo', 'geo', 'aeo', 'competitors'];
+        $allowedTabs = ['war-room', 'seo', 'aeo', 'competitors'];
         if (! in_array($activeTab, $allowedTabs, true)) {
             $activeTab = 'competitors';
         }

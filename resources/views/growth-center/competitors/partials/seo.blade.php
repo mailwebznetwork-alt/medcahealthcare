@@ -1,6 +1,6 @@
 <section class="mom-card p-6">
     <h2 class="mom-section-title">{{ __('SEO') }}</h2>
-    <p class="mom-body-text mt-2 text-[var(--text-secondary)]">{{ __('Global site-wide SEO, technical files, and AI discovery. Page, service, and pincode SEO are managed elsewhere.') }}</p>
+    <p class="mom-body-text mt-2 text-[var(--text-secondary)]">{{ __('Global site-wide SEO, coverage location, public files, and AI discovery. Page and Operations SEO are managed elsewhere.') }}</p>
 
     <div class="mom-card mt-6 border border-[rgba(255,255,255,0.06)] p-4">
         <p class="mom-micro">{{ __('Public endpoints') }}</p>
@@ -81,11 +81,39 @@
                 </div>
 
                 <div>
+                    <p class="mom-micro mb-2 text-mom-gold">{{ __('GOOGLE BUSINESS PROFILE (MANUAL)') }}</p>
+                    <p class="mom-subtext mb-2">{{ __('Paste values from your Google Business Profile (no API). Profile URL is merged into sameAs for JSON-LD when not already listed.') }}</p>
+                    <div class="space-y-3">
+                        <label class="block">
+                            <span class="mom-micro mb-1 block">{{ __('Google Place ID') }}</span>
+                            <input type="text" name="google_place_id" value="{{ old('google_place_id', $seoEntity?->google_place_id) }}" placeholder="ChIJ..." class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]">
+                        </label>
+                        <label class="block">
+                            <span class="mom-micro mb-1 block">{{ __('Google Business Profile URL') }}</span>
+                            <input type="url" name="google_business_profile_url" value="{{ old('google_business_profile_url', $seoEntity?->google_business_profile_url) }}" placeholder="https://www.google.com/maps?cid=..." class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]">
+                        </label>
+                        <label class="block">
+                            <span class="mom-micro mb-1 block">{{ __('Map listing URL (hasMap in JSON-LD)') }}</span>
+                            <input type="url" name="has_map_url" value="{{ old('has_map_url', $seoEntity?->has_map_url) }}" placeholder="https://maps.google.com/?q=..." class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]">
+                        </label>
+                    </div>
+                </div>
+
+                <div>
                     <p class="mom-micro mb-2 text-mom-gold">{{ __('ENTITY LINKS (SAME AS)') }}</p>
                     <label class="block">
                         <span class="mom-micro mb-1 block">{{ __('same_as JSON array') }}</span>
                         <textarea name="same_as_json" rows="5" class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 font-mono text-xs text-[var(--text-primary)]">{{ old('same_as_json', json_encode($seoEntity?->same_as ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)) }}</textarea>
-                        <span class="mom-subtext mt-1 block">{{ __('Example: ["https://maps.google.com/...", "https://www.instagram.com/..."]') }}</span>
+                        <span class="mom-subtext mt-1 block">{{ __('Example: ["https://www.instagram.com/...", "https://www.youtube.com/..."]') }}</span>
+                    </label>
+                </div>
+
+                <div>
+                    <p class="mom-micro mb-2 text-mom-gold">{{ __('GLOBAL FAQ (FAQPage JSON-LD)') }}</p>
+                    <p class="mom-subtext mb-2">{{ __('JSON array of objects with "question" and "answer" strings (max 40). Shown as FAQPage structured data on public pages.') }}</p>
+                    <label class="block">
+                        <span class="mom-micro mb-1 block">{{ __('faqs_json') }}</span>
+                        <textarea name="entity_faqs_json" rows="10" class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 font-mono text-xs text-[var(--text-primary)]">{{ old('entity_faqs_json', $seoEntity?->entity_faqs ? json_encode($seoEntity->entity_faqs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : '') }}</textarea>
                     </label>
                 </div>
 
@@ -101,6 +129,8 @@
                 <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Save global SEO entity') }}</button>
             </form>
         </article>
+
+        @include('growth-center.competitors.partials.geo')
 
         <article class="mom-card p-5">
             <h3 class="mom-section-title">{{ __('GLOBAL TECHNICAL & PUBLIC FILES') }}</h3>
