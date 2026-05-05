@@ -2,19 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\ModuleAccess;
+use App\Models\Integration;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class SettingsController extends Controller
 {
     public function __invoke(): View
     {
-        return view('modules.surface', [
-            'title' => __('Settings'),
-            'moduleKey' => ModuleAccess::SETTINGS,
-            'securityMetrics' => null,
-            'recentSecurityEvents' => [],
-            'failedLoginByIp' => [],
+        /** @var Collection<int, Integration> $integrations */
+        $integrations = collect();
+
+        if (Schema::hasTable('integrations')) {
+            $integrations = Integration::query()
+                ->orderBy('type')
+                ->orderBy('name')
+                ->get();
+        }
+
+        return view('settings.integrations', [
+            'integrations' => $integrations,
         ]);
     }
 }
