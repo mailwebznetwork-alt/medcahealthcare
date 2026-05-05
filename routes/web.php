@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Careers\CareersController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Growth\CompetitorPageController;
 use App\Http\Controllers\MarketingEmailOpenController;
 use App\Http\Controllers\ModuleSurfaceController;
 use App\Http\Controllers\Operations\JobPortal\ApplicationController;
@@ -136,9 +137,10 @@ Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:marketin
 });
 
 Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:growth_center', 'role:viewer,editor,manager,admin,super_admin'])->group(function () {
-    Route::get('/growth-center', [ModuleSurfaceController::class, 'show'])
-        ->defaults('momModule', 'growth_center')
-        ->name('modules.growth-center');
+    Route::get('/growth-center', function () {
+        return redirect()->route('growth-center.competitors.index');
+    })->name('modules.growth-center');
+    Route::get('/growth-center/competitors', CompetitorPageController::class)->name('growth-center.competitors.index');
 });
 
 Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:user_management'])->prefix('user-management')->name('user-management.')->group(function () {
