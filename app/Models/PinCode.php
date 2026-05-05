@@ -6,8 +6,34 @@ use Database\Factories\PinCodeFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
+
+class Pincode extends Model
+{
+    protected $table = 'pincodes';
+
+    protected $fillable = [
+        'geo_location_id',
+        'code',
+        'city',
+        'state',
+        'is_active',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+        ];
+    }
+
+    public function geoLocation(): BelongsTo
+    {
+        return $this->belongsTo(GeoLocation::class);
+    }
+}
 
 #[Fillable([
     'pincode',

@@ -11,6 +11,26 @@
         </div>
     @endif
 
+    <section class="mom-card mb-6 p-4">
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ route('growth-center.competitors.index', ['tab' => 'war-room']) }}" class="mom-cta-ghost !px-3 !py-2 !text-[11px] {{ ($activeTab ?? 'competitors') === 'war-room' ? 'border-[var(--success)] text-[var(--success)]' : '' }}">{{ __('WAR ROOM') }}</a>
+            <a href="{{ route('growth-center.competitors.index', ['tab' => 'seo']) }}" class="mom-cta-ghost !px-3 !py-2 !text-[11px] {{ ($activeTab ?? 'competitors') === 'seo' ? 'border-[var(--success)] text-[var(--success)]' : '' }}">{{ __('SEO') }}</a>
+            <a href="{{ route('growth-center.competitors.index', ['tab' => 'geo']) }}" class="mom-cta-ghost !px-3 !py-2 !text-[11px] {{ ($activeTab ?? 'competitors') === 'geo' ? 'border-[var(--success)] text-[var(--success)]' : '' }}">{{ __('GEO') }}</a>
+            <a href="{{ route('growth-center.competitors.index', ['tab' => 'aeo']) }}" class="mom-cta-ghost !px-3 !py-2 !text-[11px] {{ ($activeTab ?? 'competitors') === 'aeo' ? 'border-[var(--success)] text-[var(--success)]' : '' }}">{{ __('AEO') }}</a>
+            <a href="{{ route('growth-center.competitors.index', ['tab' => 'competitors']) }}" class="mom-cta-ghost !px-3 !py-2 !text-[11px] {{ ($activeTab ?? 'competitors') === 'competitors' ? 'border-[var(--success)] text-[var(--success)]' : '' }}">{{ __('COMPETITORS') }}</a>
+        </div>
+    </section>
+
+    @if (($activeTab ?? 'competitors') === 'war-room')
+        @include('growth-center.competitors.partials.war-room')
+    @elseif (($activeTab ?? 'competitors') === 'seo')
+        @include('growth-center.competitors.partials.seo')
+    @elseif (($activeTab ?? 'competitors') === 'geo')
+        @include('growth-center.competitors.partials.geo')
+    @elseif (($activeTab ?? 'competitors') === 'aeo')
+        @include('growth-center.competitors.partials.aeo')
+    @else
+
     <section class="mom-card p-6">
         <div class="flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -342,4 +362,5 @@
             {{ $competitors->links() }}
         </div>
     </section>
+    @endif
 </x-app-layout>

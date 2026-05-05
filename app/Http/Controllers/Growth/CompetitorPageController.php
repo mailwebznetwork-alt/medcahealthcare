@@ -7,15 +7,28 @@ use App\Models\Competitor;
 use App\Models\CompetitorKeyword;
 use App\Models\CompetitorLead;
 use App\Models\CompetitorTracking;
+use App\Models\GeoLocation;
+use App\Models\Intercept;
+use App\Models\Pincode;
+use App\Models\SeoAiSignal;
+use App\Models\SeoEntity;
+use App\Models\SeoTechnical;
 use App\Services\CompetitorComparisonService;
+use App\Services\Growth\GeoService;
+use App\Services\Growth\WarRoomService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class CompetitorPageController extends Controller
 {
-    public function __construct(private readonly CompetitorComparisonService $comparisonService) {}
+    public function __construct(
+        private readonly CompetitorComparisonService $comparisonService,
+        private readonly WarRoomService $warRoomService,
+        private readonly GeoService $geoService
+    ) {}
 
     public function __invoke(Request $request): View
     {
@@ -49,6 +62,43 @@ class CompetitorPageController extends Controller
             }
         }
 
+        $activeTab = (string) $request->query('tab', 'competitors');
+        $allowedTabs = ['war-room', 'seo', 'geo', 'aeo', 'competitors'];
+        if (! in_array($activeTab, $allowedTabs, true)) {
+            $activeTab = 'competitors';
+        }
+
+        $seoEntity = null;
+        $seoTechnical = null;
+        $seoAiSignal = null;
+        $geoLocation = null;
+        $pincodes = collect();
+        $warRoomDashboard = [
+            'active_intercepts' => 0,
+            'completed_intercepts' => 0,
+            'high_priority_count' => 0,
+            'intercepts' => collect(),
+        ];
+
+        if (Schema::hasTable('seo_entities')) {
+            $seoEntity = SeoEntity::query()->latest('id')->first();
+        }
+        if (Schema::hasTable('seo_technical')) {
+            $seoTechnical = SeoTechnical::query()->latest('id')->first();
+        }
+        if (Schema::hasTable('seo_ai_signals')) {
+            $seoAiSignal = SeoAiSignal::query()->latest('id')->first();
+        }
+        if (Schema::hasTable('geo_locations')) {
+            $geoLocation = GeoLocation::query()->latest('id')->first();
+        }
+        if (Schema::hasTable('pincodes')) {
+            $pincodes = Pincode::query()->latest('id')->limit(100)->get();
+        }
+        if (Schema::hasTable('intercepts')) {
+            $warRoomDashboard = $this->warRoomService->getDashboard();
+        }
+
         return view('growth-center.competitors.index', [
             'competitors' => $competitors,
             'allCompetitors' => Competitor::query()->orderBy('name')->get(['id', 'name']),
@@ -61,6 +111,17 @@ class CompetitorPageController extends Controller
             'comparison' => $comparison,
             'keywordOverlap' => $overlap,
             'selectedCompetitorIds' => $selectedIds,
+            'activeTab' => $activeTab,
+            'seoEntity' => $seoEntity,
+            'seoTechnical' => $seoTechnical,
+            'seoAiSignal' => $seoAiSignal,
+            'geoLocation' => $geoLocation,
+            'pincodes' => $pincodes,
+            'geoStats' => $this->geoService->getStats(),
+            'warRoomDashboard' => $warRoomDashboard,
+            'intercepts' => Schema::hasTable('intercepts')
+                ? Intercept::query()->with('competitor:id,name')->latest('id')->limit(100)->get()
+                : collect(),
         ]);
     }
 

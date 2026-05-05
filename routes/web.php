@@ -2,7 +2,11 @@
 
 use App\Http\Controllers\Careers\CareersController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Growth\AeoController;
 use App\Http\Controllers\Growth\CompetitorPageController;
+use App\Http\Controllers\Growth\GeoController;
+use App\Http\Controllers\Growth\SeoController;
+use App\Http\Controllers\Growth\WarRoomController;
 use App\Http\Controllers\MarketingEmailOpenController;
 use App\Http\Controllers\ModuleSurfaceController;
 use App\Http\Controllers\Operations\JobPortal\ApplicationController;
@@ -149,6 +153,35 @@ Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:growth_c
     Route::post('/growth-center/competitors/tracking', [CompetitorPageController::class, 'storeTracking'])->name('growth-center.competitors.tracking.store');
     Route::post('/growth-center/competitors/leads', [CompetitorPageController::class, 'storeLead'])->name('growth-center.competitors.leads.store');
     Route::delete('/growth-center/competitors/{competitor}', [CompetitorPageController::class, 'destroy'])->name('growth-center.competitors.destroy');
+
+    Route::prefix('growth-center')->group(function () {
+        Route::prefix('seo')->group(function () {
+            Route::get('entity', [SeoController::class, 'entity'])->name('growth-center.seo.entity');
+            Route::post('entity', [SeoController::class, 'storeEntity'])->name('growth-center.seo.entity.store');
+            Route::get('technical', [SeoController::class, 'technical'])->name('growth-center.seo.technical');
+            Route::post('technical', [SeoController::class, 'storeTechnical'])->name('growth-center.seo.technical.store');
+        });
+
+        Route::prefix('aeo')->group(function () {
+            Route::get('/', [AeoController::class, 'index'])->name('growth-center.aeo.index');
+            Route::post('/', [AeoController::class, 'store'])->name('growth-center.aeo.store');
+        });
+
+        Route::prefix('geo')->group(function () {
+            Route::get('location', [GeoController::class, 'location'])->name('growth-center.geo.location');
+            Route::post('location', [GeoController::class, 'storeLocation'])->name('growth-center.geo.location.store');
+            Route::get('pincodes', [GeoController::class, 'pincodes'])->name('growth-center.geo.pincodes');
+            Route::post('pincode', [GeoController::class, 'storePincode'])->name('growth-center.geo.pincode.store');
+            Route::put('pincode/{id}', [GeoController::class, 'updatePincode'])->name('growth-center.geo.pincode.update');
+        });
+
+        Route::prefix('war-room')->group(function () {
+            Route::get('dashboard', [WarRoomController::class, 'dashboard'])->name('growth-center.war-room.dashboard');
+            Route::get('intercepts', [WarRoomController::class, 'intercepts'])->name('growth-center.war-room.intercepts');
+            Route::post('intercept', [WarRoomController::class, 'storeIntercept'])->name('growth-center.war-room.intercept.store');
+            Route::put('intercept/{id}', [WarRoomController::class, 'updateIntercept'])->name('growth-center.war-room.intercept.update');
+        });
+    });
 });
 
 Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:user_management'])->prefix('user-management')->name('user-management.')->group(function () {
