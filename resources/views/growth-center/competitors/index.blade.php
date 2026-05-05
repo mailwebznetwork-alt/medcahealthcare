@@ -2,6 +2,12 @@
     :page-title="__('Growth Center')"
     :welcome-line="__('Competitor War Room workspace.')"
 >
+    <div class="mom-reveal w-full max-w-full">
+        <div class="space-y-1 pb-8 md:hidden md:pb-0">
+            <h1 class="mom-title-page">{{ __('Growth Center') }}</h1>
+            <p class="mom-subtext">{{ __('Competitor War Room workspace.') }}</p>
+        </div>
+
     @if (session('status'))
         <p class="mom-body-text mb-6 text-[var(--success)]" role="status">{{ session('status') }}</p>
     @endif
@@ -360,4 +366,5 @@
         </div>
     </section>
     @endif
+    </div>
 </x-app-layout>

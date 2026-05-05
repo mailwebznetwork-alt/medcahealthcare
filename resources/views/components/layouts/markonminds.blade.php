@@ -29,6 +29,7 @@
             request()->routeIs('site-architect.*') => __('Structure-only content, reusable blocks, PIN-code GEO.'),
             request()->routeIs('user-management.*') => __('People, access, and directory control.'),
             request()->routeIs('modules.marketing') => __('Unified tracking, performance, and decision signals.'),
+            request()->routeIs('growth-center.*') => __('Competitor intelligence, SEO, coverage, and analytics.'),
             request()->routeIs('modules.*') => __('Focused module workspace.'),
             default => __('Welcome back — here is your intelligence snapshot.'),
         };
