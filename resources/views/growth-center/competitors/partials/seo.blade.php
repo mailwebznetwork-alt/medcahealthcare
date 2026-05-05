@@ -1,6 +1,6 @@
 <section class="mom-card p-6">
     <h2 class="mom-section-title">{{ __('SEO') }}</h2>
-    <p class="mom-body-text mt-2 text-[var(--text-secondary)]">{{ __('Global site-wide SEO, coverage location, public files, and AI discovery. Page and Operations SEO are managed elsewhere.') }}</p>
+    <p class="mom-body-text mt-2 text-[var(--text-secondary)]">{{ __('Global SEO, coverage, AEO signals, technical files, and AI discovery — one place. Page and Operations SEO are managed elsewhere.') }}</p>
 
     <div class="mom-card mt-6 border border-[rgba(255,255,255,0.06)] p-4">
         <p class="mom-micro">{{ __('Public endpoints') }}</p>
@@ -131,6 +131,8 @@
         </article>
 
         @include('growth-center.competitors.partials.geo')
+
+        @include('growth-center.competitors.partials.aeo')
 
         <article class="mom-card p-5">
             <h3 class="mom-section-title">{{ __('GLOBAL TECHNICAL & PUBLIC FILES') }}</h3>

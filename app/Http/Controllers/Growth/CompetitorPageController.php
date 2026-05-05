@@ -34,7 +34,7 @@ class CompetitorPageController extends Controller
 
     public function __invoke(Request $request): View|SymfonyResponse
     {
-        if ($request->query('tab') === 'geo') {
+        if (in_array($request->query('tab'), ['geo', 'aeo'], true)) {
             return redirect()->route('growth-center.competitors.index', array_merge(
                 $request->except('tab'),
                 ['tab' => 'seo']
@@ -72,7 +72,7 @@ class CompetitorPageController extends Controller
         }
 
         $activeTab = (string) $request->query('tab', 'competitors');
-        $allowedTabs = ['war-room', 'seo', 'aeo', 'competitors'];
+        $allowedTabs = ['war-room', 'seo', 'competitors'];
         if (! in_array($activeTab, $allowedTabs, true)) {
             $activeTab = 'competitors';
         }

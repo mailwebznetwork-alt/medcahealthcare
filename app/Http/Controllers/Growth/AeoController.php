@@ -25,14 +25,14 @@ class AeoController extends Controller
             return response(['data' => SeoAiSignal::query()->latest('id')->first()]);
         }
 
-        return redirect()->route('growth-center.competitors.index', ['tab' => 'aeo']);
+        return redirect()->route('growth-center.competitors.index', ['tab' => 'seo']);
     }
 
     public function store(StoreAeoRequest $request): RedirectResponse
     {
         $this->aeoService->saveSignals($request->validated());
 
-        return redirect()->route('growth-center.competitors.index', ['tab' => 'aeo'])
+        return redirect()->route('growth-center.competitors.index', ['tab' => 'seo'])
             ->with('status', __('AEO signals saved.'));
     }
 
