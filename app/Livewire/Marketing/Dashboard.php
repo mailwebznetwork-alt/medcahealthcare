@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Marketing;
 
+use App\Models\Integration;
 use App\Models\MarketingCampaign;
 use App\Models\MarketingCommunicationSnapshot;
 use App\Models\MarketingEmailTracker;
@@ -84,11 +85,15 @@ class Dashboard extends Component
     {
         $this->authorize('view', MarketingSetting::current());
 
-        $s = MarketingSetting::current();
-        $this->ga4_measurement_id = (string) ($s->ga4_measurement_id ?? '');
-        $this->ga4_property_id = (string) ($s->ga4_property_id ?? '');
-        $this->google_ads_aw_id = (string) ($s->google_ads_aw_id ?? '');
-        $this->meta_pixel_id = (string) ($s->meta_pixel_id ?? '');
+        $googleServices = Integration::query()->where('name', 'google_services')->first();
+        $metaAds = Integration::query()->where('name', 'meta_ads')->first();
+        $googleCredentials = $googleServices?->credentials ?? [];
+        $metaCredentials = $metaAds?->credentials ?? [];
+
+        $this->ga4_measurement_id = (string) ($googleCredentials['measurement_id'] ?? '');
+        $this->ga4_property_id = (string) ($googleCredentials['property_id'] ?? '');
+        $this->google_ads_aw_id = (string) ($googleCredentials['google_ads_aw_id'] ?? '');
+        $this->meta_pixel_id = (string) ($metaCredentials['pixel_id'] ?? '');
 
         $this->loadReports();
     }
@@ -102,27 +107,7 @@ class Dashboard extends Component
 
     public function saveIntegrations(): void
     {
-        $this->authorize('update', MarketingSetting::current());
-
-        $this->validate([
-            'ga4_measurement_id' => ['nullable', 'string', 'max:64'],
-            'ga4_property_id' => ['nullable', 'string', 'max:32'],
-            'google_ads_aw_id' => ['nullable', 'string', 'max:64'],
-            'meta_pixel_id' => ['nullable', 'string', 'max:64'],
-        ]);
-
-        $s = MarketingSetting::current();
-        $s->fill([
-            'ga4_measurement_id' => $this->ga4_measurement_id ?: null,
-            'ga4_property_id' => $this->ga4_property_id ?: null,
-            'google_ads_aw_id' => $this->google_ads_aw_id ?: null,
-            'meta_pixel_id' => $this->meta_pixel_id ?: null,
-        ]);
-        $s->save();
-
-        Ga4DataApiService::forgetCache($s);
-
-        $this->flash = __('Tracking identifiers saved.');
+        $this->flash = __('Tracking identifiers moved to Settings → Integrations.');
     }
 
     public function saveCampaign(): void

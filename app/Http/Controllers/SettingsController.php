@@ -51,7 +51,7 @@ class SettingsController extends Controller
     private function fieldMap(): array
     {
         return [
-            'google_services' => ['measurement_id', 'container_id', 'verification_code', 'location_id', 'api_key'],
+            'google_services' => ['measurement_id', 'property_id', 'google_ads_aw_id', 'container_id', 'verification_code', 'location_id', 'api_key'],
             'meta_ads' => ['pixel_id', 'access_token'],
             'whatsapp_business' => ['phone_number_id', 'access_token', 'webhook_verify_token'],
             'twilio' => ['sid', 'auth_token', 'from_number'],

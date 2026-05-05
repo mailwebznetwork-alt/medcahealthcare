@@ -105,30 +105,28 @@
 
         <section class="mom-card p-6">
             <h2 class="mom-section-title">{{ __('Integrations (stored IDs)') }}</h2>
-            <p class="mom-subtext mt-1 max-w-2xl">{{ __('Non-secret identifiers only; API keys stay in .env.') }}</p>
+            <p class="mom-subtext mt-1 max-w-2xl">{{ __('Identifiers are now managed in Settings → Integrations.') }}</p>
             <div class="mt-6 grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                     <label class="mom-micro">{{ __('GA4 Measurement ID') }}</label>
-                    <input type="text" wire:model.blur="ga4_measurement_id" class="mt-1 w-full rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm" autocomplete="off" />
+                    <input type="text" value="{{ $ga4_measurement_id }}" readonly class="mt-1 w-full rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[rgba(28,22,18,0.45)] px-3 py-2 text-sm text-[var(--text-secondary)]" />
                 </div>
                 <div>
                     <label class="mom-micro">{{ __('GA4 Property ID (Data API)') }}</label>
-                    <input type="text" wire:model.blur="ga4_property_id" class="mt-1 w-full rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm" autocomplete="off" />
+                    <input type="text" value="{{ $ga4_property_id }}" readonly class="mt-1 w-full rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[rgba(28,22,18,0.45)] px-3 py-2 text-sm text-[var(--text-secondary)]" />
                 </div>
                 <div>
                     <label class="mom-micro">{{ __('Google Ads AW ID') }}</label>
-                    <input type="text" wire:model.blur="google_ads_aw_id" placeholder="AW-XXXXXXXXXX" class="mt-1 w-full rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm" autocomplete="off" />
+                    <input type="text" value="{{ $google_ads_aw_id }}" placeholder="AW-XXXXXXXXXX" readonly class="mt-1 w-full rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[rgba(28,22,18,0.45)] px-3 py-2 text-sm text-[var(--text-secondary)]" />
                 </div>
                 <div>
                     <label class="mom-micro">{{ __('Meta Pixel ID') }}</label>
-                    <input type="text" wire:model.blur="meta_pixel_id" class="mt-1 w-full rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm" autocomplete="off" />
+                    <input type="text" value="{{ $meta_pixel_id }}" readonly class="mt-1 w-full rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[rgba(28,22,18,0.45)] px-3 py-2 text-sm text-[var(--text-secondary)]" />
                 </div>
             </div>
-            <div class="mt-6">
-                <button type="button" wire:click="saveIntegrations" class="rounded-lg bg-[rgba(197,160,89,0.12)] px-4 py-2 text-sm font-medium text-mom-gold ring-1 ring-[rgba(197,160,89,0.35)] hover:bg-[rgba(197,160,89,0.18)]">
-                    {{ __('Save integrations') }}
-                </button>
-            </div>
+            <p class="mom-body-text mt-4 text-[var(--text-secondary)]">
+                {{ __('Open Settings to edit these identifiers.') }}
+            </p>
         </section>
     @endif
 

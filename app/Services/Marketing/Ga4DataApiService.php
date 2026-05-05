@@ -2,6 +2,7 @@
 
 namespace App\Services\Marketing;
 
+use App\Models\Integration;
 use App\Models\MarketingSetting;
 use Google\Analytics\Data\V1beta\Client\BetaAnalyticsDataClient;
 use Google\Analytics\Data\V1beta\DateRange;
@@ -10,6 +11,7 @@ use Google\Analytics\Data\V1beta\Metric;
 use Google\Analytics\Data\V1beta\RunReportRequest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Throwable;
 
 class Ga4DataApiService
@@ -26,9 +28,9 @@ class Ga4DataApiService
      */
     public function fetchReportBundle(MarketingSetting $settings): array
     {
-        $propertyId = $settings->ga4_property_id;
+        $propertyId = $this->resolveGa4PropertyId($settings);
         if ($propertyId === null || $propertyId === '') {
-            return $this->emptyBundle('Set GA4 Property ID in Marketing settings for API reports.');
+            return $this->emptyBundle('Set GA4 Property ID in Settings → Integrations (Google Services) for API reports.');
         }
 
         $cacheKey = 'marketing.ga4.bundle.'.sha1((string) $propertyId);
@@ -79,11 +81,32 @@ class Ga4DataApiService
     public static function forgetCache(MarketingSetting $settings): void
     {
         $propertyId = $settings->ga4_property_id;
+        if (Schema::hasTable('integrations')) {
+            $google = Integration::query()->where('name', 'google_services')->first();
+            $credentials = $google?->credentials ?? [];
+            $propertyId = $credentials['property_id'] ?? $propertyId;
+        }
         if ($propertyId === null || $propertyId === '') {
             return;
         }
 
         Cache::forget('marketing.ga4.bundle.'.sha1((string) $propertyId));
+    }
+
+    private function resolveGa4PropertyId(MarketingSetting $settings): ?string
+    {
+        $propertyId = $settings->ga4_property_id;
+
+        if (Schema::hasTable('integrations')) {
+            $google = Integration::query()->where('name', 'google_services')->first();
+            $credentials = $google?->credentials ?? [];
+            $integrationPropertyId = $credentials['property_id'] ?? null;
+            if (is_string($integrationPropertyId) && $integrationPropertyId !== '') {
+                $propertyId = $integrationPropertyId;
+            }
+        }
+
+        return $propertyId;
     }
 
     /**

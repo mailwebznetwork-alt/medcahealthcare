@@ -233,6 +233,8 @@ class IntegrationController extends Controller
         $map = [
             'google_services' => [
                 'credentials.measurement_id' => ['required', 'string', 'max:120'],
+                'credentials.property_id' => ['nullable', 'string', 'max:120'],
+                'credentials.google_ads_aw_id' => ['nullable', 'string', 'max:120'],
                 'credentials.container_id' => ['required', 'string', 'max:120'],
                 'credentials.verification_code' => ['required', 'string', 'max:255'],
                 'credentials.location_id' => ['required', 'string', 'max:120'],
