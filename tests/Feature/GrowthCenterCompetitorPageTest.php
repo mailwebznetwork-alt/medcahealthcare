@@ -89,6 +89,12 @@ it('bulk stores and compares competitors from growth center', function () {
     ]);
 
     $this->actingAs($user)
+        ->post(route('growth-center.competitors.compare'), [
+            'competitor_ids' => [$a->id, $b->id],
+        ])
+        ->assertRedirect(route('growth-center.competitors.index', ['compare_ids' => $a->id.','.$b->id]));
+
+    $this->actingAs($user)
         ->get(route('growth-center.competitors.index', ['compare_ids' => $a->id.','.$b->id]))
         ->assertOk()
         ->assertSeeText('Comparison Result')
