@@ -103,31 +103,6 @@
             </article>
         </section>
 
-        <section class="mom-card p-6">
-            <h2 class="mom-section-title">{{ __('Integrations (stored IDs)') }}</h2>
-            <p class="mom-subtext mt-1 max-w-2xl">{{ __('Identifiers are now managed in Settings → Integrations.') }}</p>
-            <div class="mt-6 grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                    <label class="mom-micro">{{ __('GA4 Measurement ID') }}</label>
-                    <input type="text" value="{{ $ga4_measurement_id }}" readonly class="mt-1 w-full rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[rgba(28,22,18,0.45)] px-3 py-2 text-sm text-[var(--text-secondary)]" />
-                </div>
-                <div>
-                    <label class="mom-micro">{{ __('GA4 Property ID (Data API)') }}</label>
-                    <input type="text" value="{{ $ga4_property_id }}" readonly class="mt-1 w-full rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[rgba(28,22,18,0.45)] px-3 py-2 text-sm text-[var(--text-secondary)]" />
-                </div>
-                <div>
-                    <label class="mom-micro">{{ __('Google Ads AW ID') }}</label>
-                    <input type="text" value="{{ $google_ads_aw_id }}" placeholder="AW-XXXXXXXXXX" readonly class="mt-1 w-full rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[rgba(28,22,18,0.45)] px-3 py-2 text-sm text-[var(--text-secondary)]" />
-                </div>
-                <div>
-                    <label class="mom-micro">{{ __('Meta Pixel ID') }}</label>
-                    <input type="text" value="{{ $meta_pixel_id }}" readonly class="mt-1 w-full rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[rgba(28,22,18,0.45)] px-3 py-2 text-sm text-[var(--text-secondary)]" />
-                </div>
-            </div>
-            <p class="mom-body-text mt-4 text-[var(--text-secondary)]">
-                {{ __('Open Settings to edit these identifiers.') }}
-            </p>
-        </section>
     @endif
 
     @if ($tab === 'ga4')

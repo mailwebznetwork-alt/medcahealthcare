@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Marketing;
 
-use App\Models\Integration;
 use App\Models\MarketingCampaign;
 use App\Models\MarketingCommunicationSnapshot;
 use App\Models\MarketingEmailTracker;
@@ -22,14 +21,6 @@ class Dashboard extends Component
     public string $tab = 'overview';
 
     public ?string $flash = null;
-
-    public string $ga4_measurement_id = '';
-
-    public string $ga4_property_id = '';
-
-    public string $google_ads_aw_id = '';
-
-    public string $meta_pixel_id = '';
 
     public string $campaign_name = '';
 
@@ -85,16 +76,6 @@ class Dashboard extends Component
     {
         $this->authorize('view', MarketingSetting::current());
 
-        $googleServices = Integration::query()->where('name', 'google_services')->first();
-        $metaAds = Integration::query()->where('name', 'meta_ads')->first();
-        $googleCredentials = $googleServices?->credentials ?? [];
-        $metaCredentials = $metaAds?->credentials ?? [];
-
-        $this->ga4_measurement_id = (string) ($googleCredentials['measurement_id'] ?? '');
-        $this->ga4_property_id = (string) ($googleCredentials['property_id'] ?? '');
-        $this->google_ads_aw_id = (string) ($googleCredentials['google_ads_aw_id'] ?? '');
-        $this->meta_pixel_id = (string) ($metaCredentials['pixel_id'] ?? '');
-
         $this->loadReports();
     }
 
@@ -103,11 +84,6 @@ class Dashboard extends Component
         Ga4DataApiService::forgetCache(MarketingSetting::current());
         $this->loadReports();
         $this->flash = __('Reports refreshed.');
-    }
-
-    public function saveIntegrations(): void
-    {
-        $this->flash = __('Tracking identifiers moved to Settings → Integrations.');
     }
 
     public function saveCampaign(): void
