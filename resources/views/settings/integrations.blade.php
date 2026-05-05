@@ -124,10 +124,13 @@
                                                         <input name="credentials[phone_number_id]" placeholder="{{ __('Phone number ID') }}" class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]">
                                                         <input name="credentials[access_token]" type="password" placeholder="{{ __('Access token') }}" class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]">
                                                         <input name="credentials[webhook_verify_token]" type="password" placeholder="{{ __('Webhook verify token') }}" class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]">
-                                                        <button type="submit" class="mom-cta-ghost !px-3 !py-2 !text-[11px]" @disabled($integration->accounts->count() >= 5)>{{ __('Add WhatsApp Number') }}</button>
+                                                        <button type="submit" class="mom-cta-ghost !px-3 !py-2 !text-[11px]" @disabled($hasIntegrationAccountsTable && $integration->accounts->count() >= 5)>{{ __('Add WhatsApp Number') }}</button>
                                                     </form>
                                                     <ul class="mt-3 space-y-1 text-xs">
-                                                        @foreach ($integration->accounts as $account)
+                                                        @if (! $hasIntegrationAccountsTable)
+                                                            <li>{{ __('Run migrations to enable WhatsApp multi-account.') }}</li>
+                                                        @endif
+                                                        @foreach ($hasIntegrationAccountsTable ? $integration->accounts : [] as $account)
                                                             <li>{{ $account->label }} ({{ $account->account_identifier }})</li>
                                                         @endforeach
                                                     </ul>

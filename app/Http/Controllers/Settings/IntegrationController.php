@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use ReflectionNamedType;
 use ReflectionUnionType;
@@ -31,7 +32,10 @@ class IntegrationController extends Controller
     {
         $existing = Integration::query()
             ->orderBy('name')
-            ->with('accounts')
+            ->when(
+                $this->hasAccountsTable(),
+                fn ($query) => $query->with('accounts')
+            )
             ->get()
             ->filter(fn (Integration $integration): bool => is_array($this->registry->get($integration->name)))
             ->map(fn (Integration $integration): array => $this->toResponse($integration))
@@ -280,6 +284,10 @@ class IntegrationController extends Controller
 
     public function storeAccount(Request $request, string $name)
     {
+        if (! $this->hasAccountsTable()) {
+            return redirect()->route('settings.index')->withErrors(['integration' => __('Integration accounts table is not migrated yet.')]);
+        }
+
         $integration = $this->findByName($name, withAccounts: true);
         $definition = $this->registry->get($name);
 
@@ -321,7 +329,7 @@ class IntegrationController extends Controller
         }
 
         $query = Integration::query()->where('name', $name);
-        if ($withAccounts) {
+        if ($withAccounts && $this->hasAccountsTable()) {
             $query->with('accounts');
         }
 
@@ -339,20 +347,36 @@ class IntegrationController extends Controller
             'credentials' => $this->credentialVault->mask(
                 $this->credentialVault->decrypt($integration->credentials)
             ),
-            'accounts' => $integration->accounts->map(function (IntegrationAccount $account): array {
-                return [
-                    'id' => $account->id,
-                    'label' => $account->label,
-                    'account_identifier' => $account->account_identifier,
-                    'is_enabled' => $account->is_enabled,
-                    'last_used_at' => $account->last_used_at?->toIso8601String(),
-                    'credentials' => $this->credentialVault->mask(
-                        $this->credentialVault->decrypt($account->credentials)
-                    ),
-                ];
-            })->values()->all(),
+            'accounts' => $this->mapAccounts($integration),
             'updated_at' => $integration->updated_at?->toIso8601String(),
         ];
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function mapAccounts(Integration $integration): array
+    {
+        if (! $this->hasAccountsTable()) {
+            return [];
+        }
+
+        $accounts = $integration->relationLoaded('accounts')
+            ? $integration->accounts
+            : $integration->accounts()->get();
+
+        return $accounts->map(function (IntegrationAccount $account): array {
+            return [
+                'id' => $account->id,
+                'label' => $account->label,
+                'account_identifier' => $account->account_identifier,
+                'is_enabled' => $account->is_enabled,
+                'last_used_at' => $account->last_used_at?->toIso8601String(),
+                'credentials' => $this->credentialVault->mask(
+                    $this->credentialVault->decrypt($account->credentials)
+                ),
+            ];
+        })->values()->all();
     }
 
     /**
@@ -427,7 +451,9 @@ class IntegrationController extends Controller
             $decryptedIntegration = clone $integration;
             $decryptedIntegration->credentials = $this->credentialVault->decrypt($integration->credentials);
 
-            $account = $integration->accounts->first();
+            $account = $this->hasAccountsTable()
+                ? ($integration->relationLoaded('accounts') ? $integration->accounts->first() : $integration->accounts()->first())
+                : null;
             if ($account instanceof IntegrationAccount) {
                 $decryptedAccount = clone $account;
                 $decryptedAccount->credentials = $this->credentialVault->decrypt($account->credentials);
@@ -471,6 +497,11 @@ class IntegrationController extends Controller
 
             return ['success' => false, 'message' => 'Integration test failed.', 'data' => []];
         }
+    }
+
+    private function hasAccountsTable(): bool
+    {
+        return Schema::hasTable('integration_accounts');
     }
 
     private function ok(string $message, array $data): JsonResponse

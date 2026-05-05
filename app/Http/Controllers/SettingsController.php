@@ -26,11 +26,16 @@ class SettingsController extends Controller
         $definitions = $this->registry->all();
 
         if (Schema::hasTable('integrations')) {
-            $integrations = Integration::query()
+            $hasIntegrationAccountsTable = Schema::hasTable('integration_accounts');
+            $query = Integration::query()
                 ->orderBy('type')
-                ->orderBy('name')
-                ->with('accounts')
-                ->get()
+                ->orderBy('name');
+
+            if ($hasIntegrationAccountsTable) {
+                $query->with('accounts');
+            }
+
+            $integrations = $query->get()
                 ->filter(fn (Integration $integration): bool => is_array($this->registry->get($integration->name)))
                 ->values();
 
@@ -67,6 +72,7 @@ class SettingsController extends Controller
             'matrixSummary' => $matrixSummary,
             'definitions' => $definitions,
             'availableIntegrations' => $availableIntegrations,
+            'hasIntegrationAccountsTable' => Schema::hasTable('integration_accounts'),
             'credentialVault' => $this->credentialVault,
             'googleBusinessReviews' => $googleBusinessReviews,
         ]);
