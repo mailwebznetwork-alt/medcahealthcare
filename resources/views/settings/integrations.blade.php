@@ -10,36 +10,6 @@
     @endif
 
     <section class="mom-card p-6">
-        <h2 class="mom-section-title">{{ __('Integration Matrix') }}</h2>
-        <div class="mt-4 overflow-x-auto">
-            <table class="w-full min-w-[36rem] text-left text-[13px]">
-                <thead class="bg-[var(--bg-card-table-head)] text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
-                    <tr>
-                        <th class="px-4 py-3 font-medium">{{ __('Type') }}</th>
-                        <th class="px-4 py-3 font-medium">{{ __('Total') }}</th>
-                        <th class="px-4 py-3 font-medium">{{ __('Active') }}</th>
-                        <th class="px-4 py-3 font-medium">{{ __('Inactive') }}</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-[rgba(255,255,255,0.045)] text-[var(--text-secondary)]">
-                    @forelse ($matrixSummary as $type => $row)
-                        <tr>
-                            <td class="px-4 py-3">{{ str_replace('_', ' ', $type) }}</td>
-                            <td class="px-4 py-3">{{ $row['total'] }}</td>
-                            <td class="px-4 py-3">{{ $row['active'] }}</td>
-                            <td class="px-4 py-3">{{ $row['inactive'] }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="px-4 py-8 text-center text-[var(--text-muted)]">{{ __('No integration data found.') }}</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <section class="mom-card mt-8 p-6">
         <div class="flex flex-wrap items-start justify-between gap-4">
             <div>
                 <h2 class="mom-section-title">{{ __('Add Integration') }}</h2>
@@ -199,6 +169,36 @@
                     @empty
                         <tr>
                             <td colspan="4" class="px-4 py-8 text-center text-[var(--text-muted)]">{{ __('No Google reviews synced yet.') }}</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="mom-card mt-8 p-6">
+        <h2 class="mom-section-title">{{ __('Integration Matrix') }}</h2>
+        <div class="mt-4 overflow-x-auto">
+            <table class="w-full min-w-[36rem] text-left text-[13px]">
+                <thead class="bg-[var(--bg-card-table-head)] text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                    <tr>
+                        <th class="px-4 py-3 font-medium">{{ __('Type') }}</th>
+                        <th class="px-4 py-3 font-medium">{{ __('Total') }}</th>
+                        <th class="px-4 py-3 font-medium">{{ __('Active') }}</th>
+                        <th class="px-4 py-3 font-medium">{{ __('Inactive') }}</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[rgba(255,255,255,0.045)] text-[var(--text-secondary)]">
+                    @forelse ($matrixSummary as $type => $row)
+                        <tr>
+                            <td class="px-4 py-3">{{ str_replace('_', ' ', $type) }}</td>
+                            <td class="px-4 py-3">{{ $row['total'] }}</td>
+                            <td class="px-4 py-3">{{ $row['active'] }}</td>
+                            <td class="px-4 py-3">{{ $row['inactive'] }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="px-4 py-8 text-center text-[var(--text-muted)]">{{ __('No integration data found.') }}</td>
                         </tr>
                     @endforelse
                 </tbody>
