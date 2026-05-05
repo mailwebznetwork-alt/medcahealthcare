@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\AutoLogout;
 use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\EnsureAccountIsActive;
@@ -23,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'module' => EnsureModuleAccess::class,
             'active' => EnsureAccountIsActive::class,
+            'admin' => AdminMiddleware::class,
             'role' => CheckRole::class,
             'auto.logout' => AutoLogout::class,
         ]);

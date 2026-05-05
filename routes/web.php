@@ -12,6 +12,7 @@ use App\Http\Controllers\Operations\PinCodes\PinCodeController;
 use App\Http\Controllers\Operations\PinCodes\PinCodeImportController;
 use App\Http\Controllers\Operations\Services\ServiceController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Settings\IntegrationController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserManagement\UserController;
 use App\Models\Blog;
@@ -167,6 +168,14 @@ Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:security
 
 Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:settings', 'role:admin,super_admin'])->group(function () {
     Route::get('/settings', SettingsController::class)->name('settings.index');
+});
+
+Route::middleware(['auth', 'admin', 'throttle:60,1'])->prefix('/admin/settings/integrations')->name('admin.settings.integrations.')->group(function () {
+    Route::get('/', [IntegrationController::class, 'index'])->name('index');
+    Route::get('/{name}', [IntegrationController::class, 'show'])->name('show');
+    Route::post('/{name}', [IntegrationController::class, 'update'])->name('update');
+    Route::patch('/{name}/toggle', [IntegrationController::class, 'toggle'])->name('toggle');
+    Route::post('/{name}/test', [IntegrationController::class, 'testConnection'])->name('test');
 });
 
 Route::middleware(['auth', 'active', 'auto.logout'])->group(function () {
