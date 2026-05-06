@@ -236,7 +236,7 @@
                     @foreach ($webhookEvents as $row)
                         <tr>
                             <td class="px-4 py-3 font-mono text-[12px]">{{ $row['key'] }}</td>
-                            <td class="px-4 py-3">{{ $row['description'] }}</td>
+                            <td class="px-4 py-3">{{ __($row['description']) }}</td>
                         </tr>
                     @endforeach
                 </tbody>

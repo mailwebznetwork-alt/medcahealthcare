@@ -10,12 +10,16 @@ return [
     | OutboundWebhookDispatcher POSTs JSON when domain events fire (see list below).
     */
 
+    /*
+    | Do not call __() here — config loads before the translator is registered.
+    | Wrap descriptions with __('…') in Blade when displaying.
+    */
     'webhook_events' => [
-        ['key' => 'lead.created', 'description' => __('New inquiry captured (API or Operations).')],
-        ['key' => 'page.published', 'description' => __('CMS page active / publicly reachable.')],
-        ['key' => 'blog.published', 'description' => __('Blog post marked published.')],
-        ['key' => 'navigation.updated', 'description' => __('Site Architect header/footer menus saved.')],
-        ['key' => 'integration.test', 'description' => __('Manual test ping from Integrations workspace.')],
+        ['key' => 'lead.created', 'description' => 'New inquiry captured (API or Operations).'],
+        ['key' => 'page.published', 'description' => 'CMS page active / publicly reachable.'],
+        ['key' => 'blog.published', 'description' => 'Blog post marked published.'],
+        ['key' => 'navigation.updated', 'description' => 'Site Architect header/footer menus saved.'],
+        ['key' => 'integration.test', 'description' => 'Manual test ping from Integrations workspace.'],
     ],
 
     /*
