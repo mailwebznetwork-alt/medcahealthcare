@@ -8,7 +8,7 @@ it('shows the growth readiness hub tab', function () {
     $this->actingAs($user)
         ->get(route('growth-center.competitors.index', ['tab' => 'readiness']))
         ->assertSuccessful()
-        ->assertSee('READINESS', false)
+        ->assertSee('Readiness', false)
         ->assertSee('Overall readiness', false)
         ->assertSee('Suggestions', false);
 });

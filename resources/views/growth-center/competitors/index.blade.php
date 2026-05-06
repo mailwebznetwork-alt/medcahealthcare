@@ -1,13 +1,5 @@
-<x-app-layout
-    :page-title="__('Growth Center')"
-    :welcome-line="__('Competitor War Room workspace.')"
->
-    <div class="mom-reveal w-full max-w-full">
-        <div class="space-y-1 pb-8 md:hidden md:pb-0">
-            <h1 class="mom-title-page">{{ __('Growth Center') }}</h1>
-            <p class="mom-subtext">{{ __('Competitor War Room workspace.') }}</p>
-        </div>
-
+<x-growth-center.workspace :active-tab="$activeTab">
+    <div class="w-full max-w-full">
     @if (session('status'))
         <p class="mom-body-text mb-6 text-[var(--success)]" role="status">{{ session('status') }}</p>
     @endif
@@ -16,17 +8,6 @@
             <p class="mom-body-text text-[var(--danger)]">{{ __('Please fix the highlighted input issues and try again.') }}</p>
         </div>
     @endif
-
-    <section class="mom-card mb-6 p-4">
-        <div class="flex flex-wrap gap-2">
-            <a href="{{ route('growth-center.competitors.index', ['tab' => 'readiness']) }}" class="mom-cta-ghost !px-3 !py-2 !text-[11px] {{ ($activeTab ?? 'competitors') === 'readiness' ? 'border-[var(--success)] text-[var(--success)]' : '' }}">{{ __('READINESS') }}</a>
-            <a href="{{ route('growth-center.competitors.index', ['tab' => 'war-room']) }}" class="mom-cta-ghost !px-3 !py-2 !text-[11px] {{ ($activeTab ?? 'competitors') === 'war-room' ? 'border-[var(--success)] text-[var(--success)]' : '' }}">{{ __('WAR ROOM') }}</a>
-            <a href="{{ route('growth-center.competitors.index', ['tab' => 'seo']) }}" class="mom-cta-ghost !px-3 !py-2 !text-[11px] {{ ($activeTab ?? 'competitors') === 'seo' ? 'border-[var(--success)] text-[var(--success)]' : '' }}">{{ __('SEO') }}</a>
-            <a href="{{ route('growth-center.competitors.index', ['tab' => 'ga4']) }}" class="mom-cta-ghost !px-3 !py-2 !text-[11px] {{ ($activeTab ?? 'competitors') === 'ga4' ? 'border-[var(--success)] text-[var(--success)]' : '' }}">{{ __('GA4') }}</a>
-            <a href="{{ route('growth-center.competitors.index', ['tab' => 'ai-pulse']) }}" class="mom-cta-ghost !px-3 !py-2 !text-[11px] {{ ($activeTab ?? 'competitors') === 'ai-pulse' ? 'border-[var(--success)] text-[var(--success)]' : '' }}">{{ __('AI PULSE') }}</a>
-            <a href="{{ route('growth-center.competitors.index', ['tab' => 'competitors']) }}" class="mom-cta-ghost !px-3 !py-2 !text-[11px] {{ ($activeTab ?? 'competitors') === 'competitors' ? 'border-[var(--success)] text-[var(--success)]' : '' }}">{{ __('COMPETITORS') }}</a>
-        </div>
-    </section>
 
     @if (($activeTab ?? 'competitors') === 'readiness')
         @include('growth-center.competitors.partials.readiness')
@@ -373,4 +354,4 @@
     </section>
     @endif
     </div>
-</x-app-layout>
+</x-growth-center.workspace>
