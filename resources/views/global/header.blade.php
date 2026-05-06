@@ -32,7 +32,7 @@
                         href="{{ $medcaGmbUrl }}"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="inline-flex max-w-[min(52vw,14rem)] items-center gap-1.5 truncate text-[11px] font-medium leading-none text-white underline decoration-white/45 underline-offset-2 transition-colors duration-200 hover:text-white hover:decoration-white md:max-w-none md:text-xs"
+                        class="inline-flex max-w-[min(52vw,14rem)] items-center gap-1.5 truncate text-[11px] font-medium leading-none text-white underline decoration-white/50 underline-offset-2 transition-colors duration-200 hover:text-white hover:decoration-white md:max-w-none md:text-xs"
                         aria-label="{{ __('Google Business Profile') }} — {{ config('medca.location_display') }}"
                     >
                         <svg class="h-3.5 w-3.5 shrink-0 text-white md:h-4 md:w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -73,7 +73,7 @@
                 @endif
 
                 <div class="flex min-w-0 flex-col justify-center border-l border-slate-200 pl-2 sm:pl-2.5">
-                    <span class="min-w-0 truncate text-[170%] font-bold leading-tight tracking-tight text-[#0f172a]">{{ config('medca.brand_name', 'Medca Health Care') }}</span>
+                    <span class="min-w-0 truncate text-[170%] font-bold leading-tight tracking-tight text-slate-800">{{ config('medca.brand_name', 'Medca Health Care') }}</span>
                     <span class="mt-0.5 min-w-0 truncate text-[0.625rem] font-medium uppercase leading-none tracking-[0.14em] text-[#0046ad]/85 md:text-[0.6875rem]">{{ config('medca.tagline') }}</span>
                 </div>
             </a>

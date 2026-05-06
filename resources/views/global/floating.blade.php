@@ -3,7 +3,7 @@
     target="_blank"
     rel="noopener noreferrer"
     onclick="if(typeof gtag==='function'){gtag('event','whatsapp_click');}"
-    class="fixed bottom-28 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-md ring-1 ring-black/10 transition-colors duration-200 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-[#25D366] focus:ring-offset-2 focus:ring-offset-slate-50"
+    class="fixed bottom-28 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-md shadow-emerald-900/20 ring-1 ring-white/50 transition-colors duration-200 hover:bg-[#20bd5a] focus:outline-none focus:ring-2 focus:ring-[#25D366] focus:ring-offset-2 focus:ring-offset-slate-50"
     aria-label="{{ __('Chat on WhatsApp') }}"
 >
     <svg class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
