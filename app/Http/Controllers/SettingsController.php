@@ -31,7 +31,7 @@ class SettingsController extends Controller
 
     public function webhooks(): View
     {
-        return view('settings.webhooks', $this->settingsPayload());
+        return view('settings.webhooks');
     }
 
     public function backup(): View
@@ -117,7 +117,6 @@ class SettingsController extends Controller
             'hasIntegrationAccountsTable' => Schema::hasTable('integration_accounts'),
             'credentialVault' => $this->credentialVault,
             'googleBusinessReviews' => $googleBusinessReviews,
-            'webhookEvents' => config('settings.webhook_events', []),
             'maintenanceActive' => File::exists(storage_path('framework/maintenance.php')),
             'backupFiles' => $backupFiles,
             'operationsConfigured' => is_string(config('settings.operations_token')) && config('settings.operations_token') !== '',

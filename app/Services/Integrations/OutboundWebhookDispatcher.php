@@ -3,23 +3,59 @@
 namespace App\Services\Integrations;
 
 use App\Models\Integration;
+use App\Models\OutboundWebhook;
+use App\Services\Webhooks\OutboundWebhookSender;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use JsonException;
 use Throwable;
 
 /**
- * PDF Settings §4–6 — outbound HTTP notifications for automation integrations (integration name: webhook).
+ * Outbound HTTP notifications — Webhook Manager (PDF §4–6) plus legacy Integration entry "webhook".
  */
 class OutboundWebhookDispatcher
 {
+    public function __construct(private readonly OutboundWebhookSender $webhookSender) {}
+
     /**
-     * POST JSON payload to the configured webhook receiver when enabled.
+     * Dispatch domain events to configured outbound endpoints (Settings → Webhooks), then legacy integration when none match.
      *
      * @param  array<string, mixed>  $payload
      */
     public function dispatch(string $eventKey, array $payload): void
     {
+        if (Schema::hasTable('outbound_webhooks')) {
+            $hooks = OutboundWebhook::query()
+                ->where('is_enabled', true)
+                ->orderBy('sort_order')
+                ->orderBy('id')
+                ->get()
+                ->filter(fn (OutboundWebhook $webhook): bool => in_array($eventKey, $webhook->events ?? [], true));
+
+            foreach ($hooks as $webhook) {
+                $this->webhookSender->send($webhook, $eventKey, $payload);
+            }
+
+            if ($hooks->isNotEmpty()) {
+                return;
+            }
+        }
+
+        $this->dispatchLegacyWebhookIntegration($eventKey, $payload);
+    }
+
+    /**
+     * Legacy single endpoint via Settings → Integrations ("Webhook" integration).
+     *
+     * @param  array<string, mixed>  $payload
+     */
+    private function dispatchLegacyWebhookIntegration(string $eventKey, array $payload): void
+    {
+        if (! Schema::hasTable('integrations')) {
+            return;
+        }
+
         $integration = Integration::query()
             ->where('name', 'webhook')
             ->where('is_enabled', true)

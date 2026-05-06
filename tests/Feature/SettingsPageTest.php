@@ -39,7 +39,7 @@ it('renders settings integrations page with integration cards', function () {
         ->get(route('settings.integrations'))
         ->assertOk()
         ->assertSee('Integrations')
-        ->assertDontSee('Outbound webhook events');
+        ->assertDontSee('Webhook Manager');
 });
 
 it('renders webhooks settings page', function () {
@@ -52,7 +52,7 @@ it('renders webhooks settings page', function () {
     $this->actingAs($admin)
         ->get(route('settings.webhooks'))
         ->assertOk()
-        ->assertSee('Outbound webhook events')
+        ->assertSee('Webhook Manager')
         ->assertSee('lead.created');
 });
 

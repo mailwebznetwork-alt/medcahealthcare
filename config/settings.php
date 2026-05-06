@@ -6,8 +6,9 @@ return [
     |--------------------------------------------------------------------------
     | Webhook Manager — outbound events (PDF §4–6 alignment)
     |--------------------------------------------------------------------------
-    | Wire receivers via Settings → Integrations (integration entry “Webhook”).
-    | OutboundWebhookDispatcher POSTs JSON when domain events fire (see list below).
+    | Configure receivers under Settings → Webhooks (multiple endpoints + logs).
+    | Legacy: Settings → Integrations entry “Webhook” is used when no endpoint
+    | subscribes to an event.
     */
 
     /*
@@ -16,10 +17,15 @@ return [
     */
     'webhook_events' => [
         ['key' => 'lead.created', 'description' => 'New inquiry captured (API or Operations).'],
+        ['key' => 'job.application.submitted', 'description' => 'Careers job application stored.'],
+        ['key' => 'service.booked', 'description' => 'Service booking / lead pipeline event (when wired).'],
+        ['key' => 'contact.form.submitted', 'description' => 'Public contact form submission (when wired).'],
+        ['key' => 'user.registered', 'description' => 'New staff user invited or registered (when wired).'],
         ['key' => 'page.published', 'description' => 'CMS page active / publicly reachable.'],
         ['key' => 'blog.published', 'description' => 'Blog post marked published.'],
+        ['key' => 'payment.received', 'description' => 'Payment captured (when wired).'],
         ['key' => 'navigation.updated', 'description' => 'Site Architect header/footer menus saved.'],
-        ['key' => 'integration.test', 'description' => 'Manual test ping from Integrations workspace.'],
+        ['key' => 'integration.test', 'description' => 'Manual test ping from Webhooks workspace.'],
     ],
 
     /*
