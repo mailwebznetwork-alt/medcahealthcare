@@ -24,7 +24,7 @@
 {{-- Sticky stack: slim topbar (~32–36px) + navbar row (~78–90px min). Approximate total px: config('medca.marketing_sticky_header_approx_px'). --}}
 <header class="sticky top-0 z-40 w-full font-sans">
     <div class="w-full border-b border-[#001433] bg-[#001f5c]">
-        <div class="mx-auto flex h-9 min-h-[32px] items-center justify-between gap-3 px-4 md:px-6 lg:px-8">
+        <div class="mx-auto flex h-9 min-h-[32px] max-w-6xl items-center justify-between gap-3 px-4 md:px-6 lg:px-8">
             <p class="min-w-0 flex-1 truncate text-left text-[11px] font-medium leading-none tracking-wide text-white md:text-xs">{{ config('medca.top_bar_claim') }}</p>
             <div class="flex shrink-0 items-center justify-end">
                 @if ($medcaGmbValid)
@@ -73,7 +73,7 @@
                 @endif
 
                 <div class="flex min-w-0 flex-col justify-center border-l border-slate-200 pl-2 sm:pl-2.5">
-                    <span class="min-w-0 truncate text-[170%] font-semibold leading-tight tracking-tight text-slate-900">{{ config('medca.brand_name', 'Medca Health Care') }}</span>
+                    <span class="min-w-0 truncate text-[170%] font-semibold leading-tight tracking-tight text-[#0046ad]">{{ config('medca.brand_name', 'Medca Health Care') }}</span>
                     <span class="mt-0.5 min-w-0 truncate text-[0.625rem] font-bold uppercase leading-none tracking-[0.18em] text-[#0046ad] md:text-[0.6875rem]">{{ config('medca.tagline') }}</span>
                 </div>
             </a>
