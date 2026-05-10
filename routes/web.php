@@ -266,13 +266,21 @@ Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:settings
     Route::get('/settings/webhooks', [SettingsController::class, 'webhooks'])->name('settings.webhooks');
 });
 
-Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:settings', 'role:super_admin'])->group(function () {
+Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:settings', 'role:super_admin', 'backup.operator'])->group(function () {
     Route::get('/settings/backup', [SettingsController::class, 'backup'])->name('settings.backup');
+});
+
+Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:settings', 'role:super_admin'])->group(function () {
     Route::get('/settings/maintenance', [SettingsController::class, 'maintenance'])->name('settings.maintenance');
 });
 
-Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:settings', 'role:super_admin'])->prefix('settings/system')->name('settings.system.')->group(function () {
+Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:settings', 'role:super_admin', 'backup.operator'])->prefix('settings/system')->name('settings.system.')->group(function () {
     Route::post('backup', [SystemOperationsController::class, 'backup'])->name('backup');
+    Route::get('backup/download', [SystemOperationsController::class, 'downloadBackup'])->name('backup.download');
+    Route::post('backup/restore', [SystemOperationsController::class, 'restoreBackup'])->name('backup.restore');
+});
+
+Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:settings', 'role:super_admin'])->prefix('settings/system')->name('settings.system.')->group(function () {
     Route::post('maintenance', [SystemOperationsController::class, 'maintenance'])->name('maintenance');
 });
 

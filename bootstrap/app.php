@@ -4,6 +4,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\AutoLogout;
 use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\EnsureAccountIsActive;
+use App\Http\Middleware\EnsureBackupOperator;
 use App\Http\Middleware\EnsureModuleAccess;
 use App\Http\Middleware\VerifyPaymentIngestSignature;
 use Illuminate\Foundation\Application;
@@ -29,6 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => CheckRole::class,
             'auto.logout' => AutoLogout::class,
             'payment.ingest.signature' => VerifyPaymentIngestSignature::class,
+            'backup.operator' => EnsureBackupOperator::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

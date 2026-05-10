@@ -1,6 +1,7 @@
 @php
     $active = $activeSection ?? 'integrations';
     $isSuperAdmin = auth()->check() && strtolower((string) auth()->user()?->role) === 'super_admin';
+    $isBackupOperator = auth()->check() && \App\Support\BackupOperator::allows(auth()->user());
 @endphp
 
 <nav class="flex flex-wrap gap-0" aria-label="{{ __('Settings sections') }}">
@@ -20,7 +21,7 @@
             'border-transparent text-[var(--text-secondary)] hover:border-[var(--border-panel-soft)] hover:text-[var(--text-primary)]' => $active !== 'webhooks',
         ])
     >{{ __('Webhooks') }}</a>
-    @if ($isSuperAdmin)
+    @if ($isBackupOperator)
         <a
             href="{{ route('settings.backup') }}"
             @class([
@@ -29,6 +30,8 @@
                 'border-transparent text-[var(--text-secondary)] hover:border-[var(--border-panel-soft)] hover:text-[var(--text-primary)]' => $active !== 'backup',
             ])
         >{{ __('Backup') }}</a>
+    @endif
+    @if ($isSuperAdmin)
         <a
             href="{{ route('settings.maintenance') }}"
             @class([

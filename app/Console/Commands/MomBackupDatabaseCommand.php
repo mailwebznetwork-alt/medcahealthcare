@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Support\SqliteDatabaseFile;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 
@@ -24,9 +25,9 @@ class MomBackupDatabaseCommand extends Command
             return self::FAILURE;
         }
 
-        $src = database_path('database.sqlite');
-        if (! File::exists($src)) {
-            $this->error(__('SQLite database file not found at :path.', ['path' => $src]));
+        $src = SqliteDatabaseFile::defaultConnectionFilesystemPath();
+        if ($src === null || ! File::exists($src)) {
+            $this->error(__('SQLite database file not found or not configured as a file path (e.g. :memory: is not supported).'));
 
             return self::FAILURE;
         }

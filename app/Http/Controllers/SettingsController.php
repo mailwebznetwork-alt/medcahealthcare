@@ -36,8 +36,6 @@ class SettingsController extends Controller
 
     public function backup(): View
     {
-        $this->authorizeSuperAdmin();
-
         return view('settings.backup', $this->settingsPayload());
     }
 

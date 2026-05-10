@@ -72,17 +72,42 @@ it('forbids backup and maintenance pages for non-super admins', function () {
         ->assertForbidden();
 });
 
-it('allows backup and maintenance pages for super admins', function () {
+it('forbids backup page for super admins who are not configured backup operators', function () {
     $super = User::factory()->create([
         'email_verified_at' => now(),
         'module_access' => settingsAllModulesOn(),
         'role' => 'super_admin',
+        'name' => 'Other Admin',
     ]);
 
     $this->actingAs($super)
         ->get(route('settings.backup'))
+        ->assertForbidden();
+});
+
+it('allows backup page only for configured backup operators', function () {
+    $operator = User::factory()->create([
+        'email_verified_at' => now(),
+        'module_access' => settingsAllModulesOn(),
+        'role' => 'super_admin',
+        'name' => 'WDJERRIE',
+    ]);
+
+    $this->actingAs($operator)
+        ->get(route('settings.backup'))
         ->assertOk()
-        ->assertSee('Database backup');
+        ->assertSee('Database backup')
+        ->assertSee('Download database export')
+        ->assertSee('Restore from upload');
+});
+
+it('allows maintenance page for any super admin', function () {
+    $super = User::factory()->create([
+        'email_verified_at' => now(),
+        'module_access' => settingsAllModulesOn(),
+        'role' => 'super_admin',
+        'name' => 'Other Admin',
+    ]);
 
     $this->actingAs($super)
         ->get(route('settings.maintenance'))

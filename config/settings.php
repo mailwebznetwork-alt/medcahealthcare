@@ -52,6 +52,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Backup UI — operator display names (Settings → Backup)
+    |--------------------------------------------------------------------------
+    | Comma-separated user names (users.name), case-insensitive. Must also be
+    | super_admin. Example: WDJERRIE or WDJERRIE,OpsLead
+    */
+    'backup_operator_names' => array_values(array_filter(array_map(
+        static fn (string $part): string => strtolower(trim($part)),
+        explode(',', (string) env('SETTINGS_BACKUP_OPERATOR_NAMES', 'WDJERRIE'))
+    ))),
+
+    /*
+    |--------------------------------------------------------------------------
     | Webhook dispatch mode — queue jobs vs synchronous HTTP
     |--------------------------------------------------------------------------
     */
