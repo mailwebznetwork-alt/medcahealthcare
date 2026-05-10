@@ -8,7 +8,7 @@
 
     <div class="mt-8 border-t border-[var(--border-panel-soft)] pt-8">
         <h3 class="mom-micro mb-2">{{ __('Export to your computer') }}</h3>
-        <p class="mom-body-text text-[var(--text-secondary)]">{{ __('Download a zip with manifest, SQLite database, storage trees, and the whole Laravel project under project/ (app, resources, vendor, config, .env, etc.). Excludes .git, node_modules, and storage/app/backups to avoid noise and recursion. Requires file-based SQLite.') }}</p>
+        <p class="mom-body-text text-[var(--text-secondary)]">{{ __('Download includes node_modules and vendor so size should track server usage closely; storage/app/backups is always skipped; .git is excluded by default (override via SETTINGS_SITE_BACKUP_EXCLUDED_PREFIXES). Zip is compressed — smaller than raw du unless you compare unpacked project/. Requires file-based SQLite.') }}</p>
         <div class="mt-4">
             <a href="{{ route('settings.system.backup.download') }}" class="mom-cta-primary inline-flex !px-3 !py-2 !text-[11px]">{{ __('Download full site backup') }}</a>
         </div>

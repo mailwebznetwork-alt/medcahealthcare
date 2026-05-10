@@ -11,8 +11,10 @@ test('full backup archive round trips sqlite database, storage directories, and 
     File::ensureDirectoryExists($base.DIRECTORY_SEPARATOR.'pub');
     File::ensureDirectoryExists($base.DIRECTORY_SEPARATOR.'priv');
     File::ensureDirectoryExists($base.DIRECTORY_SEPARATOR.'app');
+    File::ensureDirectoryExists($base.DIRECTORY_SEPARATOR.'node_modules'.DIRECTORY_SEPARATOR.'pkg');
     File::put($base.DIRECTORY_SEPARATOR.'pub'.DIRECTORY_SEPARATOR.'note.txt', 'hello');
     File::put($base.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'marker.txt', 'code');
+    File::put($base.DIRECTORY_SEPARATOR.'node_modules'.DIRECTORY_SEPARATOR.'pkg'.DIRECTORY_SEPARATOR.'npm.txt', 'dep');
 
     $dbLive = $base.DIRECTORY_SEPARATOR.'live.sqlite';
     $pdo = new PDO('sqlite:'.$dbLive);
@@ -22,6 +24,10 @@ test('full backup archive round trips sqlite database, storage directories, and 
 
     $packer = new MomFullBackupArchive($dbLive, $base.DIRECTORY_SEPARATOR.'pub', $base.DIRECTORY_SEPARATOR.'priv', $base);
     $packer->createZipAt($zip);
+
+    $opened = tap(new \ZipArchive, fn (\ZipArchive $z) => $z->open($zip));
+    expect($opened->locateName('project/node_modules/pkg/npm.txt'))->not->toBeFalse();
+    $opened->close();
 
     File::put($base.DIRECTORY_SEPARATOR.'pub'.DIRECTORY_SEPARATOR.'note.txt', 'mutated');
     File::put($base.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'marker.txt', 'mutated-app');

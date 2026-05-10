@@ -64,6 +64,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Full-site zip — paths under project/ to skip (relative to base_path)
+    |--------------------------------------------------------------------------
+    | Comma-separated POSIX-style prefixes. storage/app/backups is always
+    | skipped (recursion). Default excludes .git only; node_modules is
+    | included so backups match typical server disk usage. Use e.g.
+    | ".git,node_modules" for a smaller archive.
+    */
+    'site_backup_excluded_prefixes' => array_values(array_filter(array_map(
+        static function (string $part): string {
+            return trim(str_replace('\\', '/', $part), '/');
+        },
+        explode(',', (string) env('SETTINGS_SITE_BACKUP_EXCLUDED_PREFIXES', '.git'))
+    ), static fn (string $prefix): bool => $prefix !== '' && $prefix !== '.' && $prefix !== '..')),
+
+    /*
+    |--------------------------------------------------------------------------
     | Webhook dispatch mode — queue jobs vs synchronous HTTP
     |--------------------------------------------------------------------------
     */

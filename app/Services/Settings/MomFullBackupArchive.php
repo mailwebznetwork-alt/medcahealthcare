@@ -32,17 +32,6 @@ final class MomFullBackupArchive
 
     public const string MANIFEST_ENTRY = 'manifest.json';
 
-    /**
-     * Relative paths under the application root excluded from project/ (noise or recursion).
-     *
-     * @var list<string>
-     */
-    private const EXCLUDED_PROJECT_PREFIXES = [
-        '.git',
-        'node_modules',
-        'storage/app/backups',
-    ];
-
     public function __construct(
         private readonly ?string $sqlitePath,
         private readonly string $publicRoot,
@@ -99,6 +88,7 @@ final class MomFullBackupArchive
                 'generated_at' => now()->toIso8601String(),
                 'database_driver' => 'sqlite',
                 'database_file' => self::ARCHIVE_DB_ENTRY,
+                'excluded_project_prefixes' => $this->excludedProjectPrefixes(),
                 'paths' => [
                     'public_prefix' => self::ARCHIVE_PUBLIC_PREFIX,
                     'private_prefix' => self::ARCHIVE_PRIVATE_PREFIX,
@@ -310,13 +300,38 @@ final class MomFullBackupArchive
     {
         $relative = str_replace('\\', '/', $relative);
 
-        foreach (self::EXCLUDED_PROJECT_PREFIXES as $prefix) {
+        foreach ($this->excludedProjectPrefixes() as $prefix) {
             if ($relative === $prefix || str_starts_with($relative, $prefix.'/')) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * Prefixes under applicationRoot omitted from project/ in the zip.
+     * storage/app/backups is always excluded to avoid packing backup history.
+     *
+     * @return list<string>
+     */
+    private function excludedProjectPrefixes(): array
+    {
+        $out = [];
+        foreach (config('settings.site_backup_excluded_prefixes', []) as $prefix) {
+            $p = str_replace('\\', '/', (string) $prefix);
+            $p = trim($p, '/');
+            if ($p !== '' && $p !== '.' && $p !== '..') {
+                $out[] = $p;
+            }
+        }
+
+        $required = 'storage/app/backups';
+        if (! in_array($required, $out, true)) {
+            $out[] = $required;
+        }
+
+        return array_values(array_unique($out));
     }
 
     private function restoreApplicationTreeFromExtract(string $extractedProjectRoot, string $applicationRoot): void
