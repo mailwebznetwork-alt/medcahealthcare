@@ -72,13 +72,13 @@ it('forbids backup restore for super admins who are not backup operators', funct
         ->assertForbidden();
 });
 
-it('redirects restore when database is not file sqlite even with valid sqlite upload', function () {
+it('redirects restore when archive is not a valid full-site backup zip', function () {
     $realSqlite = sys_get_temp_dir().'/mom-restore-'.uniqid('', true).'.sqlite';
     $pdo = new PDO('sqlite:'.$realSqlite);
     $pdo->exec('CREATE TABLE t (id INTEGER PRIMARY KEY);');
     $pdo = null;
 
-    $upload = new UploadedFile($realSqlite, 'backup.sqlite', 'application/vnd.sqlite3', null, true);
+    $upload = new UploadedFile($realSqlite, 'backup.zip', 'application/zip', null, true);
 
     try {
         $this->actingAs(backupOperatorUser())

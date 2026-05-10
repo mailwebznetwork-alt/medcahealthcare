@@ -97,8 +97,8 @@ it('allows backup page only for configured backup operators', function () {
         ->get(route('settings.backup'))
         ->assertOk()
         ->assertSee('Database backup')
-        ->assertSee('Download database export')
-        ->assertSee('Restore from upload');
+        ->assertSee('Download full site backup')
+        ->assertSee('Restore from backup zip');
 });
 
 it('allows maintenance page for any super admin', function () {

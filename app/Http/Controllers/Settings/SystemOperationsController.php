@@ -4,12 +4,11 @@ namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\RestoreDatabaseBackupRequest;
+use App\Services\Settings\MomFullBackupArchive;
 use App\Support\BackupOperator;
-use App\Support\SqliteDatabaseFile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -36,42 +35,44 @@ class SystemOperationsController extends Controller
     }
 
     /**
-     * Download a freshly generated SQLite database export (file-based SQLite only).
+     * Download a freshly generated full-site archive (SQLite + storage trees).
      */
     public function downloadBackup(Request $request): RedirectResponse|BinaryFileResponse
     {
         $this->authorizeBackupOperator($request);
 
-        $path = SqliteDatabaseFile::defaultConnectionFilesystemPath();
-        if ($path === null || ! File::isFile($path)) {
+        $tmp = tempnam(sys_get_temp_dir(), 'momfb');
+        if ($tmp === false) {
             return redirect()
                 ->route('settings.backup')
-                ->withErrors(['integration' => __('Download is only available for a file-based SQLite database (not :memory: or non-SQLite drivers).')]);
+                ->withErrors(['integration' => __('Could not allocate a temporary file for download.')]);
         }
 
-        if (! SqliteDatabaseFile::startsWithSqliteMagic($path)) {
+        unlink($tmp);
+        $zipPath = $tmp.'.zip';
+
+        try {
+            MomFullBackupArchive::fromApplicationDefaults()->createZipAt($zipPath);
+            $downloadName = 'medca-full-backup-'.now()->format('Y-m-d-His').'.zip';
+
+            return response()->download($zipPath, $downloadName)->deleteFileAfterSend(true);
+        } catch (\Throwable $e) {
+            if (File::exists($zipPath)) {
+                File::delete($zipPath);
+            }
+            report($e);
+
             return redirect()
                 ->route('settings.backup')
-                ->withErrors(['integration' => __('The configured database file does not look like a valid SQLite database.')]);
+                ->withErrors(['integration' => $e->getMessage()]);
         }
-
-        $downloadName = 'database-export-'.now()->format('Y-m-d-His').'.sqlite';
-
-        return response()->download($path, $downloadName);
     }
 
     /**
-     * Replace the SQLite database file from an uploaded backup (file-based SQLite only).
+     * Restore SQLite + storage/app/public + storage/app/private from a full-site archive.
      */
     public function restoreBackup(RestoreDatabaseBackupRequest $request): RedirectResponse
     {
-        $path = SqliteDatabaseFile::defaultConnectionFilesystemPath();
-        if ($path === null || ! File::isFile($path)) {
-            return redirect()
-                ->route('settings.backup')
-                ->withErrors(['integration' => __('Restore is only available for a file-based SQLite database (not :memory: or non-SQLite drivers).')]);
-        }
-
         $uploaded = $request->file('backup_file');
         if ($uploaded === null) {
             return redirect()
@@ -80,26 +81,24 @@ class SystemOperationsController extends Controller
         }
 
         $source = $uploaded->getRealPath() ?: $uploaded->getPathname();
-        if (! SqliteDatabaseFile::startsWithSqliteMagic($source)) {
-            return redirect()
-                ->route('settings.backup')
-                ->withErrors(['integration' => __('The uploaded file is not a valid SQLite database backup.')]);
-        }
 
         $backupDir = storage_path('app/backups');
         File::ensureDirectoryExists($backupDir);
-        $safetyCopy = $backupDir.'/pre-restore-'.now()->format('Y-m-d-His').'.sqlite';
-        File::copy($path, $safetyCopy);
+        $safetyZip = $backupDir.'/pre-restore-full-'.now()->format('Y-m-d-His').'.zip';
 
-        File::copy($source, $path);
+        try {
+            MomFullBackupArchive::fromApplicationDefaults()->restoreFromZipFile($source, $safetyZip);
+        } catch (\Throwable $e) {
+            report($e);
 
-        if (config('database.default') === 'sqlite') {
-            DB::purge('sqlite');
+            return redirect()
+                ->route('settings.backup')
+                ->withErrors(['integration' => $e->getMessage()]);
         }
 
         return redirect()
             ->route('settings.backup')
-            ->with('status', __('Database restored from upload. A copy of the previous file was saved under storage/app/backups.'));
+            ->with('status', __('Full site restored from backup. A snapshot of the previous state was saved as a zip under storage/app/backups.'));
     }
 
     /**
