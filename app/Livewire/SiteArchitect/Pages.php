@@ -6,10 +6,10 @@ use App\Models\Block;
 use App\Models\Page;
 use App\Models\PageRevision;
 use App\Models\PinCode;
-use App\Models\Service;
 use App\Models\SiteSlugRedirect;
 use App\Services\ActivityLogService;
 use App\Services\Integrations\OutboundWebhookDispatcher;
+use App\Services\SiteArchitect\ServiceInsertCatalog;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\DB;
@@ -120,10 +120,7 @@ class Pages extends Component
         $modules = collect(config('modules', []))->keys()->values()->all();
 
         $servicesForInsert = $this->blockModalOpen
-            ? Service::query()
-                ->where('is_active', true)
-                ->orderBy('title')
-                ->get(['id', 'title', 'service_code', 'publish_status', 'visibility'])
+            ? app(ServiceInsertCatalog::class)->forDropdown()
             : collect();
 
         $otherPagesForLinks = collect();
@@ -691,6 +688,11 @@ class Pages extends Component
      * Service tokens live INSIDE block code (not at page level), and the
      * block's Blade markup decides how to render the loaded service.
      */
+    public function refreshServiceInsertCatalog(): void
+    {
+        // Re-render so {@see ServiceInsertCatalog} reloads from the database (e.g. after creating a service in another tab).
+    }
+
     public function appendServiceToken(): void
     {
         $code = trim($this->service_choice);
@@ -700,13 +702,8 @@ class Pages extends Component
             return;
         }
 
-        $exists = Service::query()
-            ->where('service_code', $code)
-            ->where('is_active', true)
-            ->exists();
-
-        if (! $exists) {
-            $this->addError('service_choice', __('That service is inactive or missing.'));
+        if (! app(ServiceInsertCatalog::class)->existsForToken($code)) {
+            $this->addError('service_choice', __('That service code was not found. Refresh the list or create the service first.'));
 
             return;
         }

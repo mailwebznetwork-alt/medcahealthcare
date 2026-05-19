@@ -3,8 +3,7 @@
 namespace App\Livewire\SiteArchitect;
 
 use App\Models\Block;
-use App\Models\Service;
-use Illuminate\Database\Eloquent\Collection;
+use App\Services\SiteArchitect\ServiceInsertCatalog;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\DB;
@@ -60,7 +59,9 @@ class BlockFactory extends Component
         $typesByGroup = config('block_factory.types_by_group', []);
         $allowedTypes = collect($typesByGroup)->flatten()->unique()->values()->all();
 
-        $services = $this->mode === 'form' ? $this->servicesForInsert() : collect();
+        $services = $this->mode === 'form'
+            ? app(ServiceInsertCatalog::class)->forDropdown()
+            : collect();
 
         return view('livewire.site-architect.block-factory', [
             'blocks' => $blocks,
@@ -70,19 +71,9 @@ class BlockFactory extends Component
         ]);
     }
 
-    /**
-     * Active services for the "Insert service…" dropdown (draft/private included).
-     *
-     * Live pages still bind tokens via {@see Service::findPublishedByCode}; drafts only appear after publish.
-     *
-     * @return Collection<int, Service>
-     */
-    protected function servicesForInsert()
+    public function refreshServiceInsertCatalog(): void
     {
-        return Service::query()
-            ->where('is_active', true)
-            ->orderBy('title')
-            ->get(['id', 'title', 'service_code', 'publish_status', 'visibility']);
+        // Re-render so {@see ServiceInsertCatalog} reloads from the database (e.g. after creating a service in another tab).
     }
 
     public function appendServiceToken(): void
@@ -94,13 +85,8 @@ class BlockFactory extends Component
             return;
         }
 
-        $exists = Service::query()
-            ->where('service_code', $code)
-            ->where('is_active', true)
-            ->exists();
-
-        if (! $exists) {
-            $this->addError('service_choice', __('That service is inactive or missing.'));
+        if (! app(ServiceInsertCatalog::class)->existsForToken($code)) {
+            $this->addError('service_choice', __('That service code was not found. Refresh the list or create the service first.'));
 
             return;
         }

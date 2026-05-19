@@ -410,7 +410,7 @@ it('block factory allows inserting a token for a draft service', function () {
         ->assertHasNoErrors();
 });
 
-it('block factory omits inactive services from the insert dropdown', function () {
+it('block factory lists inactive services in the insert dropdown', function () {
     Service::factory()->create([
         'service_code' => 'inactive-svc',
         'title' => 'Inactive Svc Unique Title XYZ',
@@ -422,7 +422,61 @@ it('block factory omits inactive services from the insert dropdown', function ()
     Livewire::actingAs($user)
         ->test(BlockFactory::class)
         ->call('startCreate')
-        ->assertDontSee('Inactive Svc Unique Title XYZ');
+        ->assertSee('Inactive Svc Unique Title XYZ')
+        ->assertSee('inactive-svc');
+});
+
+it('block factory allows inserting a token for an inactive service', function () {
+    Service::factory()->create([
+        'service_code' => 'inactive-token-svc',
+        'title' => 'Inactive Token',
+        'is_active' => false,
+    ]);
+
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(BlockFactory::class)
+        ->call('startCreate')
+        ->set('service_choice', 'inactive-token-svc')
+        ->call('appendServiceToken')
+        ->assertSet('code', '{{service:inactive-token-svc}}')
+        ->assertHasNoErrors();
+});
+
+it('pages block modal lists a service created after the modal was opened once refresh runs', function () {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)
+        ->test(Pages::class)
+        ->call('startCreate')
+        ->call('addBlock');
+
+    Service::factory()->create([
+        'service_code' => 'brand-new-svc',
+        'title' => 'Brand New Service Label',
+    ]);
+
+    $component
+        ->call('refreshServiceInsertCatalog')
+        ->assertSee('Brand New Service Label')
+        ->assertSee('brand-new-svc');
+});
+
+it('pages block modal lists inactive services in the insert dropdown', function () {
+    Service::factory()->create([
+        'service_code' => 'pages-inactive-svc',
+        'title' => 'Pages Inactive Unique',
+        'is_active' => false,
+    ]);
+
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Pages::class)
+        ->call('startCreate')
+        ->call('addBlock')
+        ->assertSee('Pages Inactive Unique');
 });
 
 it('pages block modal appends a {{service:CODE}} token to block_code', function () {
