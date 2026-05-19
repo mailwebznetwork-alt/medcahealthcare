@@ -17,6 +17,7 @@ use App\Http\Controllers\Operations\PinCodes\PinCodeController;
 use App\Http\Controllers\Operations\PinCodes\PinCodeImportController;
 use App\Http\Controllers\Operations\Services\ServiceController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Public\CmsPageController;
 use App\Http\Controllers\Public\ServicePublicController;
 use App\Http\Controllers\Settings\IntegrationController;
 use App\Http\Controllers\Settings\SystemOperationsController;
@@ -28,6 +29,8 @@ use App\Models\Lead;
 use App\Models\Page;
 use App\Models\SiteSlugRedirect;
 use App\Services\ActivityLogService;
+use App\Services\Content\ContentRenderContext;
+use App\Services\Public\PublicPagePresenter;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 
@@ -43,6 +46,10 @@ Route::get('/', function () {
     $page = Page::query()->where('slug', 'home')->where('is_active', true)->first();
 
     if ($page !== null) {
+        app(ContentRenderContext::class)->set(
+            app(PublicPagePresenter::class)->variablesFor($page)
+        );
+
         return view('layouts.app', ['page' => $page]);
     }
 
@@ -53,12 +60,25 @@ Route::get('/t/mail/{token}/open.gif', [MarketingEmailOpenController::class, 'pi
     ->middleware('throttle:120,1')
     ->name('marketing.email-open-pixel');
 
+foreach (config('public_pages.root_slugs', []) as $cmsSlug) {
+    $routeName = match ($cmsSlug) {
+        'careers' => 'careers.index',
+        'services' => 'public.page.services',
+        default => 'public.page.'.str_replace('-', '_', $cmsSlug),
+    };
+
+    Route::get('/'.$cmsSlug, [CmsPageController::class, 'show'])
+        ->defaults('slug', $cmsSlug)
+        ->name($routeName);
+}
+
 Route::get('/services/{code}', [ServicePublicController::class, 'show'])
     ->where('code', '[A-Za-z][A-Za-z0-9_-]*')
     ->name('public.services.show');
 
-Route::get('/careers', [CareersController::class, 'index'])->name('careers.index');
-Route::get('/careers/{slug}', [CareersController::class, 'show'])->name('careers.show');
+Route::get('/careers/{slug}', [CareersController::class, 'show'])
+    ->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*')
+    ->name('careers.show');
 Route::post('/careers/{slug}/apply', [CareersController::class, 'storeApplication'])
     ->middleware('throttle:10,1')
     ->name('careers.apply');
@@ -67,6 +87,14 @@ Route::get('/p/{slug}', function (string $slug) {
     $page = Page::query()->where('slug', $slug)->first();
 
     if ($page !== null && $page->is_active) {
+        if (Page::usesRootPublicPath($slug)) {
+            return redirect($page->publicPath(), 301);
+        }
+
+        app(ContentRenderContext::class)->set(
+            app(PublicPagePresenter::class)->variablesFor($page)
+        );
+
         return view('layouts.app', ['page' => $page]);
     }
 
@@ -81,6 +109,10 @@ Route::get('/p/{slug}', function (string $slug) {
     }
 
     if ($target !== $slug) {
+        if (Page::usesRootPublicPath($target)) {
+            return redirect(Page::publicPathForSlug($target), 301);
+        }
+
         return redirect('/p/'.$target, 301);
     }
 

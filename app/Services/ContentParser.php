@@ -6,6 +6,7 @@ use App\Enums\PublishStatus;
 use App\Enums\ServiceVisibility;
 use App\Models\Block;
 use App\Models\Service;
+use App\Services\Content\ContentRenderContext;
 use Illuminate\Support\Facades\Blade;
 use Livewire\Livewire;
 
@@ -159,9 +160,13 @@ class ContentParser
 
         $services = collect(array_values($serviceVars))->filter(fn ($v): bool => $v instanceof Service);
 
-        $sharedVars = ['services' => $services];
+        $sharedVars = array_merge(
+            app(ContentRenderContext::class)->all(),
+            ['services' => $services],
+            $serviceVars
+        );
 
-        return Blade::render($bladeReadyCode, $sharedVars + $serviceVars);
+        return Blade::render($bladeReadyCode, $sharedVars);
     }
 
     /**

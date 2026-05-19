@@ -45,7 +45,7 @@ class ContentSeoAutoFillService
         }
 
         if ($this->shouldFill((string) $page->canonical_url, $fillEmptyOnly)) {
-            $page->canonical_url = url('/p/'.ltrim((string) $page->slug, '/'));
+            $page->canonical_url = $page->publicUrl();
         }
 
         if ($this->shouldFill((string) $page->robots_meta, $fillEmptyOnly)) {
@@ -64,7 +64,7 @@ class ContentSeoAutoFillService
             $page->schema_json = $this->buildWebPageSchema(
                 (string) $page->title,
                 (string) $page->meta_description,
-                url('/p/'.ltrim((string) $page->slug, '/'))
+                $page->publicUrl()
             );
         }
     }
@@ -122,7 +122,7 @@ class ContentSeoAutoFillService
             return;
         }
 
-        $slugPath = '/p/'.ltrim((string) $page->slug, '/');
+        $slugPath = $page->publicPath();
 
         if (Schema::hasTable('page_seo') && Schema::hasTable('business_profiles')) {
             $profile = BusinessProfile::query()->where('website', config('app.url'))->first()

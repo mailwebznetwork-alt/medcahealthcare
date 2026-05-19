@@ -246,7 +246,7 @@ class SeoService
                     if ($imageUrl === null) {
                         return;
                     }
-                    $pageLoc = e(url('/p/'.$page->slug));
+                    $pageLoc = e($page->publicUrl());
                     $imageLoc = e($imageUrl);
                     $title = e((string) ($page->og_image_alt ?: $page->title ?? ''));
                     $blocks[] = "    <url>\n        <loc>{$pageLoc}</loc>\n        <image:image>\n            <image:loc>{$imageLoc}</image:loc>\n            <image:title>{$title}</image:title>\n        </image:image>\n    </url>";
@@ -375,7 +375,7 @@ class SeoService
         return Page::query()
             ->where('is_active', true)
             ->pluck('slug')
-            ->map(fn (string $slug): string => '/p/'.$slug);
+            ->map(fn (string $slug): string => Page::publicPathForSlug($slug));
     }
 
     /**

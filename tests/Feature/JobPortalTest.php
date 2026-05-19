@@ -3,7 +3,9 @@
 use App\Enums\VacancyVisibility;
 use App\Enums\VacancyWorkflowStatus;
 use App\Livewire\Modules\JobPortal;
+use App\Enums\PageLayoutMode;
 use App\Models\Application;
+use App\Models\Page;
 use App\Models\User;
 use App\Models\Vacancy;
 use App\ModuleAccess;
@@ -62,6 +64,16 @@ it('does not render draft vacancies in the job portal module', function () {
 });
 
 it('lists a published public vacancy on the careers site', function () {
+    Page::query()->updateOrCreate(
+        ['slug' => 'careers'],
+        [
+            'title' => 'Careers',
+            'content' => '{{module:job-portal}}',
+            'is_active' => true,
+            'layout_mode' => PageLayoutMode::Canvas,
+        ]
+    );
+
     $vacancy = Vacancy::factory()->published()->create([
         'slug' => 'test-role-bangalore',
         'visibility' => VacancyVisibility::Public,

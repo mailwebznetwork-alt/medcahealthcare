@@ -55,10 +55,10 @@ it('seeds the header navigation in the expected order', function () {
 it('renders every seeded marketing page on its public URL with rendered block markup', function () {
     $cases = [
         ['url' => '/', 'expectIn' => 'Premium home healthcare'],
-        ['url' => '/p/about-us', 'expectIn' => 'Doctor-led, family-centred home healthcare'],
-        ['url' => '/p/services', 'expectIn' => 'Hospital-grade care at home'],
-        ['url' => '/p/locations', 'expectIn' => 'Where Medca cares'],
-        ['url' => '/p/contact', 'expectIn' => 'Talk to a Medca care advisor'],
+        ['url' => '/about-us', 'expectIn' => 'Doctor-led, family-centred home healthcare'],
+        ['url' => '/services', 'expectIn' => 'Hospital-grade care at home'],
+        ['url' => '/locations', 'expectIn' => 'Where Medca cares'],
+        ['url' => '/contact', 'expectIn' => 'Talk to a Medca care advisor'],
     ];
 
     foreach ($cases as $case) {
@@ -75,7 +75,7 @@ it('exposes seeded pages in the public header navigation, with home routed to /'
     }
 
     $response->assertSee('href="'.url('/').'"', false);
-    $response->assertSee('href="'.url('/p/about-us').'"', false);
+    $response->assertSee('href="'.url('/about-us').'"', false);
 });
 
 it('is idempotent — re-running keeps row counts steady', function () {

@@ -81,7 +81,7 @@ class SiteNavigationResolver
             return url('/');
         }
 
-        return route('pages.public', ['slug' => $page->slug]);
+        return $page->publicUrl();
     }
 
     protected function resolveNavLabel(SiteNavigationItem $row, Page $page): string

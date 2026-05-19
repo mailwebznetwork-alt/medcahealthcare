@@ -30,7 +30,7 @@ class PageObserver
 
     public function deleted(Page $page): void
     {
-        $slugPath = '/p/'.ltrim((string) $page->slug, '/');
+        $slugPath = $page->publicPath();
 
         if (Schema::hasTable('page_seo')) {
             PageSeo::query()->where('page_slug', $slugPath)->delete();

@@ -103,9 +103,20 @@
                         <input type="text" wire:model="slug" class="mt-2 w-full rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[var(--bg-card-matte)] px-3 py-2 font-mono text-sm text-[var(--text-primary)]" />
                         @error('slug') <p class="mt-1 text-xs text-[var(--danger)]">{{ $message }}</p> @enderror
                     </div>
-                    <div class="flex items-center gap-3">
-                        <input type="checkbox" wire:model="is_active" id="page-active" class="rounded border-[rgba(255,255,255,0.15)]" />
-                        <label for="page-active" class="text-sm text-[var(--text-secondary)]">{{ __('Live') }}</label>
+                    <div class="md:col-span-2 flex flex-wrap items-end gap-6">
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" wire:model="is_active" id="page-active" class="rounded border-[rgba(255,255,255,0.15)]" />
+                            <label for="page-active" class="text-sm text-[var(--text-secondary)]">{{ __('Live') }}</label>
+                        </div>
+                        <div>
+                            <label for="page-layout-mode" class="block text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">{{ __('Page layout') }}</label>
+                            <select wire:model="layout_mode" id="page-layout-mode" class="mt-2 rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[var(--bg-card-matte)] px-3 py-2 text-sm text-[var(--text-primary)]">
+                                @foreach (\App\Enums\PageLayoutMode::cases() as $mode)
+                                    <option value="{{ $mode->value }}">{{ $mode->label() }}</option>
+                                @endforeach
+                            </select>
+                            <p class="mom-subtext mt-1">{{ __('Full width (canvas) removes the default max-width shell so your blocks control structure edge-to-edge.') }}</p>
+                        </div>
                     </div>
                 </div>
             </section>

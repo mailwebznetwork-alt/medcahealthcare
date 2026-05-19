@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PageLayoutMode;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -40,6 +41,7 @@ class Page extends Model
         'gtm_code',
         'pixel_code',
         'is_active',
+        'layout_mode',
     ];
 
     /**
@@ -53,8 +55,42 @@ class Page extends Model
             'entity_tags' => 'array',
             'fact_check_verified' => 'boolean',
             'is_active' => 'boolean',
+            'layout_mode' => PageLayoutMode::class,
             'content_reviewed_at' => 'datetime',
         ];
+    }
+
+    public static function publicPathForSlug(string $slug): string
+    {
+        if ($slug === 'home') {
+            return '/';
+        }
+
+        if (in_array($slug, config('public_pages.root_slugs', []), true)) {
+            return '/'.$slug;
+        }
+
+        return '/p/'.$slug;
+    }
+
+    public function publicPath(): string
+    {
+        return self::publicPathForSlug((string) $this->slug);
+    }
+
+    public function publicUrl(): string
+    {
+        return url($this->publicPath());
+    }
+
+    public function usesCanvasLayout(): bool
+    {
+        return $this->layout_mode === PageLayoutMode::Canvas;
+    }
+
+    public static function usesRootPublicPath(string $slug): bool
+    {
+        return $slug === 'home' || in_array($slug, config('public_pages.root_slugs', []), true);
     }
 
     protected static function booted(): void
@@ -141,6 +177,7 @@ class Page extends Model
             'gtm_code',
             'pixel_code',
             'is_active',
+            'layout_mode',
         ]);
 
         $attributes['content_reviewed_at'] = $this->content_reviewed_at?->toAtomString();

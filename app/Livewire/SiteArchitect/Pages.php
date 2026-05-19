@@ -2,6 +2,7 @@
 
 namespace App\Livewire\SiteArchitect;
 
+use App\Enums\PageLayoutMode;
 use App\Models\Block;
 use App\Models\Page;
 use App\Models\PageRevision;
@@ -39,6 +40,8 @@ class Pages extends Component
     public string $slug = '';
 
     public bool $is_active = false;
+
+    public string $layout_mode = 'contained';
 
     public string $meta_title = '';
 
@@ -179,6 +182,7 @@ class Pages extends Component
         $this->title = $page->title;
         $this->slug = $page->slug;
         $this->is_active = $page->is_active;
+        $this->layout_mode = $page->layout_mode?->value ?? PageLayoutMode::Contained->value;
         $this->meta_title = (string) ($page->meta_title ?? '');
         $this->meta_description = (string) ($page->meta_description ?? '');
         $this->keywords = (string) ($page->keywords ?? '');
@@ -277,6 +281,7 @@ class Pages extends Component
         $this->title = (string) ($snap['title'] ?? '');
         $this->slug = (string) ($snap['slug'] ?? '');
         $this->is_active = (bool) ($snap['is_active'] ?? false);
+        $this->layout_mode = (string) ($snap['layout_mode'] ?? PageLayoutMode::Contained->value);
         $this->meta_title = (string) ($snap['meta_title'] ?? '');
         $this->meta_description = (string) ($snap['meta_description'] ?? '');
         $this->keywords = (string) ($snap['keywords'] ?? '');
@@ -380,6 +385,7 @@ class Pages extends Component
                 Rule::unique('pages', 'slug')->ignore($this->editingId),
             ],
             'is_active' => ['boolean'],
+            'layout_mode' => ['required', Rule::in(array_column(PageLayoutMode::cases(), 'value'))],
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string'],
             'keywords' => ['nullable', 'string'],
@@ -438,6 +444,7 @@ class Pages extends Component
             'gtm_code' => $this->gtm_code ?: null,
             'pixel_code' => $this->pixel_code ?: null,
             'is_active' => $this->is_active,
+            'layout_mode' => $this->layout_mode,
         ];
 
         DB::transaction(function () use ($data, $previousSlug, &$savedPageId): void {
@@ -612,12 +619,11 @@ class Pages extends Component
         }
 
         $this->blockEditingSlug = $slug;
-        $catalog = app(ServiceInsertCatalog::class);
         if ($slug !== null) {
             $block = Block::query()->where('block_slug', $slug)->firstOrFail();
             $this->block_name = $block->block_name;
             $this->block_slug = $block->block_slug;
-            $this->block_code = $catalog->ensureLayoutInBlockCode((string) ($block->code ?? ''));
+            $this->block_code = (string) ($block->code ?? '');
         } else {
             $this->block_name = '';
             $this->block_slug = '';
@@ -714,8 +720,6 @@ class Pages extends Component
 
             return;
         }
-
-        $this->block_code = $catalog->ensureLayoutInBlockCode($this->block_code);
 
         $token = '{{service:'.$code.'}}';
         $this->block_code = str_contains($this->block_code, $token)
@@ -939,6 +943,7 @@ class Pages extends Component
         $this->title = '';
         $this->slug = '';
         $this->is_active = false;
+        $this->layout_mode = PageLayoutMode::Contained->value;
         $this->meta_title = '';
         $this->meta_description = '';
         $this->keywords = '';

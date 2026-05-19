@@ -6,4 +6,6 @@ return [
 
     'job-portal' => JobPortal::class,
 
+    'careers-listing' => JobPortal::class,
+
 ];

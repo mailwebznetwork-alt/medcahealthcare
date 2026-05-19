@@ -15,13 +15,6 @@ use Illuminate\View\View;
 
 class CareersController extends Controller
 {
-    public function index(): View
-    {
-        $vacancies = Vacancy::query()->careersListing()->paginate(12);
-
-        return view('careers.index', compact('vacancies'));
-    }
-
     public function show(string $slug): View
     {
         $vacancy = Vacancy::query()->careersListing()->where('slug', $slug)->firstOrFail();

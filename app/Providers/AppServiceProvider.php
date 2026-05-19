@@ -28,6 +28,7 @@ use App\Policies\PagePolicy;
 use App\Policies\PinCodePolicy;
 use App\Policies\ServicePolicy;
 use App\Policies\UserPolicy;
+use App\Services\Content\ContentRenderContext;
 use App\Services\ServiceContextCollector;
 use App\Services\SiteNavigationResolver;
 use Illuminate\Auth\Events\Login;
@@ -51,6 +52,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(ServiceContextCollector::class);
+        $this->app->singleton(ContentRenderContext::class);
     }
 
     /**

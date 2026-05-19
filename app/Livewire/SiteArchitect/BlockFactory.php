@@ -96,8 +96,6 @@ class BlockFactory extends Component
             return;
         }
 
-        $this->code = $catalog->ensureLayoutInBlockCode($this->code);
-
         $token = '{{service:'.$code.'}}';
         $this->code = str_contains($this->code, $token)
             ? $this->code
@@ -128,7 +126,7 @@ class BlockFactory extends Component
         $this->block_slug = $block->block_slug;
         $this->description = (string) ($block->description ?? '');
         $this->block_type = (string) ($block->block_type ?? '');
-        $this->code = app(ServiceInsertCatalog::class)->ensureLayoutInBlockCode((string) ($block->code ?? ''));
+        $this->code = (string) ($block->code ?? '');
         $this->serviceCatalogNonce++;
         $this->schema_json_input = $block->schema_json !== null
             ? json_encode($block->schema_json, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)

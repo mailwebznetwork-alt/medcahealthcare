@@ -244,7 +244,7 @@ class AiPulseService
             '/careers' => true,
         ];
         foreach ($pages as $page) {
-            $paths['/p/'.ltrim((string) $page->slug, '/')] = true;
+            $paths[$page->publicPath()] = true;
         }
         foreach ($blogs as $blog) {
             $paths['/blog/'.ltrim((string) $blog->slug, '/')] = true;

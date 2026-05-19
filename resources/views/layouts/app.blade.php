@@ -31,9 +31,16 @@
     <body class="medca-public-surface flex min-h-screen flex-col bg-slate-50 font-medca-sans antialiased text-slate-800">
         @include('global.header')
 
-        <main id="main-content" class="relative z-0 mx-auto w-full max-w-6xl flex-1 px-4 py-8 md:px-6 md:py-10 lg:px-8 lg:py-12">
+        <main
+            id="main-content"
+            @class([
+                'relative z-0 flex-1 w-full',
+                'mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-10 lg:px-8 lg:py-12' => ! isset($page) || ! $page->usesCanvasLayout(),
+                'px-0 py-0' => isset($page) && $page->usesCanvasLayout(),
+            ])
+        >
             @isset($page)
-                <div class="w-full py-6 md:py-8">
+                <div @class(['w-full', 'py-6 md:py-8' => ! $page->usesCanvasLayout()])>
                     {!! \App\Services\ContentParser::parse($page->content ?? '') !!}
                 </div>
             @elseif(isset($blog))

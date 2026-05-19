@@ -13,7 +13,6 @@ use App\Models\ServiceSchema;
 use App\Models\User;
 use App\Services\ContentParser;
 use App\Services\ServiceContextCollector;
-use App\Services\SiteArchitect\ServiceInsertCatalog;
 use Livewire\Livewire;
 
 beforeEach(function (): void {
@@ -112,7 +111,7 @@ it('binds draft and private active services in blocks but skips inactive tokens'
     expect(app(ServiceContextCollector::class)->collected())->toHaveCount(0);
 });
 
-it('renders a services grid for token-only block code when services are draft', function () {
+it('renders services when the block blade layout uses $services and tokens', function () {
     Service::factory()->create([
         'service_code' => 'caregivers',
         'title' => 'Caregivers (Male & Female)',
@@ -124,12 +123,10 @@ it('renders a services grid for token-only block code when services are draft', 
         'publish_status' => PublishStatus::Draft,
     ]);
 
-    $catalog = app(ServiceInsertCatalog::class);
-
     Block::query()->create([
         'block_name' => 'Main Services',
         'block_slug' => 'mainservices-test',
-        'code' => $catalog->ensureLayoutInBlockCode("{{service:caregivers}}\n{{service:homenursing-services}}"),
+        'code' => '<ul>@foreach($services as $svc)<li>{{ $svc->title }}</li>@endforeach</ul>{{service:caregivers}}{{service:homenursing-services}}',
         'is_active' => true,
     ]);
 
