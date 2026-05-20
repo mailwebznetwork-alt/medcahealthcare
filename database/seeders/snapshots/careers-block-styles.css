@@ -1,0 +1,13 @@
+.mc-jobs {
+ width: 100vw;
+ position: relative;
+ left: 50%;
+ right: 50%;
+ margin-left: -50vw;
+ margin-right: -50vw;
+ background: #f2f2f2;
+ padding: 3rem 1.5rem;
+ box-sizing: border-box;
+ font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.mc-jobs-wrap { max-width: 56rem; margin: 0 auto; }

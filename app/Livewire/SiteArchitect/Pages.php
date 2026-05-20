@@ -130,6 +130,8 @@ class Pages extends Component
 
     public string $block_code = '';
 
+    public string $block_custom_css = '';
+
     public string $module_choice = '';
 
     public string $service_choice = '';
@@ -708,10 +710,12 @@ class Pages extends Component
             $this->block_name = $block->block_name;
             $this->block_slug = $block->block_slug;
             $this->block_code = (string) ($block->code ?? '');
+            $this->block_custom_css = (string) ($block->custom_css ?? '');
         } else {
             $this->block_name = '';
             $this->block_slug = '';
             $this->block_code = '';
+            $this->block_custom_css = '';
         }
         $this->blockModalOpen = true;
         $this->serviceCatalogNonce++;
@@ -744,6 +748,7 @@ class Pages extends Component
                 Rule::unique('blocks', 'block_slug')->ignore($blockId),
             ],
             'block_code' => ['required', 'string'],
+            'block_custom_css' => ['nullable', 'string'],
         ]);
 
         if ($this->blockEditingSlug !== null && $this->blockEditingSlug !== $this->block_slug) {
@@ -754,9 +759,15 @@ class Pages extends Component
             }
         }
 
+        $customCss = trim($this->block_custom_css);
+
         Block::query()->updateOrCreate(
             ['block_slug' => $this->block_slug],
-            ['block_name' => $this->block_name, 'code' => $this->block_code]
+            [
+                'block_name' => $this->block_name,
+                'code' => $this->block_code,
+                'custom_css' => $customCss !== '' ? $customCss : null,
+            ]
         );
 
         if ($this->blockEditingSlug === null) {

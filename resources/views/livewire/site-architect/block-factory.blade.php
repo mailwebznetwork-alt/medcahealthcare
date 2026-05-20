@@ -111,6 +111,7 @@
                             <textarea wire:model="code" rows="16" class="mt-2 w-full rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[var(--bg-card-matte)] px-3 py-2 font-mono text-xs text-[var(--text-primary)]"></textarea>
                             @error('code') <p class="mt-1 text-xs text-[var(--danger)]">{{ $message }}</p> @enderror
                         </div>
+                        @include('livewire.site-architect.partials.block-custom-css-field', ['wireModel' => 'custom_css'])
                         <div>
                             <label class="block text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">{{ __('JSON schema') }}</label>
                             <textarea wire:model="schema_json_input" rows="6" class="mt-2 w-full rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[var(--bg-card-matte)] px-3 py-2 font-mono text-xs" placeholder="{{ __('Optional') }}"></textarea>

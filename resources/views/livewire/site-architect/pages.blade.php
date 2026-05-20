@@ -503,6 +503,7 @@
                         <textarea wire:model="block_code" rows="14" class="mt-2 w-full rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[var(--bg-card-matte)] px-3 py-2 font-mono text-xs"></textarea>
                         @error('block_code') <p class="mt-1 text-xs text-[var(--danger)]">{{ $message }}</p> @enderror
                     </div>
+                    @include('livewire.site-architect.partials.block-custom-css-field', ['wireModel' => 'block_custom_css'])
                 </div>
                 <div class="mt-6 flex gap-2">
                     <button type="button" wire:click="saveBlockInModal" class="rounded-mom-chrome bg-[var(--accent-gold)] px-4 py-2 text-sm font-semibold text-[#120f0d]">{{ __('Save block') }}</button>

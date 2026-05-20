@@ -31,6 +31,8 @@ class BlockFactory extends Component
 
     public string $code = '';
 
+    public string $custom_css = '';
+
     public string $schema_json_input = '';
 
     public bool $is_active = true;
@@ -127,6 +129,7 @@ class BlockFactory extends Component
         $this->description = (string) ($block->description ?? '');
         $this->block_type = (string) ($block->block_type ?? '');
         $this->code = (string) ($block->code ?? '');
+        $this->custom_css = (string) ($block->custom_css ?? '');
         $this->serviceCatalogNonce++;
         $this->schema_json_input = $block->schema_json !== null
             ? json_encode($block->schema_json, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
@@ -173,6 +176,7 @@ class BlockFactory extends Component
             'description' => ['nullable', 'string'],
             'block_type' => ['nullable', 'string', 'max:255'],
             'code' => ['required', 'string'],
+            'custom_css' => ['nullable', 'string'],
             'schema_json_input' => ['nullable', 'string'],
             'is_active' => ['boolean'],
         ]);
@@ -183,6 +187,7 @@ class BlockFactory extends Component
             'description' => $this->description !== '' ? $this->description : null,
             'block_type' => $this->block_type !== '' ? $this->block_type : null,
             'code' => $this->code,
+            'custom_css' => trim($this->custom_css) !== '' ? trim($this->custom_css) : null,
             'schema_json' => $schemaDecoded,
             'is_active' => $this->is_active,
         ];
@@ -252,7 +257,12 @@ class BlockFactory extends Component
         $this->previewError = '';
 
         try {
-            $this->previewHtml = ContentParser::renderBlockCode($block->code);
+            $this->previewHtml = ContentParser::renderBlockCode(
+                $block->code,
+                0,
+                is_string($block->custom_css) ? $block->custom_css : null,
+                $block->block_slug
+            );
         } catch (\Throwable $e) {
             $this->previewError = $e->getMessage();
         }
@@ -287,6 +297,7 @@ class BlockFactory extends Component
         $this->description = '';
         $this->block_type = '';
         $this->code = '';
+        $this->custom_css = '';
         $this->schema_json_input = '';
         $this->is_active = true;
         $this->service_choice = '';

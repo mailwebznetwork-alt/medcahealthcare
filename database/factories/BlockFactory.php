@@ -28,6 +28,7 @@ class BlockFactory extends Factory
             'description' => fake()->sentence(8),
             'block_type' => fake()->randomElement(['Hero', 'Text', 'CTA', 'Service Grid', 'Sections', 'Custom']),
             'code' => '<p>'.fake()->paragraph().'</p>',
+            'custom_css' => null,
             'schema_json' => null,
             'is_active' => true,
         ];

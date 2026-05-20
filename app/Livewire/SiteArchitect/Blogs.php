@@ -82,6 +82,8 @@ class Blogs extends Component
 
     public string $block_code = '';
 
+    public string $block_custom_css = '';
+
     public string $module_choice = '';
 
     /** Current stored path on public disk (not a Livewire upload). */
@@ -377,10 +379,12 @@ class Blogs extends Component
             $this->block_name = $block->block_name;
             $this->block_slug = $block->block_slug;
             $this->block_code = $block->code;
+            $this->block_custom_css = (string) ($block->custom_css ?? '');
         } else {
             $this->block_name = '';
             $this->block_slug = '';
             $this->block_code = '';
+            $this->block_custom_css = '';
         }
         $this->blockModalOpen = true;
     }
@@ -412,6 +416,7 @@ class Blogs extends Component
                 Rule::unique('blocks', 'block_slug')->ignore($blockId),
             ],
             'block_code' => ['required', 'string'],
+            'block_custom_css' => ['nullable', 'string'],
         ]);
 
         if ($this->blockEditingSlug !== null && $this->blockEditingSlug !== $this->block_slug) {
@@ -422,9 +427,15 @@ class Blogs extends Component
             }
         }
 
+        $customCss = trim($this->block_custom_css);
+
         Block::query()->updateOrCreate(
             ['block_slug' => $this->block_slug],
-            ['block_name' => $this->block_name, 'code' => $this->block_code]
+            [
+                'block_name' => $this->block_name,
+                'code' => $this->block_code,
+                'custom_css' => $customCss !== '' ? $customCss : null,
+            ]
         );
 
         if ($this->blockEditingSlug === null) {

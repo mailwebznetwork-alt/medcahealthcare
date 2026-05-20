@@ -48,17 +48,19 @@ class MedcaPublicPagesSeeder extends Seeder
         $pages = [];
 
         foreach ($this->pageDefinitions() as $definition) {
-            $page = Page::query()->updateOrCreate(
-                ['slug' => $definition['slug']],
-                [
+            $page = Page::query()->firstOrNew(['slug' => $definition['slug']]);
+
+            if (! $page->exists) {
+                $page->fill([
                     'title' => $definition['title'],
                     'content' => $this->buildContent($definition['blocks']),
                     'meta_title' => $definition['meta_title'],
                     'meta_description' => $definition['meta_description'],
                     'h1' => $definition['h1'],
                     'is_active' => true,
-                ]
-            );
+                ]);
+                $page->save();
+            }
 
             $pages[$definition['slug']] = $page;
         }

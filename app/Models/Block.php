@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Database\Factories\BlockFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class Block extends Model
 {
-    /** @use HasFactory<\Database\Factories\BlockFactory> */
+    /** @use HasFactory<BlockFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -18,6 +19,7 @@ class Block extends Model
         'description',
         'block_type',
         'code',
+        'custom_css',
         'schema_json',
         'is_active',
     ];

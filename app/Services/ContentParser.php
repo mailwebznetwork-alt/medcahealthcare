@@ -143,10 +143,10 @@ class ContentParser
     /**
      * Render a block's Blade code (preview, tests, or internal expansion).
      */
-    public static function renderBlockCode(string $code, int $depth = 0): string
+    public static function renderBlockCode(string $code, int $depth = 0, ?string $customCss = null, ?string $blockSlug = null): string
     {
         if (trim($code) === '') {
-            return '';
+            return self::wrapBlockOutput('', $customCss, $blockSlug);
         }
 
         $serviceVars = self::loadServiceVariablesFromBlockCode($code);
@@ -156,7 +156,42 @@ class ContentParser
             $depth + 1
         );
 
-        return Blade::render($bladeReadyCode, self::buildBlockRenderVariables($serviceVars));
+        $html = Blade::render($bladeReadyCode, self::buildBlockRenderVariables($serviceVars));
+
+        return self::wrapBlockOutput($html, $customCss, $blockSlug);
+    }
+
+    /**
+     * Prefix block HTML with a scoped <style> tag when custom CSS is set.
+     */
+    public static function wrapBlockOutput(string $html, ?string $customCss, ?string $blockSlug = null): string
+    {
+        $css = self::normalizeBlockCustomCss($customCss);
+        if ($css === '') {
+            return $html;
+        }
+
+        $attr = $blockSlug !== null && $blockSlug !== ''
+            ? ' data-block="'.e($blockSlug).'"'
+            : '';
+
+        return '<style'.$attr.' type="text/css">'."\n".$css."\n".'</style>'."\n".$html;
+    }
+
+    /**
+     * Strip accidental <style> wrappers and break-out sequences from editor input.
+     */
+    public static function normalizeBlockCustomCss(?string $customCss): string
+    {
+        $css = trim((string) ($customCss ?? ''));
+        if ($css === '') {
+            return '';
+        }
+
+        $css = preg_replace('#</?style[^>]*>#i', '', $css) ?? $css;
+        $css = preg_replace('#</style#i', '', $css) ?? $css;
+
+        return trim($css);
     }
 
     /**
@@ -213,11 +248,23 @@ class ContentParser
             ->where('is_active', true)
             ->first();
 
-        if ($block === null || ! is_string($block->code) || $block->code === '') {
+        if ($block === null) {
             return '';
         }
 
-        return self::renderBlockCode($block->code, $depth);
+        $code = is_string($block->code) ? $block->code : '';
+        $customCss = is_string($block->custom_css) ? $block->custom_css : null;
+
+        if ($code === '' && self::normalizeBlockCustomCss($customCss) === '') {
+            return '';
+        }
+
+        return self::renderBlockCode(
+            $code,
+            $depth,
+            $customCss,
+            $block->block_slug
+        );
     }
 
     /**
