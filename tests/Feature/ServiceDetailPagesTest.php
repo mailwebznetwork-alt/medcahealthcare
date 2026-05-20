@@ -6,7 +6,6 @@ use App\Enums\ServiceVisibility;
 use App\Models\Block;
 use App\Models\Page;
 use App\Models\Service;
-use App\Models\ServiceSeo;
 use App\Models\User;
 use App\ModuleAccess;
 use App\Services\Operations\ServiceDetailPageProvisioner;
@@ -96,6 +95,21 @@ it('renders the operations service edit form without a view error', function () 
         ->assertSee('GEO', false);
 });
 
+it('shows edit blocks button when a detail page is already linked', function () {
+    $user = serviceDetailOperationsUser();
+    $page = Page::factory()->create(['slug' => 'service-caregivers', 'is_active' => true]);
+    $service = Service::factory()->create([
+        'service_code' => 'caregivers',
+        'detail_page_id' => $page->id,
+    ]);
+
+    $this->actingAs($user)
+        ->get(route('operations.services.edit', $service))
+        ->assertSuccessful()
+        ->assertSee('Edit blocks', false)
+        ->assertSee('service-caregivers', false);
+});
+
 it('uses page meta title on public service detail when a detail page is linked', function () {
     $service = Service::factory()->create([
         'service_code' => 'meta-test',
@@ -141,11 +155,9 @@ it('stores detail page from operations', function () {
     ]);
 
     $response = $this->actingAs($user)
-        ->post(route('operations.services.detail-page.store', $service));
+        ->post(route('operations.services.detail-page.store', $service))
+        ->assertRedirect(route('operations.services.edit', $service));
 
     expect($service->fresh()->detail_page_id)->not->toBeNull();
-
-    $pageId = $service->fresh()->detail_page_id;
-    $response->assertRedirect(route('site-architect.pages.index', ['edit' => $pageId]));
     expect(Page::query()->where('slug', 'service-icu-at-home')->exists())->toBeTrue();
 });

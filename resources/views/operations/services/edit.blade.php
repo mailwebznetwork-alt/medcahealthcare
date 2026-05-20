@@ -24,7 +24,15 @@
     <form action="{{ route('operations.services.update', $service) }}" method="post" enctype="multipart/form-data" class="space-y-8">
         @csrf
         @method('PUT')
-        @include('operations.services._form', ['mode' => 'edit', 'service' => $service, 'pinCodes' => $pinCodes])
+        @include('operations.services._form', [
+            'mode' => 'edit',
+            'service' => $service,
+            'pinCodes' => $pinCodes,
+            'detailPages' => $detailPages,
+            'suggestedDetailPageSlug' => $suggestedDetailPageSlug,
+            'patternDetailPage' => $patternDetailPage,
+            'linkedDetailPage' => $linkedDetailPage,
+        ])
 
         <div class="flex flex-wrap gap-3">
             <x-primary-button variant="mom" type="submit">{{ __('Save changes') }}</x-primary-button>

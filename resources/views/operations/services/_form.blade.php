@@ -8,10 +8,12 @@
 
     $selectedPinIds = array_map(static fn ($v) => (int) $v, old('pincodes', $service->exists ? $service->pincodes->pluck('id')->all() : []));
 
-    $detailPageId = (int) old('detail_page_id', $service->detail_page_id);
-    $linkedDetailPage = $detailPageId > 0
-        ? $detailPages->firstWhere('id', $detailPageId)
-        : ($patternDetailPage ?? null);
+    if (! isset($linkedDetailPage)) {
+        $detailPageId = (int) old('detail_page_id', $service->detail_page_id);
+        $linkedDetailPage = $detailPageId > 0
+            ? ($detailPages->firstWhere('id', $detailPageId) ?? \App\Models\Page::query()->find($detailPageId))
+            : ($patternDetailPage ?? null);
+    }
 @endphp
 
 <div class="space-y-8">

@@ -11,7 +11,15 @@
 
     <form action="{{ route('operations.services.store') }}" method="post" enctype="multipart/form-data" class="space-y-8">
         @csrf
-        @include('operations.services._form', ['mode' => 'create', 'service' => $service, 'pinCodes' => $pinCodes])
+        @include('operations.services._form', [
+            'mode' => 'create',
+            'service' => $service,
+            'pinCodes' => $pinCodes,
+            'detailPages' => $detailPages,
+            'suggestedDetailPageSlug' => $suggestedDetailPageSlug,
+            'patternDetailPage' => $patternDetailPage,
+            'linkedDetailPage' => null,
+        ])
 
         <div class="flex flex-wrap gap-3">
             <x-primary-button variant="mom" type="submit">{{ __('Create service') }}</x-primary-button>

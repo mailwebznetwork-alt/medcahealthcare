@@ -10,6 +10,7 @@ use App\Http\Requests\Operations\Services\UpdateServiceRequest;
 use App\Models\Page;
 use App\Models\PinCode;
 use App\Models\Service;
+use App\ModuleAccess;
 use App\Services\Operations\ServiceDetailPageProvisioner;
 use App\Services\Operations\ServiceDetailPageSeoSync;
 use App\Services\Public\ServicesDetailPageResolver;
@@ -138,6 +139,7 @@ class ServiceController extends Controller
 
         $suggestedDetailPageSlug = $this->detailPageProvisioner->suggestedSlug($service);
         $patternDetailPage = $this->detailPageProvisioner->findPageBySuggestedSlug($service);
+        $linkedDetailPage = $this->detailPageResolver->resolveFor($service) ?? $patternDetailPage;
 
         return view('operations.services.edit', compact(
             'service',
@@ -145,21 +147,20 @@ class ServiceController extends Controller
             'detailPages',
             'suggestedDetailPageSlug',
             'patternDetailPage',
+            'linkedDetailPage',
         ));
     }
 
-    public function storeDetailPage(Service $service): RedirectResponse
+    public function storeDetailPage(Request $request, Service $service): RedirectResponse
     {
         $this->authorize('update', $service);
 
         $page = $this->detailPageProvisioner->provision($service);
 
-        return redirect()
-            ->route('site-architect.pages.index', ['edit' => $page->id])
-            ->with('status', __('Detail page created and linked. Slug: :slug — edit blocks and SEO below.', ['slug' => $page->slug]));
+        return $this->redirectAfterDetailPageAction($request, $service, $page, __('Detail page created and linked.'));
     }
 
-    public function editDetailPage(Service $service): RedirectResponse
+    public function editDetailPage(Request $request, Service $service): RedirectResponse
     {
         $this->authorize('update', $service);
 
@@ -169,7 +170,22 @@ class ServiceController extends Controller
         $service->loadMissing(['seo', 'faqs', 'schema']);
         $this->detailPageSeoSync->migrateFromServiceIfEmpty($service, $page);
 
-        return redirect()->route('site-architect.pages.index', ['edit' => $page->id]);
+        return $this->redirectAfterDetailPageAction($request, $service, $page, __('Detail page ready.'));
+    }
+
+    private function redirectAfterDetailPageAction(Request $request, Service $service, Page $page, string $message): RedirectResponse
+    {
+        $status = $message.' '.__('Slug: :slug.', ['slug' => $page->slug]);
+
+        if ($request->user()?->hasModuleAccess(ModuleAccess::SITE_ARCHITECT) === true) {
+            return redirect()
+                ->route('site-architect.pages.index', ['edit' => $page->id])
+                ->with('status', $status.' '.__('Edit blocks and SEO below.'));
+        }
+
+        return redirect()
+            ->route('operations.services.edit', $service)
+            ->with('status', $status.' '.__('Open Site Architect → Pages (or ask an admin for Site Architect access) to edit blocks.'));
     }
 
     public function update(UpdateServiceRequest $request, Service $service): RedirectResponse
