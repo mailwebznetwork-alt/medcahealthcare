@@ -30,6 +30,7 @@ use App\Models\Page;
 use App\Models\SiteSlugRedirect;
 use App\Services\ActivityLogService;
 use App\Services\Content\ContentRenderContext;
+use App\Services\Public\PagePublicPreviewService;
 use App\Services\Public\PublicPagePresenter;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
@@ -148,7 +149,10 @@ Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:site_arc
                 'Page ID '.$page->id.' slug '.$page->slug
             );
 
-            return view('layouts.app', ['page' => $page]);
+            return view(
+                'layouts.app',
+                app(PagePublicPreviewService::class)->viewDataFor($page)
+            );
         })->name('pages.preview');
 
         Route::view('/navigation', 'site-architect.navigation-shell')->name('navigation.index');
@@ -188,6 +192,7 @@ Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:operatio
         Route::get('{service}/duplicate', [ServiceController::class, 'duplicate'])->name('duplicate');
         Route::get('{service}/preview', [ServiceController::class, 'preview'])->name('preview');
         Route::get('{service}/edit', [ServiceController::class, 'edit'])->name('edit');
+        Route::get('{service}/detail-page/create', [ServiceController::class, 'createDetailPage'])->name('detail-page.create');
         Route::post('{service}/detail-page', [ServiceController::class, 'storeDetailPage'])->name('detail-page.store');
         Route::get('{service}/detail-page/edit', [ServiceController::class, 'editDetailPage'])->name('detail-page.edit');
         Route::put('{service}', [ServiceController::class, 'update'])->name('update');

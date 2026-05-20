@@ -14,12 +14,23 @@
             </ul>
         </div>
     @endif
+    @error('detail_page')
+        <div class="mom-card mb-6 border border-[rgba(226,92,92,0.35)] bg-[rgba(226,92,92,0.08)] px-4 py-3 text-sm text-[var(--danger)]" role="alert">
+            {{ $message }}
+        </div>
+    @enderror
 
     <div class="mb-6 flex flex-wrap items-center gap-3">
         <a href="{{ route('operations.services.preview', $service) }}" class="mom-cta-ghost" target="_blank" rel="noopener">{{ __('Preview public URL') }}</a>
         <a href="{{ $service->publicUrl() }}" class="mom-cta-ghost" target="_blank" rel="noopener">{{ __('Open /services/:code', ['code' => $service->service_code]) }}</a>
         <a href="{{ route('operations.services.duplicate', $service) }}" class="mom-cta-ghost">{{ __('Duplicate') }}</a>
     </div>
+
+    @include('operations.services._detail-page-panel', [
+        'service' => $service,
+        'linkedDetailPage' => $linkedDetailPage,
+        'suggestedDetailPageSlug' => $suggestedDetailPageSlug,
+    ])
 
     <form action="{{ route('operations.services.update', $service) }}" method="post" enctype="multipart/form-data" class="space-y-8">
         @csrf

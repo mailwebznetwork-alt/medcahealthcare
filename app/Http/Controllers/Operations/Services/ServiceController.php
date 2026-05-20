@@ -151,11 +151,24 @@ class ServiceController extends Controller
         ));
     }
 
+    public function createDetailPage(Request $request, Service $service): RedirectResponse
+    {
+        return $this->storeDetailPage($request, $service);
+    }
+
     public function storeDetailPage(Request $request, Service $service): RedirectResponse
     {
         $this->authorize('update', $service);
 
-        $page = $this->detailPageProvisioner->provision($service);
+        try {
+            $page = $this->detailPageProvisioner->provision($service);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return redirect()
+                ->route('operations.services.edit', $service)
+                ->withErrors(['detail_page' => __('Could not create the detail page: :message', ['message' => $e->getMessage()])]);
+        }
 
         return $this->redirectAfterDetailPageAction($request, $service, $page, __('Detail page created and linked.'));
     }

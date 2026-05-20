@@ -86,8 +86,9 @@ class ServiceDetailPageSeoSync
             $changed = true;
         }
 
-        if (! filled($page->canonical_url)) {
-            $page->canonical_url = $service->publicUrl();
+        $serviceCanonical = $service->publicUrl();
+        if ($this->pageFieldUnset($page, 'canonical_url') || $this->canonicalLooksLikeGenericPagePath($page, $service)) {
+            $page->canonical_url = $serviceCanonical;
             $changed = true;
         }
 
@@ -110,6 +111,16 @@ class ServiceDetailPageSeoSync
         }
 
         return $changed || $page->faqs()->exists();
+    }
+
+    private function canonicalLooksLikeGenericPagePath(Page $page, Service $service): bool
+    {
+        if (! filled($page->canonical_url)) {
+            return false;
+        }
+
+        return str_contains((string) $page->canonical_url, $page->publicPath())
+            && ! str_contains((string) $page->canonical_url, '/services/'.$service->service_code);
     }
 
     private function pageFieldUnset(Page $page, string $field): bool

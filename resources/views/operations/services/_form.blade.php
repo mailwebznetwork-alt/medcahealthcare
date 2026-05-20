@@ -17,28 +17,6 @@
 @endphp
 
 <div class="space-y-8">
-    @if ($mode === 'edit')
-        <section class="mom-card border border-[rgba(197,160,89,0.22)] bg-[rgba(197,160,89,0.04)] p-6">
-            <h3 class="mom-section-title mb-2">{{ __('Public page — blocks, SEO & schema') }}</h3>
-            <p class="mom-body-text mb-4 max-w-3xl">
-                {{ __('Content layout, meta tags, FAQs, JSON-LD, and OG image live on the linked Site Architect page. This form keeps service identity, publish rules, and GEO pincodes only.') }}
-            </p>
-            <div class="flex flex-wrap gap-3">
-                @if ($linkedDetailPage)
-                    <a href="{{ route('operations.services.detail-page.edit', $service) }}" class="mom-cta-primary">{{ __('Edit blocks & SEO') }}</a>
-                    <span class="mom-subtext self-center">{{ $linkedDetailPage->title }} · {{ $linkedDetailPage->slug }}</span>
-                @else
-                    <form action="{{ route('operations.services.detail-page.store', $service) }}" method="post" class="inline">
-                        @csrf
-                        <x-primary-button variant="mom" type="submit">{{ __('Create detail page & open editor') }}</x-primary-button>
-                    </form>
-                @endif
-                <a href="{{ route('site-architect.block-factory.index') }}" class="mom-cta-ghost">{{ __('Block Factory') }}</a>
-                <a href="{{ route('site-architect.media.index') }}" class="mom-cta-ghost">{{ __('Media library') }}</a>
-            </div>
-        </section>
-    @endif
-
     <section class="mom-card p-6">
         <h3 class="mom-section-title mb-4">{{ __('Basic') }}</h3>
         <div class="grid gap-6 md:grid-cols-2">

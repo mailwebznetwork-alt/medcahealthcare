@@ -155,7 +155,7 @@ it('stores detail page from operations', function () {
     ]);
 
     $response = $this->actingAs($user)
-        ->post(route('operations.services.detail-page.store', $service))
+        ->get(route('operations.services.detail-page.create', $service))
         ->assertRedirect(route('operations.services.edit', $service));
 
     expect($service->fresh()->detail_page_id)->not->toBeNull();
