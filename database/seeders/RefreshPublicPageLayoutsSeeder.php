@@ -19,31 +19,7 @@ class RefreshPublicPageLayoutsSeeder extends Seeder
             'code' => "{{service:homenursing-services}}\n{{service:caregivers}}",
         ]);
 
-        Block::query()->updateOrCreate(
-            ['block_slug' => 'careers-open-roles'],
-            [
-                'block_name' => 'Careers — open roles (your layout)',
-                'code' => <<<'BLADE'
-{{-- $vacancies is injected on /careers. Replace with your carousel, cards, table, or grid. --}}
-@if ($vacancies->isEmpty())
-    <p>{{ __('No open roles right now.') }}</p>
-@else
-    @foreach ($vacancies as $vacancy)
-        <article>
-            <h2>
-                <a href="{{ route('careers.show', ['slug' => $vacancy->slug]) }}">{{ $vacancy->title }}</a>
-            </h2>
-            <p>
-                @if ($vacancy->city){{ $vacancy->city }}@endif
-                @if ($vacancy->employment_type) · {{ $vacancy->employment_type->label() }}@endif
-            </p>
-        </article>
-    @endforeach
-@endif
-BLADE,
-                'is_active' => true,
-            ]
-        );
+        // Do not overwrite block slug "careers" or the careers page — admins own that layout in Site Architect.
 
         $cta = Block::query()->where('block_slug', 'cta-services')->first();
         if ($cta !== null) {
@@ -92,11 +68,6 @@ BLADE,
                 'layout_mode' => PageLayoutMode::Canvas,
             ]
         );
-
-        Page::query()->where('slug', 'careers')->update([
-            'content' => '{{block:careers-open-roles}}',
-            'layout_mode' => PageLayoutMode::Canvas,
-        ]);
 
         Block::query()->updateOrCreate(
             ['block_slug' => 'services-block-carousel'],
@@ -156,6 +127,7 @@ BLADE,
             [
                 'block_name' => 'Service detail — related (Insert service tokens)',
                 'code' => <<<'BLADE'
+{{-- Insert service → adds {{service:code}} lines above. Carousel hidden until at least one token exists. --}}
 @include('public.services.partials.services-carousel', [
     'services' => $services,
     'sectionTitle' => __('Related services'),

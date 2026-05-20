@@ -72,6 +72,7 @@
     .medca-svc-carousel-empty { text-align: center; color: #64748b; padding: 2rem 1rem; }
 </style>
 
+@if ($services->isNotEmpty())
 <section class="medca-svc-carousel" data-layout="services-carousel">
     <div class="medca-svc-carousel-wrap">
         @if (filled($sectionTitle))
@@ -80,9 +81,6 @@
             </header>
         @endif
 
-        @if ($services->isEmpty())
-            <p class="medca-svc-carousel-empty">{{ __('No services selected for this block.') }}</p>
-        @else
             <div class="medca-svc-carousel-track" role="list">
                 @foreach ($services as $service)
                     <a
@@ -98,6 +96,6 @@
                     </a>
                 @endforeach
             </div>
-        @endif
     </div>
 </section>
+@endif

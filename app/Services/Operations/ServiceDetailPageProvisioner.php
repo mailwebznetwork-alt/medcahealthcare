@@ -84,7 +84,12 @@ BLADE,
             [
                 'block_name' => 'Service detail — related services (Insert service tokens)',
                 'code' => <<<'BLADE'
-{{-- Other services shown on this page: use Block Factory → Insert service (e.g. elderly-care). Not a separate DB type — same services table. --}}
+{{-- Block Factory → Insert service (one line per related offering). Same services table; not a separate “sub-service” type. --}}
+{{-- Example for home nursing — replace codes with yours from Operations → Services: --}}
+{{-- {{service:icu-care-at-home}} --}}
+{{-- {{service:palliative-care-at-home}} --}}
+{{-- {{service:post-operative-care-at-home}} --}}
+
 @include('public.services.partials.services-carousel', [
     'services' => $services,
     'sectionTitle' => __('Related services'),
