@@ -162,14 +162,19 @@
                     <div class="flex flex-wrap items-center gap-2">
                         <select wire:model.live="module_choice" class="rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[var(--bg-card-matte)] px-3 py-2 text-sm text-[var(--text-primary)]">
                             <option value="">{{ __('Insert module…') }}</option>
-                            @foreach ($modules as $m)
-                                <option value="{{ $m }}">{{ $m }}</option>
+                            @foreach ($moduleOptions as $option)
+                                <option value="{{ $option['key'] }}">
+                                    {{ $option['label'] }}
+                                    @if ($option['source'] === 'dynamic')
+                                        ({{ __('Custom') }})
+                                    @endif
+                                </option>
                             @endforeach
                         </select>
                         <button type="button" wire:click="appendModule" wire:loading.attr="disabled" class="rounded-mom-chrome border border-[var(--border-panel-soft)] px-3 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-hover)] disabled:opacity-50">{{ __('Add module line') }}</button>
                     </div>
-                    @if (count($modules) === 0)
-                        <p class="mt-2 text-xs text-[var(--text-muted)]">{{ __('No modules registered in config/modules.php.') }}</p>
+                    @if (count($moduleOptions) === 0)
+                        <p class="mt-2 text-xs text-[var(--text-muted)]">{{ __('No modules yet. Create one in Module Builder or register Livewire modules in config/modules.php.') }}</p>
                     @endif
                     @error('module_choice') <span class="mt-2 block text-xs text-[var(--danger)]">{{ $message }}</span> @enderror
                 </div>

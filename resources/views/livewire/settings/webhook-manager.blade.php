@@ -5,7 +5,7 @@
             {{ __('Real-time outbound HTTP notifications: system events → signed payloads → your endpoints, with retries and delivery logs (architecture: listener → trigger → payload → transport → logs).') }}
         </p>
         <div class="mt-4 flex flex-wrap gap-2">
-            <button type="button" wire:click="startCreate" class="mom-cta-primary !px-3 !py-2 !text-[11px]">
+            <button type="button" wire:click="startCreate" class="mom-cta-primary mom-cta-compact">
                 {{ __('Add endpoint') }}
             </button>
         </div>
@@ -15,7 +15,7 @@
         <section class="mom-card p-6" wire:key="webhook-form">
             <div class="flex flex-wrap items-start justify-between gap-4">
                 <h3 class="mom-section-title">{{ $editingId ? __('Edit endpoint') : __('New endpoint') }}</h3>
-                <button type="button" wire:click="cancelEdit" class="mom-cta-ghost !px-3 !py-2 !text-[11px]">{{ __('Cancel') }}</button>
+                <button type="button" wire:click="cancelEdit" class="mom-cta-ghost mom-cta-compact">{{ __('Cancel') }}</button>
             </div>
             <form wire:submit.prevent="save" class="mt-6 space-y-4">
                 <div class="grid gap-4 md:grid-cols-2">
@@ -113,7 +113,7 @@
                     @error('custom_headers_json') <span class="text-[12px] text-[var(--danger)]">{{ $message }}</span> @enderror
                 </label>
                 <div class="flex flex-wrap gap-2">
-                    <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Save endpoint') }}</button>
+                    <button type="submit" class="mom-cta-primary mom-cta-compact">{{ __('Save endpoint') }}</button>
                 </div>
             </form>
         </section>
@@ -147,10 +147,10 @@
                             </td>
                             <td class="px-4 py-3">
                                 <div class="flex flex-wrap gap-2">
-                                    <button type="button" wire:click="startEdit({{ $hook->id }})" class="mom-cta-ghost !px-3 !py-2 !text-[11px]">{{ __('Edit') }}</button>
-                                    <button type="button" wire:click="toggleEnabled({{ $hook->id }})" class="mom-cta-ghost !px-3 !py-2 !text-[11px]">{{ __('Toggle') }}</button>
-                                    <button type="button" wire:click="sendTest({{ $hook->id }})" class="mom-cta-ghost !px-3 !py-2 !text-[11px]">{{ __('Test') }}</button>
-                                    <button type="button" wire:click="deleteEndpoint({{ $hook->id }})" wire:confirm="{{ __('Delete this endpoint?') }}" class="mom-cta-ghost !px-3 !py-2 !text-[11px]">{{ __('Delete') }}</button>
+                                    <button type="button" wire:click="startEdit({{ $hook->id }})" class="mom-cta-ghost mom-cta-compact">{{ __('Edit') }}</button>
+                                    <button type="button" wire:click="toggleEnabled({{ $hook->id }})" class="mom-cta-ghost mom-cta-compact">{{ __('Toggle') }}</button>
+                                    <button type="button" wire:click="sendTest({{ $hook->id }})" class="mom-cta-ghost mom-cta-compact">{{ __('Test') }}</button>
+                                    <button type="button" wire:click="deleteEndpoint({{ $hook->id }})" wire:confirm="{{ __('Delete this endpoint?') }}" class="mom-cta-ghost mom-cta-compact">{{ __('Delete') }}</button>
                                 </div>
                             </td>
                         </tr>
@@ -257,7 +257,7 @@
             <div class="mom-card mt-6 border border-[rgba(197,160,89,0.25)] p-4">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <h4 class="mom-micro">{{ __('Delivery detail (debug)') }}</h4>
-                    <button type="button" wire:click="$set('inspectDeliveryId', null)" class="mom-cta-ghost !px-3 !py-2 !text-[11px]">{{ __('Close') }}</button>
+                    <button type="button" wire:click="$set('inspectDeliveryId', null)" class="mom-cta-ghost mom-cta-compact">{{ __('Close') }}</button>
                 </div>
                 <p class="mom-subtext mt-2">{{ __('Request payload') }}</p>
                 <pre class="mt-1 max-h-48 overflow-auto whitespace-pre-wrap rounded-mom-chrome bg-[rgba(10,15,28,0.85)] p-3 font-mono text-[11px] text-[var(--text-secondary)]">{{ $inspectedDelivery->request_payload ?? '—' }}</pre>

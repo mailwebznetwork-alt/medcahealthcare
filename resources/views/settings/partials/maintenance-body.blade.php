@@ -26,7 +26,7 @@
                 @disabled(! $operationsConfigured || ! $maintenanceSecretConfigured)
             >
         </label>
-        <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]" @disabled(! $operationsConfigured || ! $maintenanceSecretConfigured)>{{ __('Put site in maintenance') }}</button>
+        <button type="submit" class="mom-cta-primary mom-cta-compact" @disabled(! $operationsConfigured || ! $maintenanceSecretConfigured)>{{ __('Put site in maintenance') }}</button>
     </form>
 
     <form method="post" action="{{ route('settings.system.maintenance') }}" class="mt-8 space-y-3 border-t border-[var(--border-panel-soft)] pt-6">
@@ -42,6 +42,6 @@
                 @disabled(! $operationsConfigured)
             >
         </label>
-        <button type="submit" class="mom-cta-ghost !px-3 !py-2 !text-[11px]" @disabled(! $operationsConfigured)>{{ __('Bring site live') }}</button>
+        <button type="submit" class="mom-cta-ghost mom-cta-compact" @disabled(! $operationsConfigured)>{{ __('Bring site live') }}</button>
     </form>
 </section>

@@ -8,6 +8,7 @@ use App\Models\Block;
 use App\Models\Service;
 use App\Services\Content\ContentRenderContext;
 use App\Services\Content\ServiceBindingRegistry;
+use App\Services\DynamicModules\DynamicModuleRenderer;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Blade;
 use Livewire\Livewire;
@@ -133,11 +134,15 @@ class ContentParser
 
         $class = config('modules.'.$key);
 
-        if (! is_string($class) || $class === '' || ! class_exists($class)) {
-            return '';
+        if (is_string($class) && $class !== '' && class_exists($class)) {
+            return Livewire::mount($class);
         }
 
-        return Livewire::mount($class);
+        try {
+            return app(DynamicModuleRenderer::class)->render($key);
+        } catch (\Throwable) {
+            return '';
+        }
     }
 
     /**

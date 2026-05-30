@@ -12,6 +12,7 @@ use App\Http\Controllers\ModuleSurfaceController;
 use App\Http\Controllers\Operations\JobPortal\ApplicationController;
 use App\Http\Controllers\Operations\JobPortal\JobPortalDashboardController;
 use App\Http\Controllers\Operations\JobPortal\VacancyController;
+use App\Http\Controllers\Operations\LegacyModuleFieldsController;
 use App\Http\Controllers\Operations\OperationsHubController;
 use App\Http\Controllers\Operations\PinCodes\PinCodeController;
 use App\Http\Controllers\Operations\PinCodes\PinCodeImportController;
@@ -23,6 +24,8 @@ use App\Http\Controllers\Public\ServicePublicController;
 use App\Http\Controllers\Settings\IntegrationController;
 use App\Http\Controllers\Settings\SystemOperationsController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\SiteArchitect\DynamicRecordController;
+use App\Http\Controllers\SiteArchitect\ModuleManagerController;
 use App\Http\Controllers\UserManagement\UserController;
 use App\Http\Controllers\WorkspaceSearchController;
 use App\Models\Blog;
@@ -177,11 +180,32 @@ Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:site_arc
         Route::view('/block-factory', 'site-architect.block-factory-shell')->name('block-factory.index');
 
         Route::view('/media', 'site-architect.media-library-shell')->name('media.index');
+
+        Route::prefix('modules')->name('modules.')->group(function () {
+            Route::get('/', [ModuleManagerController::class, 'index'])->name('index');
+            Route::get('/create', [ModuleManagerController::class, 'create'])->name('create');
+            Route::post('/', [ModuleManagerController::class, 'store'])->name('store');
+            Route::get('/{module}/edit', [ModuleManagerController::class, 'edit'])->name('edit');
+            Route::put('/{module}', [ModuleManagerController::class, 'update'])->name('update');
+            Route::delete('/{module}', [ModuleManagerController::class, 'destroy'])->name('destroy');
+
+            Route::prefix('{module}/records')->name('records.')->group(function () {
+                Route::get('/', [DynamicRecordController::class, 'index'])->name('index');
+                Route::get('/create', [DynamicRecordController::class, 'create'])->name('create');
+                Route::post('/', [DynamicRecordController::class, 'store'])->name('store');
+                Route::get('/{record}/edit', [DynamicRecordController::class, 'edit'])->name('edit');
+                Route::put('/{record}', [DynamicRecordController::class, 'update'])->name('update');
+                Route::delete('/{record}', [DynamicRecordController::class, 'destroy'])->name('destroy');
+            });
+        });
     });
 });
 
 Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:operations', 'role:manager,admin,super_admin'])->group(function () {
     Route::get('/operations', OperationsHubController::class)->name('modules.operations');
+
+    Route::put('operations/managed-modules/{module}/fields', [LegacyModuleFieldsController::class, 'update'])
+        ->name('operations.managed-modules.fields.update');
 
     Route::prefix('operations/job-portal')->name('operations.job-portal.')->group(function () {
         Route::get('/', function () {
@@ -333,6 +357,9 @@ Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:settings
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::get('/settings/integrations', [SettingsController::class, 'integrations'])->name('settings.integrations');
     Route::get('/settings/webhooks', [SettingsController::class, 'webhooks'])->name('settings.webhooks');
+    Route::get('/settings/appearance', [SettingsController::class, 'appearance'])->name('settings.appearance');
+    Route::post('/settings/appearance/preview/enable', [\App\Http\Controllers\ThemePreviewController::class, 'enable'])->name('settings.appearance.preview.enable');
+    Route::post('/settings/appearance/preview/disable', [\App\Http\Controllers\ThemePreviewController::class, 'disable'])->name('settings.appearance.preview.disable');
 });
 
 Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:settings', 'role:super_admin', 'backup.operator'])->group(function () {

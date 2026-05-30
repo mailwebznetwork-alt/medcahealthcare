@@ -1,0 +1,6 @@
+/**
+ * Medca public marketing shell — Vite entry (Phase 1 split).
+ */
+@import '../shared/tailwind.css';
+@import './tokens.css';
+@import './components.css';

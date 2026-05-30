@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Operations\JobPortal;
 use App\Enums\EmploymentType;
 use App\Enums\VacancyVisibility;
 use App\Enums\VacancyWorkflowStatus;
+use App\Http\Controllers\Concerns\InteractsWithLegacyManagedModules;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Operations\StoreVacancyRequest;
 use App\Http\Requests\Operations\UpdateVacancyRequest;
 use App\Models\Page;
 use App\Models\Vacancy;
+use App\Services\DynamicModules\LegacyManagedModuleRegistry;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -17,6 +19,8 @@ use Illuminate\View\View;
 
 class VacancyController extends Controller
 {
+    use InteractsWithLegacyManagedModules;
+
     public function __construct()
     {
         $this->authorizeResource(Vacancy::class, 'vacancy');
@@ -67,7 +71,10 @@ class VacancyController extends Controller
 
         $detailPages = $this->detailPagesForForm();
 
-        return view('operations.job-portal.vacancies.create', compact('vacancy', 'detailPages'));
+        return view('operations.job-portal.vacancies.create', array_merge(
+            compact('vacancy', 'detailPages'),
+            $this->legacyModuleContext(LegacyManagedModuleRegistry::JOB_PORTAL),
+        ));
     }
 
     public function store(StoreVacancyRequest $request): RedirectResponse
@@ -84,6 +91,8 @@ class VacancyController extends Controller
         $this->syncPublishedTimestamp($vacancy);
         $vacancy->save();
 
+        $this->persistLegacyCustomFields($request, LegacyManagedModuleRegistry::JOB_PORTAL, $vacancy);
+
         return redirect()
             ->route('operations.job-portal.vacancies.edit', $vacancy)
             ->with('status', 'vacancy-created');
@@ -98,7 +107,10 @@ class VacancyController extends Controller
     {
         $detailPages = $this->detailPagesForForm();
 
-        return view('operations.job-portal.vacancies.edit', compact('vacancy', 'detailPages'));
+        return view('operations.job-portal.vacancies.edit', array_merge(
+            compact('vacancy', 'detailPages'),
+            $this->legacyModuleContext(LegacyManagedModuleRegistry::JOB_PORTAL, $vacancy),
+        ));
     }
 
     public function update(UpdateVacancyRequest $request, Vacancy $vacancy): RedirectResponse
@@ -108,6 +120,8 @@ class VacancyController extends Controller
         $vacancy->fill($data);
         $this->syncPublishedTimestamp($vacancy);
         $vacancy->save();
+
+        $this->persistLegacyCustomFields($request, LegacyManagedModuleRegistry::JOB_PORTAL, $vacancy);
 
         return redirect()
             ->route('operations.job-portal.vacancies.edit', $vacancy)

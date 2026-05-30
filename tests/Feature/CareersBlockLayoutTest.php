@@ -132,6 +132,34 @@ it('includes the apply form partial when referenced from a job detail block', fu
         ->assertSee(route('careers.apply', ['slug' => $vacancy->slug]), false);
 });
 
+it('aligns careers hub listing with the site content shell width', function () {
+    Block::query()->updateOrCreate(
+        ['block_slug' => 'careers-open-roles'],
+        [
+            'block_name' => 'Careers open roles',
+            'code' => "@include('careers.partials.open-roles-listing', ['vacancies' => \$vacancies ?? collect()])",
+            'is_active' => true,
+        ]
+    );
+
+    Page::query()->updateOrCreate(
+        ['slug' => 'careers'],
+        [
+            'title' => 'Careers',
+            'content' => '{{block:careers-open-roles}}',
+            'is_active' => true,
+            'layout_mode' => PageLayoutMode::Canvas,
+        ]
+    );
+
+    Vacancy::factory()->published()->create(['title' => 'Shell Width Role']);
+
+    $this->get('/careers')
+        ->assertSuccessful()
+        ->assertSee('max-w-6xl', false)
+        ->assertSee('Shell Width Role', false);
+});
+
 it('renders block code with empty vacancies when no page context is set', function () {
     $html = ContentParser::renderBlockCode(
         '<ul>@foreach($vacancies as $job)<li>{{ $job->title }}</li>@endforeach</ul>'

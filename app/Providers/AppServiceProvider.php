@@ -9,8 +9,11 @@ use App\Models\Competitor;
 use App\Models\CompetitorTracking;
 use App\Models\Lead;
 use App\Models\MarketingCampaign;
+use App\Models\ThemeConfiguration;
+use App\Policies\ThemeConfigurationPolicy;
 use App\Models\MarketingSetting;
 use App\Models\Media;
+use App\Models\Module;
 use App\Models\Page;
 use App\Models\PinCode;
 use App\Models\SeoEntity;
@@ -31,6 +34,7 @@ use App\Policies\LeadPolicy;
 use App\Policies\MarketingCampaignPolicy;
 use App\Policies\MarketingSettingPolicy;
 use App\Policies\MediaPolicy;
+use App\Policies\ModulePolicy;
 use App\Policies\PagePolicy;
 use App\Policies\PinCodePolicy;
 use App\Policies\ReviewPolicy;
@@ -103,8 +107,10 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Service::class, ServicePolicy::class);
         Gate::policy(Block::class, BlockPolicy::class);
         Gate::policy(Blog::class, BlogPolicy::class);
+        Gate::policy(Module::class, ModulePolicy::class);
         Gate::policy(Media::class, MediaPolicy::class);
         Gate::policy(Page::class, PagePolicy::class);
+        Gate::policy(ThemeConfiguration::class, ThemeConfigurationPolicy::class);
         Gate::policy(MarketingSetting::class, MarketingSettingPolicy::class);
         Gate::policy(MarketingCampaign::class, MarketingCampaignPolicy::class);
         Gate::policy(Lead::class, LeadPolicy::class);
@@ -154,6 +160,10 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer(['global.header', 'global.footer'], function ($view): void {
             $view->with('marketingSettings', MarketingSetting::current());
+
+            if (\Illuminate\Support\Facades\Schema::hasTable('theme_configurations')) {
+                $view->with('themeBranding', app(\App\Services\Theme\ThemeResolver::class)->branding());
+            }
         });
 
         Paginator::useTailwind();

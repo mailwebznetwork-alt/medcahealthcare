@@ -13,6 +13,7 @@ use App\Services\ActivityLogService;
 use App\Services\Growth\HijackContentBridgeService;
 use App\Services\Growth\HijackStrategyReader;
 use App\Services\Integrations\OutboundWebhookDispatcher;
+use App\Services\DynamicModules\DynamicModuleInsertCatalog;
 use App\Services\SiteArchitect\ServiceInsertCatalog;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -138,6 +139,8 @@ class Pages extends Component
 
     public string $service_choice = '';
 
+    public string $block_module_choice = '';
+
     public int $serviceCatalogNonce = 0;
 
     public function render()
@@ -150,7 +153,7 @@ class Pages extends Component
             ->orderBy('pincode')
             ->get(['id', 'pincode', 'area_name', 'city']);
 
-        $modules = collect(config('modules', []))->keys()->values()->all();
+        $moduleOptions = app(DynamicModuleInsertCatalog::class)->forDropdown();
 
         $servicesForInsert = $this->blockModalOpen
             ? app(ServiceInsertCatalog::class)->forDropdown()
@@ -178,7 +181,7 @@ class Pages extends Component
         return view('livewire.site-architect.pages', [
             'pages' => $pages,
             'pinCodes' => $pinCodes,
-            'modules' => $modules,
+            'moduleOptions' => $moduleOptions,
             'servicesForInsert' => $servicesForInsert,
             'serviceCatalogNonce' => $this->serviceCatalogNonce,
             'otherPagesForLinks' => $otherPagesForLinks,
@@ -867,13 +870,33 @@ class Pages extends Component
     public function appendModule(): void
     {
         $key = trim($this->module_choice);
-        if ($key === '' || ! array_key_exists($key, config('modules', []))) {
+        $catalog = app(DynamicModuleInsertCatalog::class);
+
+        if ($key === '' || ! $catalog->isValidKey($key)) {
             $this->addError('module_choice', __('Choose a module.'));
 
             return;
         }
         $this->contentParts[] = ['type' => 'module', 'slug' => $key];
         $this->module_choice = '';
+    }
+
+    public function appendModuleTokenToBlock(): void
+    {
+        $key = trim($this->block_module_choice);
+        $catalog = app(DynamicModuleInsertCatalog::class);
+
+        if ($key === '' || ! $catalog->isValidKey($key)) {
+            $this->addError('block_module_choice', __('Choose a module.'));
+
+            return;
+        }
+
+        $token = '{{module:'.$key.'}}';
+        $this->block_code = str_contains($this->block_code, $token)
+            ? $this->block_code
+            : ($this->block_code === '' ? $token : rtrim($this->block_code)."\n".$token);
+        $this->block_module_choice = '';
     }
 
     /**

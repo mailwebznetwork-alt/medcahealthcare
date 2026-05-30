@@ -71,7 +71,7 @@
                     <input type="checkbox" name="is_intercept_target" value="1" class="rounded border-[rgba(255,255,255,0.12)] bg-transparent text-[var(--success)]">
                     <span class="mom-micro">{{ __('Intercept target') }}</span>
                 </label>
-                <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Save') }}</button>
+                <button type="submit" class="mom-cta-primary mom-cta-compact">{{ __('Save') }}</button>
             </form>
         </article>
 
@@ -81,7 +81,7 @@
             <form method="post" action="{{ route('growth-center.competitors.bulk-store') }}" class="mt-4 space-y-3">
                 @csrf
                 <textarea name="bulk_competitors" rows="7" class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]" placeholder="Aster Labs|https://aster.example|yes&#10;Care Plus|https://careplus.example|no">{{ old('bulk_competitors') }}</textarea>
-                <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Bulk Save') }}</button>
+                <button type="submit" class="mom-cta-primary mom-cta-compact">{{ __('Bulk Save') }}</button>
             </form>
         </article>
     </section>
@@ -121,7 +121,7 @@
                         <input type="number" min="0" max="100" name="difficulty" class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]">
                     </label>
                 </div>
-                <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Save Keyword') }}</button>
+                <button type="submit" class="mom-cta-primary mom-cta-compact">{{ __('Save Keyword') }}</button>
             </form>
 
             <div class="mt-6 border-t border-[rgba(255,255,255,0.06)] pt-4">
@@ -143,7 +143,7 @@
                         class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]"
                         placeholder="portea arekere|brand|5400|61&#10;home blood test arekere|service|1900|34&#10;diagnostic center hulimavu|local|1300|28"
                     >{{ old('bulk_keywords') }}</textarea>
-                    <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Bulk Save Keywords') }}</button>
+                    <button type="submit" class="mom-cta-primary mom-cta-compact">{{ __('Bulk Save Keywords') }}</button>
                 </form>
             </div>
         </article>
@@ -184,7 +184,7 @@
                         <input type="date" name="recorded_date" class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]" required>
                     </label>
                 </div>
-                <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Save Tracking') }}</button>
+                <button type="submit" class="mom-cta-primary mom-cta-compact">{{ __('Save Tracking') }}</button>
             </form>
         </article>
 
@@ -223,7 +223,7 @@
                     <span class="mom-micro mb-1 block">{{ __('Details') }}</span>
                     <textarea name="details" rows="3" class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]"></textarea>
                 </label>
-                <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Save Lead') }}</button>
+                <button type="submit" class="mom-cta-primary mom-cta-compact">{{ __('Save Lead') }}</button>
             </form>
         </article>
     </section>
@@ -250,7 +250,7 @@
             @error('competitor_ids')
                 <p class="mom-subtext text-[var(--danger)]">{{ $message }}</p>
             @enderror
-            <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Run Comparison') }}</button>
+            <button type="submit" class="mom-cta-primary mom-cta-compact">{{ __('Run Comparison') }}</button>
         </form>
     </section>
 
@@ -337,7 +337,7 @@
                                     @method('delete')
                                     <button
                                         type="submit"
-                                        class="mom-cta-ghost !px-3 !py-2 !text-[11px] text-[var(--danger)]"
+                                        class="mom-cta-ghost mom-cta-compact text-[var(--danger)]"
                                         onclick="return confirm('Remove this competitor?')"
                                     >
                                         {{ __('Remove') }}

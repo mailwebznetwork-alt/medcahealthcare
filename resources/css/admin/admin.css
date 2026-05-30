@@ -1,0 +1,7 @@
+/**
+ * MarkOnMinds authenticated shell — Vite entry (Phase 1 split).
+ * Imports shared Tailwind, design tokens, and admin component utilities.
+ */
+@import '../shared/tailwind.css';
+@import '../markonminds.css';
+@import './components.css';

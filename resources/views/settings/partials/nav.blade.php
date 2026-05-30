@@ -21,6 +21,14 @@
             'border-transparent text-[var(--text-secondary)] hover:border-[var(--border-panel-soft)] hover:text-[var(--text-primary)]' => $active !== 'webhooks',
         ])
     >{{ __('Webhooks') }}</a>
+    <a
+        href="{{ route('settings.appearance') }}"
+        @class([
+            'inline-flex items-center border-b px-5 py-3.5 text-sm font-semibold tracking-wide transition-colors duration-320 ease-premium',
+            'border-mom-gold text-mom-gold' => $active === 'appearance',
+            'border-transparent text-[var(--text-secondary)] hover:border-[var(--border-panel-soft)] hover:text-[var(--text-primary)]' => $active !== 'appearance',
+        ])
+    >{{ __('Appearance') }}</a>
     @if ($isBackupOperator)
         <a
             href="{{ route('settings.backup') }}"

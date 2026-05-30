@@ -10,17 +10,13 @@
     $tab = $activeTab ?? (string) request()->query('tab', 'competitors');
 @endphp
 
-<x-app-layout
+<x-admin.workspace
     :page-title="$resolvedPageTitle"
     :welcome-line="$resolvedWelcome"
 >
-    <div class="operations-workspace">
-        <div class="mom-backend-tabstrip">
-            @include('growth-center.partials.primary-tabs', ['activeTab' => $tab])
-        </div>
+    <x-slot:tabs>
+        @include('growth-center.partials.primary-tabs', ['activeTab' => $tab])
+    </x-slot:tabs>
 
-        <div class="mt-10">
-            {{ $slot }}
-        </div>
-    </div>
-</x-app-layout>
+    {{ $slot }}
+</x-admin.workspace>

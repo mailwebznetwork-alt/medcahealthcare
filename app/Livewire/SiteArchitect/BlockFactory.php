@@ -3,6 +3,7 @@
 namespace App\Livewire\SiteArchitect;
 
 use App\Models\Block;
+use App\Services\DynamicModules\DynamicModuleInsertCatalog;
 use App\Services\ContentParser;
 use App\Services\SiteArchitect\ServiceInsertCatalog;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -47,6 +48,8 @@ class BlockFactory extends Component
 
     public string $service_choice = '';
 
+    public string $module_choice = '';
+
     public int $serviceCatalogNonce = 0;
 
     public function mount(): void
@@ -67,11 +70,16 @@ class BlockFactory extends Component
             ? app(ServiceInsertCatalog::class)->forDropdown()
             : collect();
 
+        $moduleOptions = $this->mode === 'form'
+            ? app(DynamicModuleInsertCatalog::class)->forDropdown()
+            : [];
+
         return view('livewire.site-architect.block-factory', [
             'blocks' => $blocks,
             'typesByGroup' => $typesByGroup,
             'allowedTypes' => $allowedTypes,
             'services' => $services,
+            'moduleOptions' => $moduleOptions,
             'serviceCatalogNonce' => $this->serviceCatalogNonce,
         ]);
     }
@@ -103,6 +111,24 @@ class BlockFactory extends Component
             ? $this->code
             : ($this->code === '' ? $token : rtrim($this->code)."\n".$token);
         $this->service_choice = '';
+    }
+
+    public function appendModuleToken(): void
+    {
+        $key = trim($this->module_choice);
+        $catalog = app(DynamicModuleInsertCatalog::class);
+
+        if ($key === '' || ! $catalog->isValidKey($key)) {
+            $this->addError('module_choice', __('Choose a module.'));
+
+            return;
+        }
+
+        $token = '{{module:'.$key.'}}';
+        $this->code = str_contains($this->code, $token)
+            ? $this->code
+            : ($this->code === '' ? $token : rtrim($this->code)."\n".$token);
+        $this->module_choice = '';
     }
 
     public function startCreate(): void
@@ -214,6 +240,13 @@ class BlockFactory extends Component
     {
         $block = Block::query()->findOrFail($id);
         $this->authorize('delete', $block);
+
+        if ($block->is_managed) {
+            session()->flash('error', __('Managed blocks are Git-controlled and cannot be deleted. Run php artisan blocks:sync to restore from templates.'));
+
+            return;
+        }
+
         $block->delete();
 
         session()->flash('status', __('Block deleted.'));

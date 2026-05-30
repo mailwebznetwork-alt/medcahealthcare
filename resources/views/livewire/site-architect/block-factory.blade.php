@@ -5,6 +5,12 @@
         </div>
     @endif
 
+    @if (session('error'))
+        <div class="mom-card mb-6 border border-[rgba(226,92,92,0.28)] bg-[rgba(226,92,92,0.08)] px-4 py-3 text-sm text-[var(--danger)]" role="alert">
+            {{ session('error') }}
+        </div>
+    @endif
+
     @if ($mode === 'list')
         <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
             <h2 class="text-lg font-semibold text-[var(--text-primary)]">{{ __('Block Factory') }}</h2>
@@ -33,7 +39,12 @@
                 <tbody>
                     @forelse ($blocks as $block)
                         <tr wire:key="bf-row-{{ $block->id }}">
-                            <td class="px-4 py-3 font-medium text-[var(--text-primary)]">{{ $block->block_name }}</td>
+                            <td class="px-4 py-3 font-medium text-[var(--text-primary)]">
+                                {{ $block->block_name }}
+                                @if ($block->is_managed)
+                                    <span class="ml-2 rounded-full bg-[rgba(197,160,89,0.12)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-mom-gold">{{ __('Managed') }}</span>
+                                @endif
+                            </td>
                             <td class="px-4 py-3 font-mono text-xs text-[var(--text-muted)]">{{ $block->block_slug }}</td>
                             <td class="px-4 py-3 text-[var(--text-secondary)]">{{ $block->block_type ?? '—' }}</td>
                             <td class="px-4 py-3">
@@ -57,12 +68,14 @@
                                     x-data="{ code: {{ \Illuminate\Support\Js::from($block->code) }} }"
                                     @click="navigator.clipboard.writeText(code)"
                                 >{{ __('Copy code') }}</button>
-                                <button
-                                    type="button"
-                                    wire:click="deleteBlock({{ $block->id }})"
-                                    wire:confirm="{{ __('Delete this block? Any page or blog that still references this slug will show an empty slot until you change the token.') }}"
-                                    class="text-[var(--danger)] hover:underline"
-                                >{{ __('Delete') }}</button>
+                                @unless ($block->is_managed)
+                                    <button
+                                        type="button"
+                                        wire:click="deleteBlock({{ $block->id }})"
+                                        wire:confirm="{{ __('Delete this block? Any page or blog that still references this slug will show an empty slot until you change the token.') }}"
+                                        class="text-[var(--danger)] hover:underline"
+                                    >{{ __('Delete') }}</button>
+                                @endunless
                             </td>
                         </tr>
                     @empty
@@ -105,6 +118,11 @@
                             'services' => $services,
                             'serviceCatalogNonce' => $serviceCatalogNonce,
                             'showManageLink' => true,
+                        ])
+                        @include('livewire.site-architect.partials.module-insert-controls', [
+                            'moduleOptions' => $moduleOptions,
+                            'wireModel' => 'module_choice',
+                            'appendAction' => 'appendModuleToken',
                         ])
                         <div>
                             <label class="block text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">{{ __('Code (HTML / Blade)') }}</label>

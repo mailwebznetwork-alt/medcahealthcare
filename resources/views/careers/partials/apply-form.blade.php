@@ -33,7 +33,7 @@
     </div>
     <div>
         <x-input-label for="cover_message" :value="__('Message')" variant="public" />
-        <textarea id="cover_message" name="cover_message" rows="4" class="mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-[#0046ad] focus:ring-1 focus:ring-[#0046ad]">{{ old('cover_message') }}</textarea>
+        <textarea id="cover_message" name="cover_message" rows="4" class="mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-medca-primary focus:ring-1 focus:ring-medca-primary">{{ old('cover_message') }}</textarea>
     </div>
     <div>
         <x-input-label for="resume" :value="__('Resume (optional)')" variant="public" />
@@ -49,7 +49,7 @@
     </div>
     <input type="hidden" name="source" value="web" />
     <label class="flex items-start gap-2 text-[13px] text-slate-600">
-        <input type="checkbox" name="whatsapp_click" value="1" class="mt-1 h-4 w-4 rounded border-slate-300 text-[#0046ad] focus:ring-[#0046ad]" @checked(old('whatsapp_click')) />
+        <input type="checkbox" name="whatsapp_click" value="1" class="mt-1 h-4 w-4 rounded border-slate-300 text-medca-primary focus:ring-medca-primary" @checked(old('whatsapp_click')) />
         <span>{{ __('I reached this role through a WhatsApp link') }}</span>
     </label>
     <x-primary-button variant="public" type="submit">{{ __('Submit application') }}</x-primary-button>

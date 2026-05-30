@@ -31,6 +31,7 @@ class BlockFactory extends Factory
             'custom_css' => null,
             'schema_json' => null,
             'is_active' => true,
+            'is_managed' => false,
         ];
     }
 

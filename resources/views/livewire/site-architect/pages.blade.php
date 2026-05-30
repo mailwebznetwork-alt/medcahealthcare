@@ -132,14 +132,19 @@
                     <div class="flex flex-wrap items-center gap-2">
                         <select wire:model.live="module_choice" class="rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[var(--bg-card-matte)] px-3 py-2 text-sm text-[var(--text-primary)]">
                             <option value="">{{ __('Insert module…') }}</option>
-                            @foreach ($modules as $m)
-                                <option value="{{ $m }}">{{ $m }}</option>
+                            @foreach ($moduleOptions as $option)
+                                <option value="{{ $option['key'] }}">
+                                    {{ $option['label'] }}
+                                    @if ($option['source'] === 'dynamic')
+                                        ({{ __('Custom') }})
+                                    @endif
+                                </option>
                             @endforeach
                         </select>
                         <button type="button" wire:click="appendModule" wire:loading.attr="disabled" class="rounded-mom-chrome border border-[var(--border-panel-soft)] px-3 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-hover)] disabled:opacity-50">{{ __('Add module line') }}</button>
                     </div>
-                    @if (count($modules) === 0)
-                        <p class="mt-2 text-xs text-[var(--text-muted)]">{{ __('No modules registered in config/modules.php.') }}</p>
+                    @if (count($moduleOptions) === 0)
+                        <p class="mt-2 text-xs text-[var(--text-muted)]">{{ __('No modules yet. Create one in Module Builder or register Livewire modules in config/modules.php.') }}</p>
                     @else
                         <p class="mt-2 text-xs text-[var(--text-muted)]">{{ __('Pick a module from the list, then click Add module line.') }}</p>
                     @endif
@@ -203,7 +208,7 @@
                                             type="button"
                                             wire:click="applyHijackStrategy('{{ $entry['key'] }}')"
                                             wire:loading.attr="disabled"
-                                            class="mom-cta-primary !px-3 !py-2 !text-[11px]"
+                                            class="mom-cta-primary mom-cta-compact"
                                         >{{ __('Apply to page') }}</button>
                                         @if ($editingId)
                                             <button
@@ -555,6 +560,11 @@
                         'services' => $servicesForInsert,
                         'serviceCatalogNonce' => $serviceCatalogNonce,
                         'showManageLink' => true,
+                    ])
+                    @include('livewire.site-architect.partials.module-insert-controls', [
+                        'moduleOptions' => $moduleOptions,
+                        'wireModel' => 'block_module_choice',
+                        'appendAction' => 'appendModuleTokenToBlock',
                     ])
                     <div>
                         <label class="block text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">{{ __('Code (HTML / Blade / Alpine)') }}</label>

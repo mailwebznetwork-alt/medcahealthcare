@@ -3,67 +3,9 @@
     $sectionTitle = $sectionTitle ?? null;
 @endphp
 
-<style>
-    .medca-svc-grid-section {
-        width: 100%;
-        padding: 2.5rem 1rem 3rem;
-        background: #f1f5f9;
-    }
-    .medca-svc-grid-wrap { max-width: 72rem; margin: 0 auto; }
-    .medca-svc-grid-section h2 {
-        margin: 0 0 1.25rem;
-        font-size: clamp(1.35rem, 3vw, 1.75rem);
-        font-weight: 700;
-        color: #001f5c;
-        text-align: center;
-    }
-    .medca-svc-grid {
-        display: grid;
-        gap: 1.25rem;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    @media (min-width: 640px) { .medca-svc-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (min-width: 1024px) { .medca-svc-grid { grid-template-columns: repeat(3, 1fr); } }
-    .medca-svc-grid-card {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        background: #fff;
-        border-radius: 1rem;
-        padding: 1.5rem;
-        border: 1px solid #e2e8f0;
-        text-decoration: none;
-        color: inherit;
-        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .medca-svc-grid-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 28px rgba(0, 31, 92, 0.12);
-    }
-    .medca-svc-grid-card h3 { margin: 0; font-size: 1.1rem; font-weight: 600; color: #0f172a; }
-    .medca-svc-grid-card p {
-        margin: 0.65rem 0 0;
-        flex: 1;
-        font-size: 0.9rem;
-        line-height: 1.55;
-        color: #475569;
-    }
-    .medca-svc-grid-card .link {
-        margin-top: 1rem;
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: #0046ad;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-    .medca-svc-grid-empty { text-align: center; color: #64748b; }
-</style>
-
-<section class="medca-svc-grid-section" data-layout="services-grid">
-    <div class="medca-svc-grid-wrap">
+<x-public.full-bleed class="bg-slate-100 py-10 md:py-12" data-layout="services-grid">
+    <x-public.content-shell>
+        <div class="medca-svc-grid-section">
         @if (filled($sectionTitle))
             <h2>{{ $sectionTitle }}</h2>
         @endif
@@ -85,5 +27,6 @@
                 @endforeach
             </ul>
         @endif
-    </div>
-</section>
+        </div>
+    </x-public.content-shell>
+</x-public.full-bleed>

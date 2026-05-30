@@ -5,6 +5,7 @@ namespace App\Livewire\SiteArchitect;
 use App\Models\Block;
 use App\Models\Blog;
 use App\Models\Page;
+use App\Services\DynamicModules\DynamicModuleInsertCatalog;
 use App\Services\Integrations\OutboundWebhookDispatcher;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -95,7 +96,7 @@ class Blogs extends Component
     {
         $blogs = Blog::query()->latest()->paginate(12);
 
-        $modules = collect(config('modules', []))->keys()->values()->all();
+        $moduleOptions = app(DynamicModuleInsertCatalog::class)->forDropdown();
 
         $blockNameMap = [];
         if ($this->mode === 'form' && $this->contentParts !== []) {
@@ -112,7 +113,7 @@ class Blogs extends Component
 
         return view('livewire.site-architect.blogs', [
             'blogs' => $blogs,
-            'modules' => $modules,
+            'moduleOptions' => $moduleOptions,
             'blockNameMap' => $blockNameMap,
         ]);
     }
@@ -448,7 +449,9 @@ class Blogs extends Component
     public function appendModule(): void
     {
         $key = trim($this->module_choice);
-        if ($key === '' || ! array_key_exists($key, config('modules', []))) {
+        $catalog = app(DynamicModuleInsertCatalog::class);
+
+        if ($key === '' || ! $catalog->isValidKey($key)) {
             $this->addError('module_choice', __('Choose a module.'));
 
             return;

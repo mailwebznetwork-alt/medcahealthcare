@@ -17,7 +17,7 @@
                 @endforeach
             </select>
         </label>
-        <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]" @disabled(count($availableIntegrations) === 0)>
+        <button type="submit" class="mom-cta-primary mom-cta-compact" @disabled(count($availableIntegrations) === 0)>
             {{ __('Add Integration') }}
         </button>
     </form>
@@ -56,7 +56,7 @@
                         <td class="px-4 py-3">
                             <div class="flex flex-wrap gap-2">
                                 <details class="inline-block">
-                                    <summary class="mom-cta-primary cursor-pointer !px-3 !py-2 !text-[11px]">{{ __('Configure') }}</summary>
+                                    <summary class="mom-cta-primary cursor-pointer mom-cta-compact">{{ __('Configure') }}</summary>
                                     <div class="mt-3 w-[28rem] rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[rgba(10,15,28,0.92)] p-4">
                                         <form method="post" action="{{ route('admin.settings.integrations.update', $integration->name) }}" class="space-y-3">
                                             @csrf
@@ -73,7 +73,7 @@
                                                     >
                                                 </label>
                                             @endforeach
-                                            <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Save') }}</button>
+                                            <button type="submit" class="mom-cta-primary mom-cta-compact">{{ __('Save') }}</button>
                                         </form>
 
                                         @if (!empty($definition['multi_account']) && $integration->name === 'whatsapp_business')
@@ -85,7 +85,7 @@
                                                     <input name="credentials[phone_number_id]" placeholder="{{ __('Phone number ID') }}" class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]">
                                                     <input name="credentials[access_token]" type="password" placeholder="{{ __('Access token') }}" class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]">
                                                     <input name="credentials[webhook_verify_token]" type="password" placeholder="{{ __('Webhook verify token') }}" class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]">
-                                                    <button type="submit" class="mom-cta-ghost !px-3 !py-2 !text-[11px]" @disabled($hasIntegrationAccountsTable && $integration->accounts->count() >= 5)>{{ __('Add WhatsApp Number') }}</button>
+                                                    <button type="submit" class="mom-cta-ghost mom-cta-compact" @disabled($hasIntegrationAccountsTable && $integration->accounts->count() >= 5)>{{ __('Add WhatsApp Number') }}</button>
                                                 </form>
                                                 <ul class="mt-3 space-y-1 text-xs">
                                                     @if (! $hasIntegrationAccountsTable)
@@ -102,16 +102,16 @@
                                 <form method="post" action="{{ route('admin.settings.integrations.toggle', $integration->name) }}">
                                     @csrf
                                     @method('patch')
-                                    <button type="submit" class="mom-cta-ghost !px-3 !py-2 !text-[11px]">{{ $integration->is_enabled ? __('Disable') : __('Enable') }}</button>
+                                    <button type="submit" class="mom-cta-ghost mom-cta-compact">{{ $integration->is_enabled ? __('Disable') : __('Enable') }}</button>
                                 </form>
                                 <form method="post" action="{{ route('admin.settings.integrations.test', $integration->name) }}">
                                     @csrf
-                                    <button type="submit" class="mom-cta-ghost !px-3 !py-2 !text-[11px]">{{ __('Test') }}</button>
+                                    <button type="submit" class="mom-cta-ghost mom-cta-compact">{{ __('Test') }}</button>
                                 </form>
                                 <form method="post" action="{{ route('admin.settings.integrations.destroy', $integration->name) }}" onsubmit="return confirm('{{ __('Delete this integration?') }}')">
                                     @csrf
                                     @method('delete')
-                                    <button type="submit" class="mom-cta-ghost !px-3 !py-2 !text-[11px]">{{ __('Delete') }}</button>
+                                    <button type="submit" class="mom-cta-ghost mom-cta-compact">{{ __('Delete') }}</button>
                                 </form>
                             </div>
                         </td>
@@ -134,7 +134,7 @@
         </div>
         <form method="post" action="{{ route('admin.settings.integrations.google-business-profile.sync-reviews') }}">
             @csrf
-            <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Sync Google reviews') }}</button>
+            <button type="submit" class="mom-cta-primary mom-cta-compact">{{ __('Sync Google reviews') }}</button>
         </form>
     </div>
     <div class="mt-4 overflow-x-auto">

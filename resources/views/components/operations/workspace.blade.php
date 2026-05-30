@@ -17,34 +17,28 @@
         request()->routeIs('operations.bookings.*') => __('Lead intake and conversion — simple queues, no CRM overhead.'),
         default => __('Run-state, hiring, coverage, and operational management workspace.'),
     };
+    $showToolbar = request()->routeIs('operations.job-portal.*', 'operations.pin-codes.*', 'operations.services.*');
 @endphp
 
-<x-app-layout
+<x-admin.workspace
     :page-title="$resolvedPageTitle"
     :welcome-line="$resolvedWelcome"
 >
-    <div class="operations-workspace">
-        <div class="mom-backend-tabstrip">
-            @include('operations.partials.primary-tabs')
-        </div>
+    <x-slot:tabs>
+        @include('operations.partials.primary-tabs')
+    </x-slot:tabs>
 
-        @if (request()->routeIs('operations.job-portal.*', 'operations.pin-codes.*', 'operations.services.*'))
-            <div
-                class="mom-backend-toolbar-row mom-sticky-toolbar sticky top-[72px] z-20 -mx-8 px-8 py-3.5"
-            >
-                @if (request()->routeIs('operations.job-portal.*'))
-                    @include('operations.job-portal.partials.toolbar')
-                @elseif (request()->routeIs('operations.pin-codes.*'))
-                    @include('operations.pin-codes.partials.toolbar')
-                @else
-                    @include('operations.services.partials.toolbar')
-                @endif
-            </div>
-        @endif
+    @if ($showToolbar)
+        <x-slot:toolbar>
+            @if (request()->routeIs('operations.job-portal.*'))
+                @include('operations.job-portal.partials.toolbar')
+            @elseif (request()->routeIs('operations.pin-codes.*'))
+                @include('operations.pin-codes.partials.toolbar')
+            @else
+                @include('operations.services.partials.toolbar')
+            @endif
+        </x-slot:toolbar>
+    @endif
 
-        {{-- Secondary tabs partial kept: operations.partials.secondary-tabs --}}
-        <div @class(['mt-10' => ! request()->routeIs('operations.job-portal.*', 'operations.pin-codes.*', 'operations.services.*'), 'mt-8' => request()->routeIs('operations.job-portal.*', 'operations.pin-codes.*', 'operations.services.*')])>
-            {{ $slot }}
-        </div>
-    </div>
-</x-app-layout>
+    {{ $slot }}
+</x-admin.workspace>

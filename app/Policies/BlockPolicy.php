@@ -30,6 +30,15 @@ class BlockPolicy
 
     public function delete(User $user, Block $block): bool
     {
+        if ($block->is_managed) {
+            return false;
+        }
+
         return $user->hasModuleAccess(ModuleAccess::SITE_ARCHITECT);
+    }
+
+    public function forceDelete(User $user, Block $block): bool
+    {
+        return false;
     }
 }

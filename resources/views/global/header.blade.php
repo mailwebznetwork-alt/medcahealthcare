@@ -1,23 +1,30 @@
 @php
-    $logoSrc = asset('images/medca-logo.png');
+    $themeResolver = app(\App\Services\Theme\ThemeResolver::class);
+    $themeBranding = $themeResolver->branding();
+    $themeRepo = app(\App\Services\Theme\ThemeConfigRepository::class);
+    $logoSrc = $themeRepo->assetUrl($themeBranding['logo_path'] ?? null) ?: asset('images/medca-logo.png');
+    $brandName = $themeBranding['brand_name'] ?? config('medca.brand_name');
+    $brandTagline = $themeBranding['tagline'] ?? config('medca.tagline');
     $isSuperAdmin = auth()->check() && strtolower((string) auth()->user()?->role) === 'super_admin';
     $navItems = app(\App\Services\SiteNavigationResolver::class)->headerLinks();
-    $medcaPhoneTel = preg_replace('/\s+/', '', (string) config('medca.phone_tel'));
-    $medcaWhatsAppUrl = (string) config('medca.whatsapp_url');
+    $medcaPhoneTel = preg_replace('/\s+/', '', (string) ($themeBranding['phone_tel'] ?? config('medca.phone_tel')));
+    $medcaWhatsAppUrl = (string) ($themeBranding['whatsapp_url'] ?? config('medca.whatsapp_url'));
+    $headerPresetClass = $themeResolver->headerPresetClass();
+    $layoutShellClass = $themeResolver->layoutShellClass();
 
     $medcaGmbUrl = trim((string) config('medca.public_profile_url', ''));
     $medcaGmbValid = $medcaGmbUrl !== '' && filter_var($medcaGmbUrl, FILTER_VALIDATE_URL);
 
     $navLinkBase = 'inline-flex items-center py-2 text-xs font-medium uppercase tracking-[0.06em] transition-colors duration-200 md:text-sm focus-visible:outline-none';
-    $navLinkDefault = 'text-[#0046ad] hover:text-[#001e5c] focus-visible:text-[#001e5c]';
+    $navLinkDefault = 'text-medca-primary hover:text-medca-primary-hover focus-visible:text-medca-primary-hover';
     $navLinkActive = 'text-[#581c87] hover:text-[#3b0764] focus-visible:text-[#3b0764]';
-    $navDrawerTriggerClass = 'inline-flex items-center justify-center rounded-lg border border-clinical-200 bg-white p-2 text-[#0046ad] shadow-sm transition-colors duration-200 hover:border-clinical-300 hover:bg-clinical-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-clinical-500/40';
+    $navDrawerTriggerClass = 'inline-flex items-center justify-center rounded-lg border border-clinical-200 bg-white p-2 text-medca-primary shadow-sm transition-colors duration-200 hover:border-clinical-300 hover:bg-clinical-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-clinical-500/40';
 @endphp
 
 {{-- Sticky stack: slim topbar (~32–36px) + navbar row (~78–90px min). Approximate total px: config('medca.marketing_sticky_header_approx_px'). --}}
-<header class="sticky top-0 z-40 w-full font-sans">
-    <div class="w-full border-b border-[#001433] bg-[#001f5c]">
-        <div class="mx-auto flex h-9 min-h-[32px] max-w-6xl items-center justify-between gap-3 px-4 md:px-6 lg:px-8">
+<header class="sticky top-0 z-40 w-full font-sans {{ $headerPresetClass }}">
+    <div class="w-full border-b border-medca-navy-border bg-medca-navy">
+        <div @class(['mx-auto flex h-9 min-h-[32px] items-center justify-between gap-3 px-4 md:px-6 lg:px-8', $layoutShellClass])>
             <p class="min-w-0 flex-1 truncate text-left text-[11px] font-medium leading-none tracking-wide text-white md:text-xs">{{ config('medca.top_bar_claim') }}</p>
             <div class="flex shrink-0 items-center justify-end">
                 @if ($medcaGmbValid)
@@ -48,13 +55,13 @@
     </div>
 
     <div class="w-full border-b border-slate-200 bg-white shadow-sm">
-        <div class="mx-auto flex min-h-[78px] max-w-6xl items-center justify-between gap-4 px-4 md:min-h-[84px] md:gap-6 md:px-6 lg:min-h-[86px] lg:gap-8 lg:px-8">
+        <div @class(['mx-auto flex min-h-[78px] items-center justify-between gap-4 px-4 md:min-h-[84px] md:gap-6 md:px-6 lg:min-h-[86px] lg:gap-8 lg:px-8', $layoutShellClass])>
             {{-- Brand & Logo --}}
-            <a href="{{ url('/') }}" class="inline-flex min-w-0 max-w-[min(100%,78vw)] items-center gap-2 text-sm md:max-w-none md:gap-2.5 md:text-base text-[#0046ad] focus:outline-none focus-visible:ring-2 focus-visible:ring-clinical-500/30" aria-label="{{ config('medca.brand_name') }} — {{ config('medca.tagline') }} — {{ __('Home') }}">
+            <a href="{{ url('/') }}" class="inline-flex min-w-0 max-w-[min(100%,78vw)] items-center gap-2 text-sm md:max-w-none md:gap-2.5 md:text-base text-medca-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-clinical-500/30" aria-label="{{ $brandName }} — {{ $brandTagline }} — {{ __('Home') }}">
                 @if($logoSrc !== '')
                     <img
                         src="{{ $logoSrc }}"
-                        alt="{{ config('medca.brand_name') }}"
+                        alt="{{ $brandName }}"
                         class="h-7 w-auto shrink-0 object-contain md:h-8"
                     />
                 @else
@@ -66,8 +73,8 @@
                 @endif
 
                 <div class="flex min-w-0 flex-col justify-center border-l border-slate-200 pl-2 sm:pl-2.5">
-                    <span class="min-w-0 truncate text-[170%] font-semibold leading-tight tracking-tight text-[#0046ad]">{{ config('medca.brand_name', 'Medca Health Care') }}</span>
-                    <span class="mt-0.5 min-w-0 truncate text-[0.625rem] font-bold uppercase leading-none tracking-[0.18em] text-[#0046ad] md:text-[0.6875rem]">{{ config('medca.tagline') }}</span>
+                    <span class="min-w-0 truncate text-[170%] font-semibold leading-tight tracking-tight text-medca-primary">{{ config('medca.brand_name', 'Medca Health Care') }}</span>
+                    <span class="mt-0.5 min-w-0 truncate text-[0.625rem] font-bold uppercase leading-none tracking-[0.18em] text-medca-primary md:text-[0.6875rem]">{{ config('medca.tagline') }}</span>
                 </div>
             </a>
 
@@ -170,7 +177,7 @@
                                         href="{{ $item['href'] }}"
                                         x-on:click="open = false"
                                         @if ($drawerCurrent) aria-current="page" @endif
-                                        class="flex min-h-[60px] items-center border-b border-slate-100 px-1 text-sm font-medium uppercase tracking-[0.05em] transition-colors duration-200 hover:bg-slate-50 focus-visible:outline-none {{ $drawerCurrent ? $navLinkActive : 'text-[#0046ad] hover:text-[#001e5c]' }}"
+                                        class="flex min-h-[60px] items-center border-b border-slate-100 px-1 text-sm font-medium uppercase tracking-[0.05em] transition-colors duration-200 hover:bg-slate-50 focus-visible:outline-none {{ $drawerCurrent ? $navLinkActive : 'text-medca-primary hover:text-medca-primary-hover' }}"
                                     >
                                         {{ $item['label'] }}
                                     </a>

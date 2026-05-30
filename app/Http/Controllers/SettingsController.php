@@ -34,6 +34,11 @@ class SettingsController extends Controller
         return view('settings.webhooks');
     }
 
+    public function appearance(): View
+    {
+        return view('settings.appearance');
+    }
+
     public function backup(): View
     {
         return view('settings.backup', $this->settingsPayload());

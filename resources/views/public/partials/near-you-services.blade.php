@@ -5,11 +5,11 @@
     $locationRequired = (bool) ($locationRequired ?? false);
 @endphp
 
-<section class="border-t border-slate-200 bg-white py-10" data-section="near-you">
-    <div class="mx-auto max-w-6xl px-4 md:px-6">
+<x-public.full-bleed class="border-t border-slate-200 bg-white py-10 md:py-12" data-section="near-you">
+    <x-public.content-shell>
         <div class="flex flex-wrap items-end justify-between gap-4">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-widest text-[#0046ad]">{{ __('Near You') }}</p>
+                <p class="text-xs font-semibold uppercase tracking-widest text-medca-primary">{{ __('Near You') }}</p>
                 <h2 class="mt-2 text-2xl font-semibold text-slate-900">
                     @if ($pincode)
                         {{ __('Services in :area', ['area' => $pinCodeRecord?->area_name ?: $pincode]) }}
@@ -24,7 +24,7 @@
             <button
                 type="button"
                 onclick="window.dispatchEvent(new CustomEvent('open-pincode-modal'))"
-                class="text-sm font-semibold text-[#0046ad] underline underline-offset-2"
+                class="text-sm font-semibold text-medca-primary underline underline-offset-2"
             >{{ $pincode ? __('Change pincode') : __('Set pincode') }}</button>
         </div>
 
@@ -38,7 +38,7 @@
             <ul class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($services as $service)
                     <li>
-                        <a href="{{ route('public.services.show', $service->service_code) }}" class="block h-full rounded-xl border border-slate-200 bg-slate-50 p-5 shadow-sm transition hover:border-[#0046ad]/30 hover:shadow-md">
+                        <a href="{{ route('public.services.show', $service->service_code) }}" class="block h-full rounded-xl border border-slate-200 bg-slate-50 p-5 shadow-sm transition hover:border-medca-primary/30 hover:shadow-md">
                             <h3 class="text-base font-semibold text-slate-900">{{ $service->title }}</h3>
                             @if (filled($service->short_summary))
                                 <p class="mt-2 text-sm text-slate-600">{{ \Illuminate\Support\Str::limit(strip_tags($service->short_summary), 120) }}</p>
@@ -48,5 +48,5 @@
                 @endforeach
             </ul>
         @endif
-    </div>
-</section>
+    </x-public.content-shell>
+</x-public.full-bleed>

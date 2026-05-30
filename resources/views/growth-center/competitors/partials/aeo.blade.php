@@ -20,7 +20,7 @@
                 <input type="number" min="0" max="100" name="entity_consistency_score" value="{{ old('entity_consistency_score', $seoAiSignal?->entity_consistency_score ?? 0) }}" class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]" required>
             </label>
         </div>
-        <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Save AEO signals') }}</button>
+        <button type="submit" class="mom-cta-primary mom-cta-compact">{{ __('Save AEO signals') }}</button>
     </form>
 
     <div class="mom-subtext mt-6 rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.45)] p-4">

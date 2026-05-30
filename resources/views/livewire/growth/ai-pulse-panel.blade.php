@@ -19,8 +19,8 @@
             {{ __('Last scan:') }} <span class="text-[var(--text-primary)]">{{ $snapshot['scanned_at'] ?? '—' }}</span>
         </p>
         <div class="flex flex-wrap gap-2">
-            <button type="button" wire:click="refreshSnapshot" class="mom-cta-ghost !px-3 !py-2 !text-[11px]">{{ __('Refresh snapshot') }}</button>
-            <button type="button" wire:click="runDeepScan" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Run deep scan') }}</button>
+            <button type="button" wire:click="refreshSnapshot" class="mom-cta-ghost mom-cta-compact">{{ __('Refresh snapshot') }}</button>
+            <button type="button" wire:click="runDeepScan" class="mom-cta-primary mom-cta-compact">{{ __('Run deep scan') }}</button>
         </div>
     </div>
 

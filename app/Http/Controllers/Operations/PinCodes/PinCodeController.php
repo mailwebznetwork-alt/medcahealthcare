@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Operations\PinCodes;
 
+use App\Http\Controllers\Concerns\InteractsWithLegacyManagedModules;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Operations\PinCodes\StorePinCodeRequest;
 use App\Http\Requests\Operations\PinCodes\UpdatePinCodeRequest;
 use App\Models\PinCode;
 use App\Models\PinCodeImportLog;
+use App\Services\DynamicModules\LegacyManagedModuleRegistry;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -15,6 +17,8 @@ use Illuminate\View\View;
 
 class PinCodeController extends Controller
 {
+    use InteractsWithLegacyManagedModules;
+
     public function overview(): View
     {
         $this->authorize('viewAny', PinCode::class);
@@ -66,7 +70,10 @@ class PinCodeController extends Controller
             'geo_page_ready' => false,
         ]);
 
-        return view('operations.pin-codes.create', compact('pinCode'));
+        return view('operations.pin-codes.create', array_merge(
+            compact('pinCode'),
+            $this->legacyModuleContext(LegacyManagedModuleRegistry::PIN_CODES),
+        ));
     }
 
     public function store(StorePinCodeRequest $request): RedirectResponse
@@ -76,7 +83,9 @@ class PinCodeController extends Controller
             $data['slug'] = null;
         }
 
-        PinCode::query()->create($data);
+        $pinCode = PinCode::query()->create($data);
+
+        $this->persistLegacyCustomFields($request, LegacyManagedModuleRegistry::PIN_CODES, $pinCode);
 
         return redirect()->route('operations.pin-codes.directory')->with('status', 'pin-code-created');
     }
@@ -85,7 +94,10 @@ class PinCodeController extends Controller
     {
         $this->authorize('update', $pin_code);
 
-        return view('operations.pin-codes.edit', ['pinCode' => $pin_code]);
+        return view('operations.pin-codes.edit', array_merge(
+            ['pinCode' => $pin_code],
+            $this->legacyModuleContext(LegacyManagedModuleRegistry::PIN_CODES, $pin_code),
+        ));
     }
 
     public function update(UpdatePinCodeRequest $request, PinCode $pin_code): RedirectResponse
@@ -96,6 +108,8 @@ class PinCodeController extends Controller
         }
 
         $pin_code->update($data);
+
+        $this->persistLegacyCustomFields($request, LegacyManagedModuleRegistry::PIN_CODES, $pin_code);
 
         return redirect()->route('operations.pin-codes.directory')->with('status', 'pin-code-updated');
     }

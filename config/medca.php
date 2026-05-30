@@ -13,6 +13,9 @@ return [
 
     'top_bar_claim' => '#1 Home Healthcare in Bengaluru',
 
+    /** PWA / mobile browser chrome — matches --medca-navy in public/tokens.css */
+    'theme_color' => env('MEDCA_THEME_COLOR', '#001f5c'),
+
     /**
      * Approximate total height (px) of the sticky public marketing header (strip + brand row).
      * Documentation only unless you wire it (e.g. inline scroll-margin); CSS height remains content-driven.

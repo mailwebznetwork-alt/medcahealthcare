@@ -8,17 +8,13 @@
     $resolvedWelcome = $welcomeLine ?? __('Structure-only content, reusable blocks, PIN-code GEO.');
 @endphp
 
-<x-app-layout
+<x-admin.workspace
     :page-title="$resolvedPageTitle"
     :welcome-line="$resolvedWelcome"
 >
-    <div class="operations-workspace">
-        <div class="mom-backend-tabstrip">
-            @include('site-architect.partials.primary-tabs')
-        </div>
+    <x-slot:tabs>
+        @include('site-architect.partials.primary-tabs')
+    </x-slot:tabs>
 
-        <div class="mt-10">
-            {{ $slot }}
-        </div>
-    </div>
-</x-app-layout>
+    {{ $slot }}
+</x-admin.workspace>

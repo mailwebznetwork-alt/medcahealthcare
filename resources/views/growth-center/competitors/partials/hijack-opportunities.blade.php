@@ -32,7 +32,7 @@
                     <input type="date" name="recorded_date" value="{{ now()->toDateString() }}" class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]" required>
                 </label>
             </div>
-            <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Save Our Ranking') }}</button>
+            <button type="submit" class="mom-cta-primary mom-cta-compact">{{ __('Save Our Ranking') }}</button>
         </form>
     </article>
 
@@ -43,7 +43,7 @@
         </p>
         @if ($seoEntity && ($hijackStrategies ?? []) !== [])
             <p class="mom-micro mt-4 text-mom-gold">{{ __(':count strategy bundle(s) ready', ['count' => count($hijackStrategies ?? [])]) }}</p>
-            <a href="{{ route('site-architect.pages.index') }}" class="mom-cta-primary mt-4 inline-block !px-3 !py-2 !text-[11px] no-underline">
+            <a href="{{ route('site-architect.pages.index') }}" class="mom-cta-primary mt-4 inline-block mom-cta-compact no-underline">
                 {{ __('Open Site Architect') }}
             </a>
         @else

@@ -28,6 +28,7 @@ use Illuminate\Support\Str;
     'business_profile_id',
     'landing_page',
     'priority',
+    'custom_fields',
 ])]
 class PinCode extends Model
 {
@@ -44,6 +45,7 @@ class PinCode extends Model
             'is_active' => 'boolean',
             'geo_page_ready' => 'boolean',
             'delivery_charge' => 'decimal:2',
+            'custom_fields' => 'array',
         ];
     }
 

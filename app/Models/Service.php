@@ -37,6 +37,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
     'publish_status',
     'visibility',
     'sort_order',
+    'custom_fields',
 ])]
 class Service extends Model
 {
@@ -137,6 +138,7 @@ class Service extends Model
             'visibility' => ServiceVisibility::class,
             'sort_order' => 'integer',
             'detail_page_id' => 'integer',
+            'custom_fields' => 'array',
         ];
     }
 

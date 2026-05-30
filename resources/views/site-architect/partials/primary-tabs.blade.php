@@ -3,6 +3,7 @@
     $blogsActive = request()->routeIs('site-architect.blogs.*');
     $blockFactoryActive = request()->routeIs('site-architect.block-factory.*');
     $mediaActive = request()->routeIs('site-architect.media.*');
+    $modulesActive = request()->routeIs('site-architect.modules.*');
     $navigationActive = request()->routeIs('site-architect.navigation.*');
 @endphp
 
@@ -47,4 +48,12 @@
             'border-transparent text-[var(--text-secondary)] hover:border-[var(--border-panel-soft)] hover:text-[var(--text-primary)]' => ! $mediaActive,
         ])
     >{{ __('Media') }}</a>
+    <a
+        href="{{ route('site-architect.modules.index') }}"
+        @class([
+            'inline-flex items-center border-b px-5 py-3.5 text-sm font-semibold tracking-wide transition-colors duration-320 ease-premium',
+            'border-mom-gold text-mom-gold' => $modulesActive,
+            'border-transparent text-[var(--text-secondary)] hover:border-[var(--border-panel-soft)] hover:text-[var(--text-primary)]' => ! $modulesActive,
+        ])
+    >{{ __('Module Builder') }}</a>
 </nav>

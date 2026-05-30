@@ -28,7 +28,7 @@
                                     <button
                                         type="button"
                                         wire:click="$set('pincode', '{{ $sample->pincode }}')"
-                                        class="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-700 hover:border-[#0046ad]"
+                                        class="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-700 hover:border-medca-primary"
                                     >{{ $sample->pincode }} · {{ $sample->area_name }}</button>
                                 @endforeach
                             </div>
@@ -37,7 +37,7 @@
 
                     <div class="flex justify-end gap-2 pt-2">
                         <button type="button" wire:click="closeModal" class="rounded-lg px-4 py-2 text-sm text-slate-600 hover:bg-slate-100">{{ __('Later') }}</button>
-                        <button type="submit" class="rounded-lg bg-[#0046ad] px-4 py-2 text-sm font-semibold text-white">{{ __('Save') }}</button>
+                        <button type="submit" class="rounded-lg bg-medca-primary px-4 py-2 text-sm font-semibold text-white">{{ __('Save') }}</button>
                     </div>
                 </form>
             </div>

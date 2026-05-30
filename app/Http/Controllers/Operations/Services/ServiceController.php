@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Operations\Services;
 
 use App\Enums\PublishStatus;
 use App\Enums\ServiceVisibility;
+use App\Http\Controllers\Concerns\InteractsWithLegacyManagedModules;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Operations\Services\StoreServiceRequest;
 use App\Http\Requests\Operations\Services\UpdateServiceRequest;
@@ -11,6 +12,7 @@ use App\Models\Page;
 use App\Models\PinCode;
 use App\Models\Service;
 use App\ModuleAccess;
+use App\Services\DynamicModules\LegacyManagedModuleRegistry;
 use App\Services\Operations\ServiceDetailPageProvisioner;
 use App\Services\Operations\ServiceDetailPageSeoSync;
 use App\Services\Public\ServicesDetailPageResolver;
@@ -24,6 +26,8 @@ use Illuminate\View\View;
 
 class ServiceController extends Controller
 {
+    use InteractsWithLegacyManagedModules;
+
     public function __construct(
         private readonly ServiceDetailPageProvisioner $detailPageProvisioner,
         private readonly ServicesDetailPageResolver $detailPageResolver,
@@ -91,12 +95,16 @@ class ServiceController extends Controller
         $suggestedDetailPageSlug = 'service-{code}';
         $patternDetailPage = null;
 
-        return view('operations.services.create', compact(
-            'service',
-            'pinCodes',
-            'detailPages',
-            'suggestedDetailPageSlug',
-            'patternDetailPage',
+        return view('operations.services.create', array_merge(
+            compact(
+                'service',
+                'pinCodes',
+                'detailPages',
+                'suggestedDetailPageSlug',
+                'patternDetailPage',
+            ),
+            $this->legacyModuleContext(LegacyManagedModuleRegistry::SERVICES),
+            ['linkedDetailPage' => null]
         ));
     }
 
@@ -121,6 +129,8 @@ class ServiceController extends Controller
 
             $this->syncPincodes($service, $data['pincodes'] ?? []);
 
+            $this->persistLegacyCustomFields($request, LegacyManagedModuleRegistry::SERVICES, $service);
+
             return $service->fresh(['pincodes']);
         });
 
@@ -141,13 +151,16 @@ class ServiceController extends Controller
         $patternDetailPage = $this->detailPageProvisioner->findPageBySuggestedSlug($service);
         $linkedDetailPage = $this->detailPageResolver->resolveFor($service) ?? $patternDetailPage;
 
-        return view('operations.services.edit', compact(
-            'service',
-            'pinCodes',
-            'detailPages',
-            'suggestedDetailPageSlug',
-            'patternDetailPage',
-            'linkedDetailPage',
+        return view('operations.services.edit', array_merge(
+            compact(
+                'service',
+                'pinCodes',
+                'detailPages',
+                'suggestedDetailPageSlug',
+                'patternDetailPage',
+                'linkedDetailPage',
+            ),
+            $this->legacyModuleContext(LegacyManagedModuleRegistry::SERVICES, $service),
         ));
     }
 
@@ -226,6 +239,8 @@ class ServiceController extends Controller
                 $service->loadMissing(['seo', 'faqs', 'schema']);
                 $this->detailPageSeoSync->migrateFromServiceIfEmpty($service, $detailPage);
             }
+
+            $this->persistLegacyCustomFields($request, LegacyManagedModuleRegistry::SERVICES, $service);
         });
 
         return redirect()

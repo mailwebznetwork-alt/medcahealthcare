@@ -3,9 +3,9 @@
 namespace Database\Seeders;
 
 use App\Enums\PageLayoutMode;
-use App\Models\Block;
 use App\Models\Page;
 use App\Models\SiteNavigationItem;
+use App\Services\Blocks\BlockTemplateSyncService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -27,49 +27,8 @@ class MedcaCareersPageSeeder extends Seeder
 
     private function seedBlocks(): void
     {
-        Block::query()->updateOrCreate(
-            ['block_slug' => 'hero-careers'],
-            [
-                'block_name' => 'Careers — Hero',
-                'description' => 'Marketing hero for the public /careers hub.',
-                'block_type' => 'Hero',
-                'code' => "@include('careers.partials.hub-hero')",
-                'is_active' => true,
-            ]
-        );
-
-        Block::query()->updateOrCreate(
-            ['block_slug' => 'careers-open-roles'],
-            [
-                'block_name' => 'Careers — Open roles listing',
-                'description' => 'Searchable vacancy cards. Requires $vacancies from PublicPagePresenter on /careers.',
-                'block_type' => 'Listing',
-                'code' => "@include('careers.partials.open-roles-listing', ['vacancies' => \$vacancies ?? collect()])",
-                'is_active' => true,
-            ]
-        );
-
-        Block::query()->updateOrCreate(
-            ['block_slug' => 'careers-job-detail-layout'],
-            [
-                'block_name' => 'Careers — Job detail layout',
-                'description' => 'Full job detail with apply panel. Requires $vacancy on /careers/{slug}.',
-                'block_type' => 'Layout',
-                'code' => "@include('careers.partials.job-detail-layout', ['vacancy' => \$vacancy])",
-                'is_active' => true,
-            ]
-        );
-
-        // Legacy slug kept as a thin alias for older page content references.
-        Block::query()->updateOrCreate(
-            ['block_slug' => 'careers'],
-            [
-                'block_name' => 'Careers — Open roles (legacy alias)',
-                'description' => 'Alias of careers-open-roles for backward compatibility.',
-                'block_type' => 'Listing',
-                'code' => "@include('careers.partials.open-roles-listing', ['vacancies' => \$vacancies ?? collect()])",
-                'is_active' => true,
-            ]
+        app(BlockTemplateSyncService::class)->sync(
+            categories: ['careers'],
         );
     }
 

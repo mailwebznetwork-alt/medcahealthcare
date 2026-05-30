@@ -1,0 +1,652 @@
+@layer components {
+    /**
+     * Public CMS blocks: inner content width aligned with global/header.blade.php (max-w-6xl + px).
+     */
+    .medca-content-shell {
+        @apply mx-auto w-full max-w-6xl px-4 md:px-6 lg:px-8;
+    }
+
+    .medca-full-bleed {
+        @apply w-full;
+    }
+
+    .medca-hero-gradient {
+        @apply bg-gradient-to-br from-medca-navy via-medca-navy-mid to-medca-primary text-white;
+    }
+
+    .medca-eyebrow {
+        @apply text-xs font-semibold uppercase tracking-[0.18em] text-medca-primary;
+    }
+
+    .medca-link-primary {
+        @apply text-sm font-semibold text-medca-primary hover:underline;
+    }
+
+    .medca-cta-solid {
+        @apply inline-flex items-center justify-center rounded-xl bg-medca-primary px-5 py-3 text-sm font-semibold text-white hover:bg-medca-primary-hover;
+    }
+
+    .medca-cta-on-hero {
+        @apply inline-flex items-center justify-center rounded-xl bg-white px-5 py-3 text-sm font-semibold text-medca-navy shadow hover:bg-slate-100;
+    }
+
+    /** Medca public primary CTA — prefer <x-primary-button variant="public"> */
+    .btn-premium {
+        @apply inline-flex items-center justify-center rounded-lg bg-medca-primary px-6 py-3 font-semibold text-white shadow-lg shadow-brand-blue/20 transition-all duration-300 hover:bg-medca-primary-hover active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:ring-offset-2;
+    }
+
+    /** Medca public card shell — prefer <x-public.card> */
+    .service-card {
+        @apply rounded-2xl border border-slate-100 bg-white p-8 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl;
+    }
+
+    /* ── Careers open roles listing (extracted Phase 7) ── */
+    .mc-jobs-search {
+        display: grid;
+        gap: 0.75rem;
+        background: var(--medca-surface);
+        border: 1px solid var(--medca-border);
+        border-radius: 0.75rem;
+        padding: 1.25rem;
+        box-shadow: var(--medca-shadow-surface);
+    }
+
+    @media (min-width: 640px) {
+        .mc-jobs-search {
+            grid-template-columns: 1fr 1fr auto;
+            align-items: end;
+        }
+    }
+
+    .mc-jobs-search label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--medca-text-muted);
+        margin-bottom: 0.4rem;
+    }
+
+    .mc-jobs-search input {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 0.5rem;
+        padding: 0.65rem 0.75rem;
+        font-size: 1rem;
+        color: var(--medca-text-primary);
+        box-sizing: border-box;
+    }
+
+    .mc-jobs-search input:focus {
+        outline: 2px solid var(--medca-primary);
+        border-color: var(--medca-primary);
+    }
+
+    .mc-jobs-search button {
+        border: none;
+        border-radius: 0.5rem;
+        background: var(--medca-primary);
+        color: #fff;
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 0.7rem 1.5rem;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .mc-jobs-search button:hover {
+        background: var(--medca-primary-hover);
+    }
+
+    .mc-jobs-count {
+        margin: 1.5rem 0 1rem;
+        font-size: 0.95rem;
+        color: var(--medca-text-muted);
+    }
+
+    .mc-jobs-count strong {
+        color: var(--medca-text-primary);
+    }
+
+    .mc-jobs-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .mc-job-card {
+        display: block;
+        background: var(--medca-surface);
+        border: 1px solid var(--medca-border);
+        border-radius: 0.75rem;
+        padding: 1.25rem;
+        text-decoration: none;
+        color: inherit;
+        transition: box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .mc-job-card:hover {
+        border-color: var(--medca-primary);
+        box-shadow: 0 4px 16px var(--medca-primary-soft);
+    }
+
+    .mc-job-card h2 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--medca-primary);
+        line-height: 1.3;
+    }
+
+    .mc-job-card:hover h2 {
+        text-decoration: underline;
+    }
+
+    .mc-job-meta {
+        margin: 0.4rem 0 0;
+        font-size: 0.875rem;
+        color: var(--medca-text-muted);
+    }
+
+    .mc-job-meta .sep::before {
+        content: "·";
+        margin: 0 0.5rem;
+        font-weight: bold;
+    }
+
+    .mc-job-snippet {
+        margin: 0.75rem 0 0;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--medca-text-secondary);
+    }
+
+    .mc-job-footer {
+        margin-top: 1rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--medca-surface-elevated);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem 1rem;
+        font-size: 0.8rem;
+        color: var(--medca-text-muted);
+    }
+
+    .mc-job-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        background: #e0f2fe;
+        color: var(--medca-primary-hover);
+        font-weight: 600;
+        font-size: 0.75rem;
+    }
+
+    .mc-job-cta {
+        margin-left: auto;
+        font-weight: 600;
+        color: var(--medca-primary);
+        font-size: 0.875rem;
+    }
+
+    .mc-jobs-empty {
+        background: var(--medca-surface);
+        border: 1px dashed #cbd5e1;
+        border-radius: 0.75rem;
+        padding: 3rem 1.5rem;
+        text-align: center;
+        color: var(--medca-text-muted);
+    }
+
+    .mc-jobs-no-match {
+        display: none;
+        margin-top: 1.5rem;
+        text-align: center;
+        color: var(--medca-text-muted);
+        font-size: 0.95rem;
+    }
+
+    .mc-jobs-no-match.is-visible {
+        display: block;
+    }
+
+    /* ── Service carousel / grid / detail (extracted Phase 7) ── */
+    .medca-svc-carousel {
+        width: 100%;
+        font-family: inherit;
+    }
+
+    .medca-svc-carousel-header {
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .medca-svc-carousel-header h2 {
+        margin: 0;
+        font-size: clamp(1.35rem, 3vw, 1.75rem);
+        font-weight: 700;
+        color: var(--medca-navy);
+    }
+
+    .medca-svc-carousel-track {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        gap: 1.25rem;
+        padding: 0.5rem 0.25rem 1rem;
+        scrollbar-width: none;
+    }
+
+    .medca-svc-carousel-track::-webkit-scrollbar {
+        display: none;
+    }
+
+    .medca-svc-carousel-card {
+        flex: 0 0 85%;
+        scroll-snap-align: start;
+        display: flex;
+        flex-direction: column;
+        background: var(--medca-surface);
+        border: 1px solid var(--medca-border);
+        border-radius: 0.75rem;
+        padding: 1.25rem;
+        text-decoration: none;
+        color: inherit;
+        box-shadow: var(--medca-shadow-surface);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .medca-svc-carousel-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--medca-shadow-hover);
+    }
+
+    @media (min-width: 640px) {
+        .medca-svc-carousel-card {
+            flex: 0 0 48%;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .medca-svc-carousel-card {
+            flex: 0 0 32%;
+        }
+    }
+
+    .medca-svc-carousel-card h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--medca-navy-accent);
+    }
+
+    .medca-svc-carousel-card p {
+        margin: 0.5rem 0 0;
+        flex: 1;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        color: var(--medca-text-secondary);
+    }
+
+    .medca-svc-carousel-card .cta {
+        margin-top: 1rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--medca-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .medca-svc-carousel-empty {
+        text-align: center;
+        color: var(--medca-text-muted);
+        padding: 2rem 1rem;
+    }
+
+    .medca-svc-grid-section {
+        width: 100%;
+    }
+
+    .medca-svc-grid-section h2 {
+        margin: 0 0 1.25rem;
+        font-size: clamp(1.35rem, 3vw, 1.75rem);
+        font-weight: 700;
+        color: var(--medca-navy);
+        text-align: center;
+    }
+
+    .medca-svc-grid {
+        display: grid;
+        gap: 1.25rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    @media (min-width: 640px) {
+        .medca-svc-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .medca-svc-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    .medca-svc-grid-card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background: var(--medca-surface);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        border: 1px solid var(--medca-border);
+        text-decoration: none;
+        color: inherit;
+        box-shadow: var(--medca-shadow-surface);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .medca-svc-grid-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--medca-shadow-hover);
+    }
+
+    .medca-svc-grid-card h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--medca-text-primary);
+    }
+
+    .medca-svc-grid-card p {
+        margin: 0.65rem 0 0;
+        flex: 1;
+        font-size: 0.9rem;
+        line-height: 1.55;
+        color: var(--medca-text-secondary);
+    }
+
+    .medca-svc-grid-card .link {
+        margin-top: 1rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--medca-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .medca-svc-grid-empty {
+        text-align: center;
+        color: var(--medca-text-muted);
+    }
+
+    .medca-detail-carousel {
+        width: 100%;
+        font-family: inherit;
+    }
+
+    .medca-detail-carousel-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .medca-detail-carousel-header h1 {
+        margin: 0;
+        font-size: clamp(1.75rem, 4vw, 2.5rem);
+        font-weight: 700;
+        color: var(--medca-navy);
+    }
+
+    .medca-detail-carousel-lead {
+        margin: 0.75rem 0 0;
+        font-size: 1.05rem;
+        color: var(--medca-text-secondary);
+        line-height: 1.6;
+    }
+
+    .medca-detail-track {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 1.5rem;
+        padding: 1rem 0.5rem;
+        scrollbar-width: none;
+    }
+
+    .medca-detail-track::-webkit-scrollbar {
+        display: none;
+    }
+
+    .medca-detail-card {
+        flex: 0 0 85%;
+        scroll-snap-align: start;
+        background: var(--medca-surface);
+        border: 1px solid var(--medca-border);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        box-shadow: var(--medca-shadow-surface);
+        display: flex;
+        flex-direction: column;
+    }
+
+    @media (min-width: 640px) {
+        .medca-detail-card {
+            flex: 0 0 48%;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .medca-detail-card {
+            flex: 0 0 31%;
+        }
+    }
+
+    .medca-detail-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: #e8f0fe;
+        color: var(--medca-navy-accent);
+        font-size: 0.75rem;
+        font-weight: 700;
+        border-radius: 999px;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+    }
+
+    .medca-detail-card h3 {
+        margin: 0 0 0.75rem;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--medca-navy);
+    }
+
+    .medca-detail-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 1.5rem;
+        flex: 1;
+    }
+
+    .medca-detail-list li {
+        font-size: 0.88rem;
+        color: var(--medca-text-secondary);
+        margin-bottom: 0.55rem;
+        display: flex;
+        gap: 0.5rem;
+        line-height: 1.4;
+    }
+
+    .medca-detail-list li::before {
+        content: "✓";
+        color: #83b735;
+        font-weight: 700;
+    }
+
+    .medca-detail-action {
+        display: block;
+        text-align: center;
+        padding: 0.65rem;
+        background: var(--medca-navy);
+        color: #fff;
+        font-size: 0.88rem;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 0.5rem;
+    }
+
+    .medca-detail-action:hover {
+        background: var(--medca-navy-accent);
+    }
+
+    /* ── Careers apply panel (extracted Phase 7) ── */
+    .mc-apply-panel {
+        width: 100%;
+        max-width: 24rem;
+        margin: 0 auto;
+    }
+
+    .mc-apply-panel-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .mc-apply-online {
+        background: var(--medca-surface);
+        border: 1px solid var(--medca-border);
+        border-radius: 0.5rem;
+        padding: 1.25rem;
+        box-shadow: var(--medca-shadow-surface);
+    }
+
+    .mc-apply-online h2 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--medca-text-primary);
+    }
+
+    .mc-apply-online > p {
+        margin: 0.5rem 0 0;
+        font-size: 0.875rem;
+        color: var(--medca-text-secondary);
+    }
+
+    .mc-apply-online .apply-form-wrap {
+        margin-top: 1rem;
+    }
+
+    .mc-wa-apply {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+        background: linear-gradient(135deg, #e8f7ec 0%, #f4fdf6 100%);
+        border: 1px solid #25d366;
+        border-radius: 0.5rem;
+        padding: 1.25rem;
+        box-shadow: 0 2px 8px rgba(37, 211, 102, 0.15);
+    }
+
+    .mc-wa-apply-icon {
+        flex-shrink: 0;
+        color: #25d366;
+    }
+
+    .mc-wa-apply-title {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--medca-text-primary);
+    }
+
+    .mc-wa-apply-text {
+        margin: 0.4rem 0 0;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        color: var(--medca-text-secondary);
+    }
+
+    .mc-wa-apply-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 1rem;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 0.4rem;
+        background: #25d366;
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.95rem;
+        text-decoration: none;
+        transition: filter 0.15s;
+    }
+
+    .mc-wa-apply-btn:hover {
+        filter: brightness(1.05);
+    }
+}
+
+/* Phase 8 — public header style presets (navigation resolver unchanged) */
+body.medca-public-surface .medca-header-classic {
+    /* Default Medca stack — no overrides */
+}
+
+body.medca-public-surface .medca-header-corporate > div:first-child {
+    display: none;
+}
+
+body.medca-public-surface .medca-header-corporate > div:nth-child(2) {
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.08);
+}
+
+body.medca-public-surface .medca-header-premium > div:first-child {
+    background: var(--medca-navy);
+    border-color: var(--medca-navy-border);
+}
+
+body.medca-public-surface .medca-header-premium > div:nth-child(2) {
+    background: var(--medca-navy-mid);
+    border-bottom: 2px solid var(--medca-primary);
+    color: #fff;
+}
+
+body.medca-public-surface .medca-header-premium a,
+body.medca-public-surface .medca-header-premium button {
+    color: #fff;
+}
+
+body.medca-public-surface .medca-header-minimal > div:first-child {
+    display: none;
+}
+
+body.medca-public-surface .medca-header-minimal > div:nth-child(2) {
+    min-height: 64px;
+}
+
+body.medca-public-surface .medca-header-modern {
+    padding: 0.5rem 1rem;
+}
+
+body.medca-public-surface .medca-header-modern > div:first-child {
+    border-radius: 12px 12px 0 0;
+    margin: 0 auto;
+    max-width: 72rem;
+}
+
+body.medca-public-surface .medca-header-modern > div:nth-child(2) {
+    border: 1px solid var(--medca-border);
+    border-radius: 0 0 12px 12px;
+    margin: 0 auto;
+    max-width: 72rem;
+    box-shadow: var(--medca-shadow-surface);
+}

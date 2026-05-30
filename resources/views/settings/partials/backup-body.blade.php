@@ -1,16 +1,16 @@
-<section class="mom-card p-6">
+<x-admin.card tag="section">
     <h2 class="mom-section-title">{{ __('Database backup') }}</h2>
     <p class="mom-body-text mt-2 text-[var(--text-secondary)]">{{ __('Creates a timestamped copy of the SQLite database under storage/app/backups. Other database drivers require a manual dump.') }}</p>
     <form method="post" action="{{ route('settings.system.backup') }}" class="mt-4 flex flex-wrap items-center gap-3">
         @csrf
-        <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Run backup now') }}</button>
+        <button type="submit" class="mom-cta-primary mom-cta-compact">{{ __('Run backup now') }}</button>
     </form>
 
     <div class="mt-8 border-t border-[var(--border-panel-soft)] pt-8">
         <h3 class="mom-micro mb-2">{{ __('Export to your computer') }}</h3>
         <p class="mom-body-text text-[var(--text-secondary)]">{{ __('Download includes node_modules and vendor so size should track server usage closely; storage/app/backups is always skipped; .git is excluded by default (override via SETTINGS_SITE_BACKUP_EXCLUDED_PREFIXES). Zip is compressed — smaller than raw du unless you compare unpacked project/. Requires file-based SQLite.') }}</p>
         <div class="mt-4">
-            <a href="{{ route('settings.system.backup.download') }}" class="mom-cta-primary inline-flex !px-3 !py-2 !text-[11px]">{{ __('Download full site backup') }}</a>
+            <a href="{{ route('settings.system.backup.download') }}" class="mom-cta-primary inline-flex mom-cta-compact">{{ __('Download full site backup') }}</a>
         </div>
     </div>
 
@@ -26,7 +26,7 @@
                 <label for="backup_file" class="mom-micro mb-1 block text-[var(--text-secondary)]">{{ __('Full site backup (.zip)') }}</label>
                 <input id="backup_file" name="backup_file" type="file" accept=".zip,application/zip" required class="mom-subtext mt-2 block w-full max-w-md text-sm" />
             </div>
-            <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Restore from backup zip') }}</button>
+            <button type="submit" class="mom-cta-primary mom-cta-compact">{{ __('Restore from backup zip') }}</button>
         </form>
     </div>
 
@@ -40,4 +40,4 @@
             </ul>
         </div>
     @endif
-</section>
+</x-admin.card>

@@ -130,7 +130,7 @@
                     </label>
                 </div>
 
-                <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Save global SEO entity') }}</button>
+                <button type="submit" class="mom-cta-primary mom-cta-compact">{{ __('Save global SEO entity') }}</button>
             </form>
         </article>
 
@@ -173,7 +173,7 @@
                     <span class="mom-micro mb-1 block">{{ __('llm.txt (raw, optional)') }}</span>
                     <textarea name="llm_txt" rows="8" class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 font-mono text-xs text-[var(--text-primary)]" placeholder="{{ __('Leave blank to use default bot allow-list.') }}">{{ old('llm_txt', $seoTechnical?->llm_txt) }}</textarea>
                 </label>
-                <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Save technical settings') }}</button>
+                <button type="submit" class="mom-cta-primary mom-cta-compact">{{ __('Save technical settings') }}</button>
             </form>
         </article>
     </div>

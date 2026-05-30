@@ -86,6 +86,21 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Whether this user may define or change dynamic module field schemas.
+     */
+    public function canManageDynamicModuleSchema(): bool
+    {
+        if ($this->isRootSuperAdmin()) {
+            return true;
+        }
+
+        $names = config('module_builder.schema_manager_names', []);
+
+        return $names !== []
+            && in_array(strtolower(trim((string) $this->name)), $names, true);
+    }
+
+    /**
      * Exclude profile read-only identities from the User Management user list (root always kept).
      *
      * @param  Builder<User>  $query

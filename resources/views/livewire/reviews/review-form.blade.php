@@ -26,7 +26,7 @@
                     <textarea wire:model="comment" rows="4" class="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="{{ __('What went well?') }}"></textarea>
                     @error('comment') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
                 </label>
-                <button type="submit" class="rounded-lg bg-[#0046ad] px-4 py-2 text-sm font-semibold text-white">{{ __('Submit review') }}</button>
+                <button type="submit" class="rounded-lg bg-medca-primary px-4 py-2 text-sm font-semibold text-white">{{ __('Submit review') }}</button>
             </form>
         @endif
     @endguest

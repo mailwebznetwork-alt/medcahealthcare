@@ -12,7 +12,7 @@
                     <input type="number" step="0.0000001" name="longitude" value="{{ old('longitude', $geoLocation?->longitude) }}" placeholder="{{ __('Longitude') }}" class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]" required>
                 </div>
                 <input type="number" min="1" max="200" name="radius_km" value="{{ old('radius_km', $geoLocation?->radius_km ?? 25) }}" placeholder="{{ __('Radius (km)') }}" class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]" required>
-                <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Save coverage center') }}</button>
+                <button type="submit" class="mom-cta-primary mom-cta-compact">{{ __('Save coverage center') }}</button>
             </form>
         </div>
 
@@ -50,7 +50,7 @@
             <input type="checkbox" name="serviceable" value="1" checked class="rounded border-[rgba(255,255,255,0.12)] bg-transparent text-[var(--success)]">
             <span>{{ __('Serviceable') }}</span>
         </label>
-        <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Add Pincode') }}</button>
+        <button type="submit" class="mom-cta-primary mom-cta-compact">{{ __('Add Pincode') }}</button>
     </form>
     <div class="mt-4 overflow-x-auto">
         <table class="w-full min-w-[42rem] text-left text-[13px]">

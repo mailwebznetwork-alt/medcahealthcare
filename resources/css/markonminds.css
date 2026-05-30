@@ -42,12 +42,25 @@
     /** Sidebar wordmark — muted bronze */
     --mom-wordmark: #a08750;
 
-    /** Primary UI accent — reference gold */
-    --accent-gold: #c5a059;
-    --accent-gold-soft: rgba(197, 160, 89, 0.12);
-    --accent-gold-border: rgba(197, 160, 89, 0.28);
-    --accent-gold-glow: rgba(197, 160, 89, 0.14);
-    --accent-gold-border-strong: rgba(197, 160, 89, 0.42);
+    /**
+     * Primary UI accent — reference gold (canonical admin namespace).
+     * `--accent-gold*` remain as legacy aliases for existing Blade/CSS references.
+     */
+    --mom-gold: #c5a059;
+    --mom-gold-soft: rgba(197, 160, 89, 0.12);
+    --mom-gold-border: rgba(197, 160, 89, 0.28);
+    --mom-gold-glow: rgba(197, 160, 89, 0.14);
+    --mom-gold-border-strong: rgba(197, 160, 89, 0.42);
+    --accent-gold: var(--mom-gold);
+    --accent-gold-soft: var(--mom-gold-soft);
+    --accent-gold-border: var(--mom-gold-border);
+    --accent-gold-glow: var(--mom-gold-glow);
+    --accent-gold-border-strong: var(--mom-gold-border-strong);
+
+    /** Admin surface / border aliases (Theme Foundation Phase 4) */
+    --mom-surface: var(--bg-surface);
+    --mom-border: var(--border-panel);
+    --mom-border-soft: var(--border-panel-soft);
 
     --text-primary: #ffffff;
     --text-secondary: #8e847e;

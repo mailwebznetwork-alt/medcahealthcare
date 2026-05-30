@@ -5,12 +5,14 @@ namespace App\Models;
 use Database\Factories\BlockFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 class Block extends Model
 {
     /** @use HasFactory<BlockFactory> */
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'uuid',
@@ -22,6 +24,7 @@ class Block extends Model
         'custom_css',
         'schema_json',
         'is_active',
+        'is_managed',
     ];
 
     /**
@@ -32,6 +35,7 @@ class Block extends Model
         return [
             'schema_json' => 'array',
             'is_active' => 'boolean',
+            'is_managed' => 'boolean',
         ];
     }
 

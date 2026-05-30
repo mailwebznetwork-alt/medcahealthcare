@@ -3,21 +3,21 @@
     'welcomeLine',
 ])
 
-<x-app-layout :page-title="__('Settings')" :welcome-line="$welcomeLine">
-    <div class="operations-workspace">
-        <div class="mom-backend-tabstrip">
-            @include('settings.partials.nav', ['activeSection' => $activeSection])
-        </div>
+<x-admin.workspace
+    :page-title="__('Settings')"
+    :welcome-line="$welcomeLine"
+    content-class="mt-10 w-full max-w-full"
+>
+    <x-slot:tabs>
+        @include('settings.partials.nav', ['activeSection' => $activeSection])
+    </x-slot:tabs>
 
-        <div class="mt-10 w-full max-w-full">
-            @if (session('status'))
-                <p class="mom-body-text mb-6 text-[var(--success)]" role="status">{{ session('status') }}</p>
-            @endif
-            @if ($errors->has('integration'))
-                <p class="mom-body-text mb-6 text-[var(--danger)]" role="alert">{{ $errors->first('integration') }}</p>
-            @endif
+    @if (session('status'))
+        <p class="mom-body-text mb-6 text-[var(--success)]" role="status">{{ session('status') }}</p>
+    @endif
+    @if ($errors->has('integration'))
+        <p class="mom-body-text mb-6 text-[var(--danger)]" role="alert">{{ $errors->first('integration') }}</p>
+    @endif
 
-            {{ $slot }}
-        </div>
-    </div>
-</x-app-layout>
+    {{ $slot }}
+</x-admin.workspace>

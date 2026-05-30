@@ -3,163 +3,7 @@
     $vacancies = $vacancies ?? collect();
 @endphp
 
-<style>
-    .mc-jobs-search {
-        display: grid;
-        gap: 0.75rem;
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.75rem;
-        padding: 1.25rem;
-        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-    }
-    @media (min-width: 640px) {
-        .mc-jobs-search {
-            grid-template-columns: 1fr 1fr auto;
-            align-items: end;
-        }
-    }
-    .mc-jobs-search label {
-        display: block;
-        font-size: 0.75rem;
-        font-weight: 700;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: #64748b;
-        margin-bottom: 0.4rem;
-    }
-    .mc-jobs-search input {
-        width: 100%;
-        border: 1px solid #cbd5e1;
-        border-radius: 0.5rem;
-        padding: 0.65rem 0.75rem;
-        font-size: 1rem;
-        color: #0f172a;
-        box-sizing: border-box;
-    }
-    .mc-jobs-search input:focus {
-        outline: 2px solid #0046ad;
-        border-color: #0046ad;
-    }
-    .mc-jobs-search button {
-        border: none;
-        border-radius: 0.5rem;
-        background: #0046ad;
-        color: #fff;
-        font-weight: 600;
-        font-size: 1rem;
-        padding: 0.7rem 1.5rem;
-        cursor: pointer;
-        white-space: nowrap;
-    }
-    .mc-jobs-search button:hover {
-        background: #001e5c;
-    }
-    .mc-jobs-count {
-        margin: 1.5rem 0 1rem;
-        font-size: 0.95rem;
-        color: #64748b;
-    }
-    .mc-jobs-count strong {
-        color: #0f172a;
-    }
-    .mc-jobs-list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-    .mc-job-card {
-        display: block;
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.75rem;
-        padding: 1.25rem;
-        text-decoration: none;
-        color: inherit;
-        transition: box-shadow 0.15s ease, border-color 0.15s ease;
-    }
-    .mc-job-card:hover {
-        border-color: #0046ad;
-        box-shadow: 0 4px 16px rgba(0, 70, 173, 0.12);
-    }
-    .mc-job-card h2 {
-        margin: 0;
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: #0046ad;
-        line-height: 1.3;
-    }
-    .mc-job-card:hover h2 {
-        text-decoration: underline;
-    }
-    .mc-job-meta {
-        margin: 0.4rem 0 0;
-        font-size: 0.875rem;
-        color: #64748b;
-    }
-    .mc-job-meta .sep::before {
-        content: "·";
-        margin: 0 0.5rem;
-        font-weight: bold;
-    }
-    .mc-job-snippet {
-        margin: 0.75rem 0 0;
-        font-size: 0.875rem;
-        line-height: 1.6;
-        color: #334155;
-    }
-    .mc-job-footer {
-        margin-top: 1rem;
-        padding-top: 0.75rem;
-        border-top: 1px solid #f1f5f9;
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.5rem 1rem;
-        font-size: 0.8rem;
-        color: #64748b;
-    }
-    .mc-job-badge {
-        display: inline-block;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        background: #e0f2fe;
-        color: #001e5c;
-        font-weight: 600;
-        font-size: 0.75rem;
-    }
-    .mc-job-cta {
-        margin-left: auto;
-        font-weight: 600;
-        color: #0046ad;
-        font-size: 0.875rem;
-    }
-    .mc-jobs-empty {
-        background: #fff;
-        border: 1px dashed #cbd5e1;
-        border-radius: 0.75rem;
-        padding: 3rem 1.5rem;
-        text-align: center;
-        color: #64748b;
-    }
-    .mc-jobs-no-match {
-        display: none;
-        margin-top: 1.5rem;
-        text-align: center;
-        color: #64748b;
-        font-size: 0.95rem;
-    }
-    .mc-jobs-no-match.is-visible {
-        display: block;
-    }
-</style>
-
-<section
-    class="w-full bg-slate-100 px-4 py-10 md:px-8 md:py-12 lg:px-12"
-    aria-label="{{ __('Open positions') }}"
+<x-public.section class="bg-slate-50" aria-label="{{ __('Open positions') }}"
     x-data="{
         q: '',
         city: '',
@@ -184,7 +28,6 @@
     }"
     x-init="$watch('q', () => updateVisibility()); $watch('city', () => updateVisibility())"
 >
-    <div class="mx-auto max-w-4xl">
         <form class="mc-jobs-search" role="search" @submit.prevent="updateVisibility()">
             <div>
                 <label for="mc-job-q">{{ __('What') }}</label>
@@ -265,5 +108,4 @@
 
             <p class="mc-jobs-no-match" x-ref="noMatch">{{ __('No jobs match your search. Try different keywords or location.') }}</p>
         @endif
-    </div>
-</section>
+</x-public.section>

@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <meta name="theme-color" content="#001f5c">
+        <meta name="theme-color" content="{{ config('medca.theme_color') }}">
         <style>[x-cloak]{display:none!important}</style>
         @stack('meta')
         @isset($vacancy)
@@ -35,10 +35,19 @@
         @endif
         @include('global.partials.site-seo-meta')
         @includeWhen(isset($page), 'global.partials.page-json-ld')
+        @php
+            $themeResolver = app(\App\Services\Theme\ThemeResolver::class);
+            $themeBranding = $themeResolver->branding();
+            $faviconUrl = app(\App\Services\Theme\ThemeConfigRepository::class)->assetUrl($themeBranding['favicon_path'] ?? null);
+        @endphp
+        @if ($faviconUrl)
+            <link rel="icon" href="{{ $faviconUrl }}">
+        @endif
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <link href="{{ $themeResolver->googleFontsHref() }}" rel="stylesheet">
+        @vite(['resources/css/public/public.css', 'resources/js/app.js'])
+        <x-theme.public-vars />
         <x-marketing.tracking-head :settings="$marketingSettings ?? null" />
         @stack('schema')
         @if (isset($vacancy) && isset($jobPostingSchema) && $jobPostingSchema !== [])
@@ -67,12 +76,17 @@
     <body class="medca-public-surface flex min-h-screen flex-col bg-slate-50 font-medca-sans antialiased text-slate-800">
         @include('global.header')
 
+        @php
+            $layoutMainClass = $themeResolver->layoutMainClasses().' py-8 md:py-10 lg:py-12';
+        @endphp
         <main
             id="main-content"
             @class([
                 'relative z-0 flex-1 w-full',
-                'mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-10 lg:px-8 lg:py-12' => ! isset($page) || ! $page->usesCanvasLayout(),
+                $layoutMainClass => ! isset($page) && ! isset($blog),
+                $layoutMainClass => isset($page) && ! $page->usesCanvasLayout(),
                 'px-0 py-0' => isset($page) && $page->usesCanvasLayout(),
+                $layoutMainClass => isset($blog),
             ])
         >
             @isset($page)
@@ -83,7 +97,7 @@
                     @include('public.partials.near-you-services', app(\App\Services\Public\PublicPagePresenter::class)->nearYouPayload())
                 @endif
             @elseif(isset($blog))
-                <article class="w-full py-6 md:py-8">
+                <article class="w-full">
                     @if ($blog->featured_image)
                         <div class="mb-8 overflow-hidden rounded-lg border border-slate-200 shadow-sm">
                             <img
@@ -94,7 +108,7 @@
                             />
                         </div>
                     @endif
-                    <div class="max-w-none">
+                    <div class="max-w-none py-6 md:py-8">
                         {!! \App\Services\ContentParser::parse($blog->content ?? '') !!}
                     </div>
                 </article>

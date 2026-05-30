@@ -1,0 +1,84 @@
+/**
+ * Public marketing shell (layouts.app) — scroll / tap behaviour.
+ */
+html.medca-public-root {
+    scroll-behavior: smooth;
+    /* Sticky topbar (~36px) + navbar (~78–90px); keeps in-page anchors below the header */
+    scroll-padding-top: 8rem;
+    /* Prevent header/content horizontal shift when scrollbar appears between pages */
+    scrollbar-gutter: stable;
+}
+
+html.medca-public-root * {
+    -webkit-tap-highlight-color: transparent;
+}
+
+@layer base {
+    body.medca-public-surface img {
+        -webkit-user-drag: none;
+    }
+}
+
+/**
+ * Public marketing theme — `--medca-*` namespace only.
+ * Does NOT override admin `:root` token names (`--accent-gold`, `--text-primary`, etc.).
+ * See config/theme.php for the full token map.
+ */
+body.medca-public-surface {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+
+    /* Color */
+    --medca-primary: #0055ff;
+    --medca-primary-soft: rgba(0, 70, 173, 0.08);
+    --medca-primary-border: rgba(0, 70, 173, 0.22);
+    --medca-primary-hover: #001e5c;
+    --medca-navy: #001f5c;
+    --medca-navy-mid: #012a7d;
+    --medca-navy-accent: #164081;
+    --medca-navy-border: #001433;
+    --medca-text-primary: #0f172a;
+    --medca-text-secondary: #475569;
+    --medca-text-muted: #64748b;
+
+    /* Surfaces */
+    --medca-surface: #ffffff;
+    --medca-surface-muted: #f8fafc;
+    --medca-surface-elevated: #f1f5f9;
+    --medca-surface-hover: #f1f5f9;
+
+    /* Borders */
+    --medca-border: #e2e8f0;
+    --medca-border-soft: rgba(15, 23, 42, 0.12);
+
+    /* Elevation */
+    --medca-shadow-surface: 0 4px 14px rgba(15, 23, 42, 0.08);
+    --medca-shadow-elevated: 0 12px 28px rgba(15, 23, 42, 0.1);
+    --medca-shadow-hover: 0 16px 36px rgba(15, 23, 42, 0.12);
+    --medca-shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    --medca-shadow-glow: 0 0 24px rgba(0, 70, 173, 0.06);
+
+    /* Radius (aligned with public card / button chrome) */
+    --medca-radius-sm: 8px;
+    --medca-radius-md: 12px;
+    --medca-radius-lg: 16px;
+    --medca-radius-xl: 24px;
+}
+
+/** Flatten brown-shell card chrome when mom-card appears on public CMS pages */
+body.medca-public-surface .mom-card {
+    background: var(--medca-surface);
+    box-shadow: var(--medca-shadow-surface);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+body.medca-public-surface .mom-card-interactive:hover {
+    box-shadow: var(--medca-shadow-hover);
+}
+
+/** Eyebrow labels: clinical accent reads cleaner on white than pure brand blue at 11px. */
+body.medca-public-surface .mom-micro {
+    @apply text-clinical-700;
+}

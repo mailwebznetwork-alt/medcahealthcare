@@ -89,4 +89,8 @@
             </div>
         </div>
     </div>
+
+    @isset($managedModule)
+        <x-dynamic-fields.unified-table :module="$managedModule" :values="$customFieldValues ?? new stdClass()" />
+    @endisset
 </div>

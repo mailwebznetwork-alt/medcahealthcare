@@ -15,7 +15,7 @@
             <span class="mom-subtext block font-normal">{{ __('intercept targets · active') }}</span>
         </p>
         <p class="mom-body-text mt-2 flex-1 text-[var(--text-secondary)]">{{ __('Intercept routing vs active competitors. Toggle intercept target on each competitor record.') }}</p>
-        <span class="mom-cta-primary mt-4 !inline-flex !w-fit !px-3 !py-2 !text-[11px]">{{ __('Open roster') }}</span>
+        <span class="mom-cta-primary mt-4 !inline-flex !w-fit mom-cta-compact">{{ __('Open roster') }}</span>
     </a>
 
     <a href="{{ route('growth-center.competitors.index', ['tab' => 'competitors']) }}#growth-keyword-intelligence" class="mom-card flex min-h-[190px] flex-col p-5 no-underline">
@@ -39,7 +39,7 @@
             <span class="mom-subtext font-normal">{{ __('GEO PIN rows') }}</span>
         </p>
         <p class="mom-body-text mt-2 flex-1 text-[var(--text-secondary)]">{{ __('Growth Center pin coverage aligned with local discovery.') }}</p>
-        <span class="mom-cta-primary mt-4 !inline-flex !w-fit !px-3 !py-2 !text-[11px]">{{ __('SEO & entity') }}</span>
+        <span class="mom-cta-primary mt-4 !inline-flex !w-fit mom-cta-compact">{{ __('SEO & entity') }}</span>
     </a>
 
     <a href="{{ route('growth-center.competitors.index', ['tab' => 'competitors']) }}#growth-lead-attribution" class="mom-card flex min-h-[190px] flex-col p-5 no-underline">
@@ -143,7 +143,7 @@
             <option value="low">Low</option>
         </select>
         <input type="text" name="action" placeholder="{{ __('Action') }}" class="rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]" required>
-        <button type="submit" class="mom-cta-primary !px-3 !py-2 !text-[11px]">{{ __('Create Intercept') }}</button>
+        <button type="submit" class="mom-cta-primary mom-cta-compact">{{ __('Create Intercept') }}</button>
     </form>
 </section>
 

@@ -48,6 +48,7 @@ class Vacancy extends Model
         'sort_order',
         'detail_page_id',
         'published_at',
+        'custom_fields',
     ];
 
     /**
@@ -64,6 +65,7 @@ class Vacancy extends Model
             'is_active' => 'boolean',
             'sort_order' => 'integer',
             'detail_page_id' => 'integer',
+            'custom_fields' => 'array',
             'salary_min' => 'decimal:2',
             'salary_max' => 'decimal:2',
             'schema_json' => 'array',
