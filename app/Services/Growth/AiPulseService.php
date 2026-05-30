@@ -7,6 +7,8 @@ use App\Models\Block;
 use App\Models\Blog;
 use App\Models\Lead;
 use App\Models\Page;
+use App\Services\Growth\BacklinkMonitorService;
+use App\Support\GrowthReadinessReport;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -191,7 +193,8 @@ class AiPulseService
 
         $brokenCount = count($broken);
         $brandAuthority = $this->brandAuthority($rankMath, $aioMean, $speedMean, $brokenCount);
-        $recommendations = $this->recommendations($broken, $rankMath, $speedMean, $brandAuthority, $speedSource);
+        $ecosystem = $this->ecosystemScores();
+        $recommendations = $this->recommendations($broken, $rankMath, $speedMean, $brandAuthority, $speedSource, $ecosystem);
 
         $payload = [
             'scanned_at' => now()->toDateTimeString(),
@@ -206,6 +209,8 @@ class AiPulseService
                 'rankmath' => $rankMath,
                 'aio' => $aioMean,
                 'brand_authority' => $brandAuthority,
+                'content_health' => $ecosystem['content_health'],
+                'backlink_strength' => $ecosystem['backlink_strength'],
             ],
             'speed_detail' => [
                 'source' => $speedSource,
@@ -222,6 +227,7 @@ class AiPulseService
             ],
             'broken_links' => array_values($broken),
             'recommendations' => $recommendations,
+            'ecosystem' => $ecosystem,
         ];
 
         $payload['pulse_narrative'] = $this->buildPulseNarrativeInsights($payload);
@@ -342,10 +348,27 @@ class AiPulseService
     }
 
     /**
+     * @return array{content_health: int, backlink_strength: int, gap_count: int, autonomous_ready: int}
+     */
+    private function ecosystemScores(): array
+    {
+        $report = GrowthReadinessReport::cached();
+
+        return [
+            'content_health' => (int) ($report['score_content'] ?? 0),
+            'backlink_strength' => (int) ($report['score_backlinks'] ?? 0),
+            'gap_count' => app(BacklinkMonitorService::class)->gapDomains()->count(),
+            'autonomous_ready' => collect($report['sections']['content']['items'] ?? [])
+                ->firstWhere('label', 'Autonomous SEO published') !== null ? 1 : 0,
+        ];
+    }
+
+    /**
      * @param  list<array{scope: string, id: int, title: string, url: string, reason: string}>  $broken
+     * @param  array{content_health: int, backlink_strength: int, gap_count: int, autonomous_ready: int}  $ecosystem
      * @return list<string>
      */
-    private function recommendations(array $broken, int $rankMath, int $speed, int $authority, string $speedSource = 'baseline'): array
+    private function recommendations(array $broken, int $rankMath, int $speed, int $authority, string $speedSource = 'baseline', array $ecosystem = []): array
     {
         $out = [];
         if ($broken !== []) {
@@ -363,6 +386,17 @@ class AiPulseService
         }
         if ($authority < 75) {
             $out[] = __('Add AEO Q&A and structured data; align NAP in Growth Center SEO.');
+        }
+        if (($ecosystem['content_health'] ?? 100) < 60) {
+            $out[] = __('Run Hijack Ops and publish autonomous SEO from Site Architect one-click updates.');
+        }
+        if (($ecosystem['backlink_strength'] ?? 100) < 60) {
+            $out[] = __('Close backlink gaps in War Room — competitors have citations Medca is missing.');
+        }
+        if (($ecosystem['gap_count'] ?? 0) > 0) {
+            $out[] = __(':n competitor backlink gap domain(s) detected — prioritize local healthcare directories.', [
+                'n' => (string) ($ecosystem['gap_count'] ?? 0),
+            ]);
         }
 
         return $out !== [] ? $out : [__('AI Pulse: key on-page signals look healthy.')];
@@ -615,7 +649,8 @@ TXT;
             'scanned_at' => __('Scan in progress'),
             'scan_in_progress' => true,
             'totals' => ['pages' => 0, 'blogs' => 0, 'blocks' => 0],
-            'scores' => ['speed' => 0, 'rankmath' => 0, 'aio' => 0, 'brand_authority' => 0],
+            'scores' => ['speed' => 0, 'rankmath' => 0, 'aio' => 0, 'brand_authority' => 0, 'content_health' => 0, 'backlink_strength' => 0],
+            'ecosystem' => ['content_health' => 0, 'backlink_strength' => 0, 'gap_count' => 0, 'autonomous_ready' => 0],
             'speed_detail' => ['source' => 'placeholder', 'score_0_100' => 0],
             'free_tier_sources' => [],
             'broken_links' => [],

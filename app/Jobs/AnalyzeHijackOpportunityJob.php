@@ -2,10 +2,12 @@
 
 namespace App\Jobs;
 
+use App\Jobs\AutonomousContentJob;
 use App\Models\CompetitorKeyword;
 use App\Models\CompetitorTracking;
 use App\Models\SiteKeywordRanking;
 use App\Services\Growth\SeoEntityResolver;
+use App\Support\GrowthReadinessReport;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
@@ -146,6 +148,10 @@ TXT;
         $entity->forceFill([
             'hijack_strategy' => json_encode($existing, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
         ])->save();
+
+        GrowthReadinessReport::forget();
+
+        AutonomousContentJob::dispatch($competitorKeywordId);
     }
 
     private function geminiGenerateText(string $apiKey, string $prompt): string

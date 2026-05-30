@@ -10,6 +10,7 @@ use App\Models\PageRevision;
 use App\Models\PinCode;
 use App\Models\SiteSlugRedirect;
 use App\Services\ActivityLogService;
+use App\Services\Growth\HijackContentBridgeService;
 use App\Services\Growth\HijackStrategyReader;
 use App\Services\Integrations\OutboundWebhookDispatcher;
 use App\Services\SiteArchitect\ServiceInsertCatalog;
@@ -315,39 +316,65 @@ class Pages extends Component
             return;
         }
 
-        if (is_string($strategy['meta_title'] ?? null) && trim($strategy['meta_title']) !== '') {
-            $this->meta_title = trim($strategy['meta_title']);
+        $fields = app(HijackContentBridgeService::class)->extractPageSeoFields($strategy);
+
+        if ($fields['meta_title'] !== null) {
+            $this->meta_title = $fields['meta_title'];
         }
 
-        if (is_string($strategy['meta_description'] ?? null) && trim($strategy['meta_description']) !== '') {
-            $this->meta_description = trim($strategy['meta_description']);
+        if ($fields['meta_description'] !== null) {
+            $this->meta_description = $fields['meta_description'];
         }
 
-        if (is_string($strategy['h1_suggestion'] ?? null) && trim($strategy['h1_suggestion']) !== '') {
-            $this->h1 = trim($strategy['h1_suggestion']);
+        if ($fields['h1'] !== null) {
+            $this->h1 = $fields['h1'];
         }
 
-        $changes = $strategy['content_changes'] ?? [];
-        if (is_array($changes) && $changes !== []) {
-            $bullets = collect($changes)
-                ->filter(fn ($line) => is_string($line) && trim($line) !== '')
-                ->map(fn (string $line) => '- '.trim($line))
-                ->implode("\n");
-
-            $note = __('Growth hijack content edits (:keyword):', [
-                'keyword' => (string) ($strategy['keyword'] ?? ''),
-            ])."\n".$bullets;
-
+        if ($fields['ai_context_note'] !== null) {
             $this->ai_context = trim($this->ai_context) !== ''
-                ? trim($this->ai_context)."\n\n".$note
-                : $note;
+                ? trim($this->ai_context)."\n\n".$fields['ai_context_note']
+                : $fields['ai_context_note'];
         }
 
-        if (is_string($strategy['schema_hint'] ?? null) && trim($strategy['schema_hint']) !== '') {
-            $this->schema_type = $this->schema_type !== '' ? $this->schema_type : 'MedicalOrganization';
+        if ($fields['schema_type'] !== null && $this->schema_type === '') {
+            $this->schema_type = $fields['schema_type'];
         }
 
         session()->flash('status', __('Hijack strategy applied — review SEO fields and save the page.'));
+    }
+
+    public function applyAndPublishHijackStrategy(string $strategyKey): void
+    {
+        if ($this->mode !== 'form' || $this->editingId === null) {
+            $this->addError('hijack_strategy', __('Save the page first, then use one-click publish.'));
+
+            return;
+        }
+
+        $page = Page::query()->findOrFail($this->editingId);
+        $this->authorize('update', $page);
+
+        try {
+            $result = app(HijackContentBridgeService::class)->applyAndPublish($page, $strategyKey);
+        } catch (\InvalidArgumentException $e) {
+            $this->addError('hijack_strategy', $e->getMessage());
+
+            return;
+        }
+
+        $page = $result['page'];
+        $this->meta_title = (string) ($page->meta_title ?? '');
+        $this->meta_description = (string) ($page->meta_description ?? '');
+        $this->h1 = (string) ($page->h1 ?? '');
+        $this->ai_context = (string) ($page->ai_context ?? '');
+        $this->schema_type = (string) ($page->schema_type ?? '');
+        if (is_array($page->focus_keywords)) {
+            $this->focusKeywords = $this->padStringList($page->focus_keywords, 10);
+        }
+
+        session()->flash('status', __('One-click update complete — page and SEO entity synced for :path.', [
+            'path' => $result['path'],
+        ]));
     }
 
     public function markContentReviewed(): void

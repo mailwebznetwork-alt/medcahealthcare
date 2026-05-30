@@ -54,6 +54,24 @@
         </a>
     </section>
 
+    <section class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <a href="{{ route('growth-center.competitors.index', ['tab' => 'readiness']) }}" class="mom-card block px-5 py-4 no-underline">
+            <p class="mom-micro">{{ __('Content health') }}</p>
+            <p class="mom-metric mt-2">{{ (int) ($snapshot['scores']['content_health'] ?? 0) }}<span class="text-lg text-[var(--text-muted)]">/100</span></p>
+            <p class="mom-subtext mt-1">{{ __('Autonomous hijack SEO + published pages.') }}</p>
+        </a>
+        <a href="{{ route('growth-center.competitors.index', ['tab' => 'war-room']) }}" class="mom-card block px-5 py-4 no-underline">
+            <p class="mom-micro">{{ __('Backlink strength') }}</p>
+            <p class="mom-metric mt-2">{{ (int) ($snapshot['scores']['backlink_strength'] ?? 0) }}<span class="text-lg text-[var(--text-muted)]">/100</span></p>
+            <p class="mom-subtext mt-1">{{ __('Citation coverage vs competitor gaps.') }}</p>
+        </a>
+        <a href="{{ route('growth-center.competitors.index', ['tab' => 'hijack-opportunities']) }}" class="mom-card block px-5 py-4 no-underline">
+            <p class="mom-micro">{{ __('Backlink gaps') }}</p>
+            <p class="mom-metric mt-2">{{ (int) data_get($snapshot, 'ecosystem.gap_count', 0) }}</p>
+            <p class="mom-subtext mt-1">{{ __('Domains linking competitors but not Medca.') }}</p>
+        </a>
+    </section>
+
     @php($sources = $snapshot['free_tier_sources'] ?? [])
     @if ($sources !== [])
         <a href="{{ Route::has('admin.settings.integrations.index') ? route('admin.settings.integrations.index') : route('settings.integrations') }}" class="mom-card block p-5 no-underline">

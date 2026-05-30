@@ -7,6 +7,7 @@ use App\Models\PageElement;
 use App\Models\PageSeo;
 use App\Services\Growth\AiPulseService;
 use App\Services\Growth\ContentSeoAutoFillService;
+use App\Support\GrowthReadinessReport;
 use Illuminate\Support\Facades\Schema;
 
 class PageObserver
@@ -26,6 +27,7 @@ class PageObserver
         $this->contentSeoAutoFill->syncPageGrowthArtifacts($page);
         $this->contentSeoAutoFill->refreshAggregateSignals();
         $this->aiPulseService->triggerAuditAfterPublish();
+        GrowthReadinessReport::forget();
     }
 
     public function deleted(Page $page): void
@@ -42,5 +44,6 @@ class PageObserver
 
         $this->contentSeoAutoFill->refreshAggregateSignals();
         $this->aiPulseService->triggerAuditAfterPublish();
+        GrowthReadinessReport::forget();
     }
 }

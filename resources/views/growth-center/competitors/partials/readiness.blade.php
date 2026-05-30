@@ -49,7 +49,7 @@
     </div>
 </section>
 
-<div class="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4" role="list" aria-label="{{ __('Growth health scores') }}">
+<div class="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6" role="list" aria-label="{{ __('Growth health scores') }}">
     @foreach ($health as $h)
         <a
             href="{{ $h['href'] ?? '#' }}"
@@ -76,10 +76,10 @@
         <p class="mom-micro text-mom-gold">{{ __('Overall readiness') }}</p>
         <p class="mom-metric mt-3 text-5xl tabular-nums sm:text-6xl">{{ (int) ($report['overall_score'] ?? 0) }}</p>
         <p class="mom-body-text mt-3 flex-1 text-[var(--text-secondary)]">
-            {{ __('Average of SEO (incl. discovery) and tracking. Deep GA4 / Meta: use Growth tabs (GA4, Marketing).') }}
+            {{ __('Average of SEO, tracking, autonomous content health, and backlink strength.') }}
         </p>
     </div>
-    <div class="lg:col-span-2 grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div class="lg:col-span-2 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-2">
         @foreach ($report['sections'] ?? [] as $section)
             <div class="mom-card flex flex-col p-5">
                 <div class="mb-3 flex items-center justify-between gap-3">

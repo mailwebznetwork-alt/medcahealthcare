@@ -23,3 +23,10 @@ if (config('growth.schedule_ai_pulse_daily')) {
         ->name('ai-pulse-rebuild')
         ->withoutOverlapping();
 }
+
+if (config('growth.schedule_backlink_refresh_daily')) {
+    Schedule::job(new \App\Jobs\RefreshBacklinkIntelligenceJob())
+        ->dailyAt('04:05')
+        ->name('backlink-intelligence-refresh')
+        ->withoutOverlapping();
+}

@@ -13,6 +13,7 @@ use App\Models\PinCode;
 use App\Models\SeoAiSignal;
 use App\Models\SeoTechnical;
 use App\Models\SiteKeywordRanking;
+use App\Services\Growth\BacklinkMonitorService;
 use App\Services\Growth\CompetitorComparisonService;
 use App\Services\Growth\GeoService;
 use App\Services\Growth\SeoEntityResolver;
@@ -151,6 +152,7 @@ class CompetitorPageController extends Controller
             'intercepts' => $warRoomDashboard['intercepts'] ?? collect(),
             'hijackOpportunities' => $hijackOpportunities,
             'hijackStrategies' => $hijackStrategies,
+            'backlinkSummary' => app(BacklinkMonitorService::class)->warRoomSummary(),
         ]);
     }
 

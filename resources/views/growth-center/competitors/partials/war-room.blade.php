@@ -58,6 +58,58 @@
     </a>
 </section>
 
+<section class="mb-8">
+    @php $backlinkSummary = $backlinkSummary ?? ['gap_count' => 0, 'top_gaps' => [], 'site_backlink_domains' => 0, 'competitor_backlink_domains' => 0]; @endphp
+    <div class="mom-card p-6">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+                <h2 class="mom-section-title">{{ __('Backlink gap intelligence') }}</h2>
+                <p class="mom-body-text mt-2 max-w-2xl text-[var(--text-secondary)]">
+                    {{ __('Domains where competitors earn citations but Medca does not — sourced from backlink monitor scans and local directory probes.') }}
+                </p>
+            </div>
+            <div class="flex gap-6 text-center">
+                <div>
+                    <p class="mom-micro">{{ __('Gap domains') }}</p>
+                    <p class="mom-metric mt-1">{{ number_format((int) ($backlinkSummary['gap_count'] ?? 0)) }}</p>
+                </div>
+                <div>
+                    <p class="mom-micro">{{ __('Competitor refs') }}</p>
+                    <p class="mom-metric mt-1">{{ number_format((int) ($backlinkSummary['competitor_backlink_domains'] ?? 0)) }}</p>
+                </div>
+                <div>
+                    <p class="mom-micro">{{ __('Medca refs') }}</p>
+                    <p class="mom-metric mt-1">{{ number_format((int) ($backlinkSummary['site_backlink_domains'] ?? 0)) }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="mt-6 overflow-x-auto">
+            <table class="w-full min-w-[36rem] text-left text-[13px]">
+                <thead class="bg-[var(--bg-card-table-head)] text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                    <tr>
+                        <th class="px-4 py-3">{{ __('Referring domain') }}</th>
+                        <th class="px-4 py-3">{{ __('Competitors linked') }}</th>
+                        <th class="px-4 py-3">{{ __('Names') }}</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[rgba(255,255,255,0.045)]">
+                    @forelse ($backlinkSummary['top_gaps'] ?? [] as $gap)
+                        <tr>
+                            <td class="px-4 py-3 font-medium text-[var(--text-primary)]">{{ $gap['domain'] ?? '—' }}</td>
+                            <td class="px-4 py-3">{{ (int) ($gap['competitor_count'] ?? 0) }}</td>
+                            <td class="px-4 py-3 text-[var(--text-secondary)]">{{ implode(', ', $gap['competitors'] ?? []) ?: '—' }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="3" class="px-4 py-8 text-center text-[var(--text-muted)]">{{ __('No backlink gaps detected yet — run a competitor scan from Growth settings or wait for the scheduled job.') }}</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
 <section class="mom-card p-6">
     <h2 class="mom-section-title">{{ __('Intercept queue') }}</h2>
     <div class="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-3">

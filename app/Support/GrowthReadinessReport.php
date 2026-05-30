@@ -10,6 +10,7 @@ use App\Models\Integration;
 use App\Models\MarketingSetting;
 use App\Models\SeoEntity;
 use App\Models\SeoTechnical;
+use App\Services\Growth\BacklinkMonitorService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
@@ -78,13 +79,18 @@ final class GrowthReadinessReport
         $seoItems = array_merge($seoCoreItems, $discoveryItems);
 
         $trackingItems = self::trackingItems($marketing);
+        $contentItems = self::contentHealthItems($seoEntity);
+        $backlinkMetrics = app(BacklinkMonitorService::class)->readinessMetrics();
+        $backlinkItems = $backlinkMetrics['items'];
 
         $seoCoreScore = self::sectionScore($seoCoreItems);
         $entityScore = self::sectionScore($discoveryItems);
         $seoScore = self::sectionScore($seoItems);
         $trackingScore = self::sectionScore($trackingItems);
+        $contentScore = self::sectionScore($contentItems);
+        $backlinkScore = (int) ($backlinkMetrics['score'] ?? 0);
 
-        $aioIndex = (int) round(($seoCoreScore + $entityScore + $trackingScore) / 3);
+        $aioIndex = (int) round(($seoCoreScore + $entityScore + $trackingScore + $contentScore + $backlinkScore) / 5);
 
         $sections = [
             'seo' => [
@@ -97,14 +103,24 @@ final class GrowthReadinessReport
                 'score' => $trackingScore,
                 'items' => array_map(self::stripWeight(...), $trackingItems),
             ],
+            'content' => [
+                'label' => 'Autonomous content & hijack SEO',
+                'score' => $contentScore,
+                'items' => array_map(self::stripWeight(...), $contentItems),
+            ],
+            'backlinks' => [
+                'label' => 'Backlink strength & gaps',
+                'score' => $backlinkScore,
+                'items' => array_map(self::stripWeight(...), $backlinkItems),
+            ],
         ];
 
-        $overall = (int) round(($seoScore + $trackingScore) / 2);
+        $overall = (int) round(($seoScore + $trackingScore + $contentScore + $backlinkScore) / 4);
 
         return [
             'sections' => $sections,
             'overall_score' => $overall,
-            'suggestions' => self::suggestionsFromItems($seoItems, $trackingItems),
+            'suggestions' => self::suggestionsFromItems(array_merge($seoItems, $contentItems, $backlinkItems), $trackingItems),
             'health_row' => [
                 [
                     'id' => 'aio',
@@ -134,10 +150,26 @@ final class GrowthReadinessReport
                     'blurb' => 'GA4, GTM, Meta, CAPI, Clarity.',
                     'href' => self::hrefMarketing(),
                 ],
+                [
+                    'id' => 'content',
+                    'label' => 'Content health',
+                    'score' => $contentScore,
+                    'blurb' => 'Hijack strategies, Gemini autonomous SEO, published pages.',
+                    'href' => self::hrefHijackOps(),
+                ],
+                [
+                    'id' => 'backlinks',
+                    'label' => 'Backlink strength',
+                    'score' => $backlinkScore,
+                    'blurb' => 'Citation coverage vs competitor backlink gaps.',
+                    'href' => self::hrefWarRoom(),
+                ],
             ],
             'score_seo_core' => $seoCoreScore,
             'score_entity' => $entityScore,
             'score_signals' => $trackingScore,
+            'score_content' => $contentScore,
+            'score_backlinks' => $backlinkScore,
         ];
     }
 
@@ -424,6 +456,68 @@ final class GrowthReadinessReport
     }
 
     /**
+     * @return list<array{label: string, status: string, detail: string, weight: float}>
+     */
+    private static function contentHealthItems(?SeoEntity $seo): array
+    {
+        $strategies = $seo?->hijackStrategies() ?? [];
+        $total = count($strategies);
+        $ready = 0;
+        $published = 0;
+
+        foreach ($strategies as $strategy) {
+            if (! is_array($strategy)) {
+                continue;
+            }
+            $auto = $strategy['autonomous_content'] ?? null;
+            if (is_array($auto) && in_array((string) ($auto['status'] ?? ''), ['ready', 'published'], true)) {
+                $ready++;
+            }
+            if (isset($strategy['applied_at']) && is_string($strategy['applied_at'])) {
+                $published++;
+            }
+        }
+
+        $strategyStatus = match (true) {
+            $total === 0 => ['fail', 'No hijack strategies stored yet — run Hijack Ops when competitors outrank Medca.'],
+            $ready >= 1 => ['pass', sprintf('%d of %d strategies have Gemini autonomous SEO ready.', $ready, $total)],
+            default => ['warn', sprintf('%d hijack strategies exist but none have autonomous content yet.', $total)],
+        };
+
+        $publishStatus = match (true) {
+            $published >= 1 => ['pass', sprintf('%d strategy(ies) published to pages via Site Architect.', $published)],
+            $ready >= 1 => ['warn', 'Autonomous content is ready — use One-click publish in Site Architect.'],
+            default => ['warn', 'No hijack strategies published to live pages yet.'],
+        };
+
+        $geminiKey = trim((string) config('gemini.api_key', ''));
+        $gemStatus = $geminiKey !== '' ? 'pass' : 'fail';
+        $gemDetail = $geminiKey !== ''
+            ? 'Gemini is configured for AutonomousContentJob.'
+            : 'Set GEMINI_API_KEY to enable autonomous meta generation.';
+
+        return [
+            ['label' => 'Hijack strategy library', 'status' => $strategyStatus[0], 'detail' => $strategyStatus[1], 'weight' => 2.0],
+            ['label' => 'Autonomous SEO published', 'status' => $publishStatus[0], 'detail' => $publishStatus[1], 'weight' => 2.5],
+            ['label' => 'Gemini content engine', 'status' => $gemStatus, 'detail' => $gemDetail, 'weight' => 1.5],
+        ];
+    }
+
+    private static function hrefHijackOps(): string
+    {
+        return Route::has('growth-center.competitors.index')
+            ? route('growth-center.competitors.index', ['tab' => 'hijack-opportunities'])
+            : '#';
+    }
+
+    private static function hrefWarRoom(): string
+    {
+        return Route::has('growth-center.competitors.index')
+            ? route('growth-center.competitors.index', ['tab' => 'war-room'])
+            : '#';
+    }
+
+    /**
      * @param  list<array{label: string, status: string, detail: string, weight: float}>  $seoItems
      * @param  list<array{label: string, status: string, detail: string, weight: float}>  $trackingItems
      * @return list<array{priority: string, text: string, href: string|null}>
@@ -468,6 +562,8 @@ final class GrowthReadinessReport
             'Google Search Console verification', 'AI discovery flags', 'Bing Webmaster integration' => self::hrefTechnical(),
             'Hub coordinates (GEO)' => self::hrefGeo(),
             'HTTPS (APP_URL)' => null,
+            'Hijack strategy library', 'Autonomous SEO published', 'Gemini content engine' => self::hrefHijackOps(),
+            'Medca citation coverage', 'Backlink gap vs competitors', 'Backlink scan freshness' => self::hrefWarRoom(),
             'Public measurement', 'GTM / GA4 / Meta Pixel', 'Tag duplication', 'Meta Conversions API', 'Microsoft Clarity', 'Gemini API' => self::hrefIntegrations(),
             default => self::hrefMarketing(),
         };

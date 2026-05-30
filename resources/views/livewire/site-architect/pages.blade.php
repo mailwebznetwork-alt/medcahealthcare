@@ -186,16 +186,35 @@
                                                     'gap' => $strategy['position_gap'] ?? '—',
                                                 ]) }}
                                             </p>
-                                            @if (! empty($strategy['meta_title']))
-                                                <p class="mt-2 text-xs text-[var(--text-secondary)]"><span class="text-[var(--text-muted)]">{{ __('Title') }}:</span> {{ $strategy['meta_title'] }}</p>
+                                            @php
+                                                $previewTitle = $strategy['autonomous_content']['meta_title']
+                                                    ?? $strategy['meta_title']
+                                                    ?? null;
+                                            @endphp
+                                            @if (! empty($previewTitle))
+                                                <p class="mt-1 text-xs text-[var(--success)]">
+                                                    <span class="font-semibold">{{ ! empty($strategy['autonomous_content']['meta_title']) ? __('AI optimized') : __('Suggested title') }}:</span>
+                                                    {{ $previewTitle }}
+                                                </p>
                                             @endif
                                         </div>
+                                        <div class="flex shrink-0 flex-col gap-2">
                                         <button
                                             type="button"
                                             wire:click="applyHijackStrategy('{{ $entry['key'] }}')"
                                             wire:loading.attr="disabled"
-                                            class="mom-cta-primary shrink-0 !px-3 !py-2 !text-[11px]"
+                                            class="mom-cta-primary !px-3 !py-2 !text-[11px]"
                                         >{{ __('Apply to page') }}</button>
+                                        @if ($editingId)
+                                            <button
+                                                type="button"
+                                                wire:click="applyAndPublishHijackStrategy('{{ $entry['key'] }}')"
+                                                wire:loading.attr="disabled"
+                                                wire:confirm="{{ __('Publish AI SEO to this page and sync seo_entities now?') }}"
+                                                class="rounded-mom-chrome border border-[rgba(98,195,112,0.45)] bg-[rgba(98,195,112,0.12)] px-3 py-2 text-[11px] font-semibold text-[var(--success)]"
+                                            >{{ __('One-click publish') }}</button>
+                                        @endif
+                                        </div>
                                     </div>
                                 </li>
                             @endforeach
