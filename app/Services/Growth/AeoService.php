@@ -3,7 +3,7 @@
 namespace App\Services\Growth;
 
 use App\Models\BusinessProfile;
-use App\Models\GrowthPincode;
+use App\Models\PinCode;
 use App\Models\PageElement;
 use App\Models\PageSeo;
 use App\Models\SeoAiSignal;
@@ -87,14 +87,14 @@ class AeoService
                 ->all()
             : [];
 
-        $locations = Schema::hasTable('pincodes')
-            ? GrowthPincode::query()
+        $locations = Schema::hasTable('pin_codes')
+            ? PinCode::query()
                 ->orderBy('pincode')
                 ->get()
-                ->map(fn (GrowthPincode $pincode): array => [
+                ->map(fn (PinCode $pincode): array => [
                     'pincode' => $pincode->pincode,
                     'landing_page' => $pincode->landing_page,
-                    'serviceable' => (bool) $pincode->serviceable,
+                    'serviceable' => (bool) $pincode->is_serviceable,
                     'priority' => $pincode->priority,
                 ])
                 ->values()

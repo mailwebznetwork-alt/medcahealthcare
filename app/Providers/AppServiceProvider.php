@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Models\Block;
 use App\Models\Blog;
 use App\Models\BusinessProfile;
+use App\Models\Competitor;
+use App\Models\CompetitorTracking;
 use App\Models\Lead;
 use App\Models\MarketingCampaign;
 use App\Models\MarketingSetting;
@@ -14,12 +16,16 @@ use App\Models\PinCode;
 use App\Models\SeoEntity;
 use App\Models\SeoTechnical;
 use App\Models\Service;
+use App\Models\SiteKeywordRanking;
 use App\Models\User;
 use App\Observers\BlogObserver;
+use App\Observers\CompetitorTrackingObserver;
 use App\Observers\PageObserver;
 use App\Observers\ServiceObserver;
+use App\Observers\SiteKeywordRankingObserver;
 use App\Policies\BlockPolicy;
 use App\Policies\BlogPolicy;
+use App\Policies\CompetitorPolicy;
 use App\Policies\LeadPolicy;
 use App\Policies\MarketingCampaignPolicy;
 use App\Policies\MarketingSettingPolicy;
@@ -101,10 +107,13 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(MarketingSetting::class, MarketingSettingPolicy::class);
         Gate::policy(MarketingCampaign::class, MarketingCampaignPolicy::class);
         Gate::policy(Lead::class, LeadPolicy::class);
+        Gate::policy(Competitor::class, CompetitorPolicy::class);
 
         Page::observe(PageObserver::class);
         Blog::observe(BlogObserver::class);
         Service::observe(ServiceObserver::class);
+        CompetitorTracking::observe(CompetitorTrackingObserver::class);
+        SiteKeywordRanking::observe(SiteKeywordRankingObserver::class);
 
         View::composer('layouts.app', function ($view): void {
             $view->with('marketingSettings', MarketingSetting::current());

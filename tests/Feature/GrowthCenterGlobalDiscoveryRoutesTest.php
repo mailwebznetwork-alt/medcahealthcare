@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\BusinessProfile;
-use App\Models\GrowthPincode;
+use App\Models\PinCode;
 use App\Models\PageElement;
 use App\Models\PageSeo;
 use App\Models\SeoEntity;
@@ -39,7 +39,7 @@ it('serves global robots and llm endpoints', function () {
 });
 
 it('serves sitemap and discovery payload using page and geo data', function () {
-    if (! Schema::hasTable('business_profiles') || ! Schema::hasTable('page_seo') || ! Schema::hasTable('page_elements') || ! Schema::hasTable('pincodes')) {
+    if (! Schema::hasTable('business_profiles') || ! Schema::hasTable('page_seo') || ! Schema::hasTable('page_elements') || ! Schema::hasTable('pin_codes')) {
         $this->markTestSkipped('Growth Center architecture tables are not migrated.');
     }
 
@@ -79,12 +79,15 @@ it('serves sitemap and discovery payload using page and geo data', function () {
         'type' => 'text',
     ]);
 
-    GrowthPincode::query()->create([
+    PinCode::query()->create([
         'business_profile_id' => $profile->id,
         'pincode' => '560076',
-        'serviceable' => true,
+        'area_name' => 'Arekere',
+        'city' => 'Bangalore',
+        'is_serviceable' => true,
         'landing_page' => '/locations/560076',
         'priority' => 'high',
+        'is_active' => true,
     ]);
 
     $this->get('/sitemap.xml')

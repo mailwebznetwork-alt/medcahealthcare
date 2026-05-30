@@ -14,7 +14,41 @@ class CompetitorKeyword extends Model
         'intent_type',
         'search_volume',
         'difficulty',
+        'hijack_priority',
     ];
+
+    /** @var list<string> */
+    public const HIGH_INTENT_TYPES = ['local', 'service', 'high_intent'];
+
+    protected function casts(): array
+    {
+        return [
+            'search_volume' => 'integer',
+            'difficulty' => 'integer',
+            'hijack_priority' => 'integer',
+            'is_active' => 'boolean',
+        ];
+    }
+
+    public function isHighIntent(): bool
+    {
+        return in_array(strtolower((string) $this->intent_type), self::HIGH_INTENT_TYPES, true);
+    }
+
+    public function latestPosition(): ?int
+    {
+        $position = $this->trackings()
+            ->orderByDesc('recorded_date')
+            ->orderByDesc('id')
+            ->value('position');
+
+        return $position !== null ? (int) $position : null;
+    }
+
+    public function isHijackOpportunity(): bool
+    {
+        return $this->hijack_priority !== null && (int) $this->hijack_priority >= 1;
+    }
 
     public function competitor(): BelongsTo
     {

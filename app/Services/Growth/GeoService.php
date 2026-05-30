@@ -4,7 +4,7 @@ namespace App\Services\Growth;
 
 use App\Models\BusinessProfile;
 use App\Models\GeoLocation;
-use App\Models\GrowthPincode;
+use App\Models\PinCode;
 use Illuminate\Support\Facades\Schema;
 
 class GeoService
@@ -32,29 +32,36 @@ class GeoService
         );
     }
 
-    public function addPincode(array $data): GrowthPincode
+    public function addPincode(array $data): PinCode
     {
-        return GrowthPincode::query()->create([
-            'business_profile_id' => $this->resolveBusinessProfileId(),
-            'geo_location_id' => $data['geo_location_id'] ?? null,
-            'pincode' => $data['pincode'],
-            'serviceable' => (bool) ($data['serviceable'] ?? true),
-            'landing_page' => $data['landing_page'] ?? null,
-            'priority' => $data['priority'] ?? 'medium',
-        ]);
+        $pincode = trim((string) ($data['pincode'] ?? ''));
+
+        return PinCode::query()->updateOrCreate(
+            ['pincode' => $pincode],
+            [
+                'business_profile_id' => $this->resolveBusinessProfileId(),
+                'geo_location_id' => $data['geo_location_id'] ?? null,
+                'area_name' => trim((string) ($data['area_name'] ?? 'Area '.$pincode)),
+                'city' => trim((string) ($data['city'] ?? 'Bangalore')),
+                'is_serviceable' => (bool) ($data['serviceable'] ?? true),
+                'landing_page' => $data['landing_page'] ?? null,
+                'priority' => $data['priority'] ?? 'medium',
+                'is_active' => true,
+            ]
+        );
     }
 
-    public function updatePincode(int $id, array $data): ?GrowthPincode
+    public function updatePincode(int $id, array $data): ?PinCode
     {
-        $pincode = GrowthPincode::query()->find($id);
-        if (! $pincode instanceof GrowthPincode) {
+        $pincode = PinCode::query()->find($id);
+        if (! $pincode instanceof PinCode) {
             return null;
         }
 
         $pincode->fill([
             'geo_location_id' => $data['geo_location_id'] ?? $pincode->geo_location_id,
             'pincode' => $data['pincode'] ?? $pincode->pincode,
-            'serviceable' => array_key_exists('serviceable', $data) ? (bool) $data['serviceable'] : $pincode->serviceable,
+            'is_serviceable' => array_key_exists('serviceable', $data) ? (bool) $data['serviceable'] : $pincode->is_serviceable,
             'landing_page' => $data['landing_page'] ?? $pincode->landing_page,
             'priority' => $data['priority'] ?? $pincode->priority,
         ])->save();
@@ -64,7 +71,7 @@ class GeoService
 
     public function getCoverageStats(): array
     {
-        if (! Schema::hasTable('geo_locations') || ! Schema::hasTable('pincodes')) {
+        if (! Schema::hasTable('geo_locations') || ! Schema::hasTable('pin_codes')) {
             return [
                 'total_locations' => 0,
                 'total_pincodes' => 0,
@@ -75,9 +82,9 @@ class GeoService
 
         return [
             'total_locations' => GeoLocation::query()->count(),
-            'total_pincodes' => GrowthPincode::query()->count(),
-            'serviceable_pincodes' => GrowthPincode::query()->where('serviceable', true)->count(),
-            'high_priority_pincodes' => GrowthPincode::query()->where('priority', 'high')->count(),
+            'total_pincodes' => PinCode::query()->count(),
+            'serviceable_pincodes' => PinCode::query()->where('is_serviceable', true)->count(),
+            'high_priority_pincodes' => PinCode::query()->where('priority', 'high')->count(),
         ];
     }
 }

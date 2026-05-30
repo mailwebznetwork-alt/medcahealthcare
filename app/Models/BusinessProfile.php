@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class BusinessProfile extends Model
 {
@@ -19,4 +20,12 @@ class BusinessProfile extends Model
         'website',
         'address',
     ];
+
+    /**
+     * @return HasMany<PinCode, $this>
+     */
+    public function pinCodes(): HasMany
+    {
+        return $this->hasMany(PinCode::class);
+    }
 }

@@ -8,7 +8,7 @@ use App\Models\Competitor;
 use App\Models\CompetitorKeyword;
 use App\Models\CompetitorLead;
 use App\Models\CompetitorTracking;
-use App\Models\GrowthPincode;
+use App\Models\PinCode;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 
@@ -50,8 +50,8 @@ final class WarRoomRollup
             ? (int) CompetitorTracking::query()->count()
             : 0;
 
-        $geoRefRules = Schema::hasTable('pincodes')
-            ? (int) GrowthPincode::query()->count()
+        $geoRefRules = Schema::hasTable('pin_codes')
+            ? (int) PinCode::query()->count()
             : 0;
 
         $attributionLeads = Schema::hasTable('competitor_leads')

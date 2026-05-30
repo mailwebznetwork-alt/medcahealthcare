@@ -92,3 +92,16 @@ it('returns compare and summary payloads', function () {
         ->assertOk()
         ->assertJsonStructure(['best_competitor', 'worst_competitor']);
 });
+
+it('denies competitor API when growth_center module is revoked', function () {
+    if (! Schema::hasTable('competitors')) {
+        $this->markTestSkipped('Competitors table is not migrated.');
+    }
+
+    $user = User::factory()->create([
+        'module_access' => array_fill_keys(\App\ModuleAccess::keys(), false),
+    ]);
+    $this->actingAs($user, 'sanctum');
+
+    $this->getJson('/api/admin/growth/competitors')->assertForbidden();
+});

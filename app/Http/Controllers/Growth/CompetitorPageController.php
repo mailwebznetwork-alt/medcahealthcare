@@ -9,11 +9,12 @@ use App\Models\CompetitorKeyword;
 use App\Models\CompetitorLead;
 use App\Models\CompetitorTracking;
 use App\Models\GeoLocation;
-use App\Models\GrowthPincode;
+use App\Models\PinCode;
 use App\Models\Intercept;
 use App\Models\SeoAiSignal;
 use App\Models\SeoEntity;
 use App\Models\SeoTechnical;
+use App\Models\SiteKeywordRanking;
 use App\Services\CompetitorComparisonService;
 use App\Services\Growth\GeoService;
 use App\Services\Growth\WarRoomService;
@@ -74,7 +75,7 @@ class CompetitorPageController extends Controller
         }
 
         $activeTab = (string) $request->query('tab', 'competitors');
-        $allowedTabs = ['readiness', 'war-room', 'seo', 'ga4', 'ai-pulse', 'competitors'];
+        $allowedTabs = ['readiness', 'war-room', 'hijack-opportunities', 'seo', 'ga4', 'ai-pulse', 'competitors'];
         if (! in_array($activeTab, $allowedTabs, true)) {
             $activeTab = 'competitors';
         }
@@ -104,12 +105,19 @@ class CompetitorPageController extends Controller
         if (Schema::hasTable('geo_locations')) {
             $geoLocation = GeoLocation::query()->latest('id')->first();
         }
-        if (Schema::hasTable('pincodes')) {
-            $pincodes = GrowthPincode::query()->latest('id')->limit(100)->get();
+        if (Schema::hasTable('pin_codes')) {
+            $pincodes = PinCode::query()->latest('id')->limit(100)->get();
         }
         if (Schema::hasTable('intercepts')) {
             $warRoomDashboard = $this->warRoomService->getDashboard();
         }
+
+        $hijackOpportunities = collect();
+        if (Schema::hasTable('competitor_keywords') && Schema::hasColumn('competitor_keywords', 'hijack_priority')) {
+            $hijackOpportunities = $this->comparisonService->identifyHighValueOpportunities();
+        }
+
+        $hijackStrategies = $seoEntity?->hijackStrategies() ?? [];
 
         $businessProfile = null;
         if (Schema::hasTable('business_profiles')) {
@@ -143,6 +151,8 @@ class CompetitorPageController extends Controller
             'intercepts' => Schema::hasTable('intercepts')
                 ? Intercept::query()->with('competitor:id,name')->latest('id')->limit(100)->get()
                 : collect(),
+            'hijackOpportunities' => $hijackOpportunities,
+            'hijackStrategies' => $hijackStrategies,
         ]);
     }
 
@@ -326,8 +336,11 @@ class CompetitorPageController extends Controller
             'clicks' => ['required', 'integer', 'min:0'],
             'impressions' => ['required', 'integer', 'min:0'],
             'position' => ['nullable', 'integer', 'min:1'],
+            'our_position' => ['nullable', 'integer', 'min:1'],
             'recorded_date' => ['required', 'date'],
         ]);
+
+        $keyword = CompetitorKeyword::query()->findOrFail((int) $validated['competitor_keyword_id']);
 
         CompetitorTracking::query()->create([
             'competitor_keyword_id' => (int) $validated['competitor_keyword_id'],
@@ -337,11 +350,44 @@ class CompetitorPageController extends Controller
             'recorded_date' => $validated['recorded_date'],
         ]);
 
+        if (isset($validated['our_position']) && Schema::hasTable('site_keyword_rankings')) {
+            SiteKeywordRanking::query()->create([
+                'keyword' => SiteKeywordRanking::normalizeKeyword($keyword->keyword),
+                'position' => (int) $validated['our_position'],
+                'recorded_date' => $validated['recorded_date'],
+            ]);
+        }
+
         WarRoomRollup::forget();
 
         return redirect()
             ->route('growth-center.competitors.index')
             ->with('status', __('Tracking data added successfully.'));
+    }
+
+    public function storeOurRanking(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'keyword' => ['required', 'string', 'max:255'],
+            'position' => ['required', 'integer', 'min:1'],
+            'recorded_date' => ['required', 'date'],
+        ]);
+
+        if (! Schema::hasTable('site_keyword_rankings')) {
+            return redirect()
+                ->route('growth-center.competitors.index', ['tab' => 'hijack-opportunities'])
+                ->withErrors(['keyword' => __('Site keyword rankings are not available yet. Run migrations.')]);
+        }
+
+        SiteKeywordRanking::query()->create([
+            'keyword' => SiteKeywordRanking::normalizeKeyword($validated['keyword']),
+            'position' => (int) $validated['position'],
+            'recorded_date' => $validated['recorded_date'],
+        ]);
+
+        return redirect()
+            ->route('growth-center.competitors.index', ['tab' => 'hijack-opportunities'])
+            ->with('status', __('Medca ranking recorded. Hijack scan updated.'));
     }
 
     public function storeLead(Request $request): RedirectResponse

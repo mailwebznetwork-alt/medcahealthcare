@@ -19,7 +19,26 @@ class SeoEntity extends Model
         'google_business_profile_url',
         'has_map_url',
         'entity_faqs',
+        'hijack_strategy',
     ];
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function hijackStrategies(): array
+    {
+        if (! is_string($this->hijack_strategy) || trim($this->hijack_strategy) === '') {
+            return [];
+        }
+
+        try {
+            $decoded = json_decode($this->hijack_strategy, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\Throwable) {
+            return [];
+        }
+
+        return is_array($decoded) ? $decoded : [];
+    }
 
     protected function casts(): array
     {

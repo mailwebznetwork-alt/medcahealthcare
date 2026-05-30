@@ -2,6 +2,9 @@
 
 use App\Models\Service;
 use App\Services\SiteArchitect\ServiceInsertCatalog;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
 
 it('returns every service for the architect insert dropdown', function () {
     $active = Service::factory()->create(['service_code' => 'catalog-active']);

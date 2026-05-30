@@ -10,7 +10,7 @@ Route::post('/leads', [LeadController::class, 'store'])->middleware('throttle:ap
 Route::post('/payments/notify', [PaymentNotificationController::class, 'store'])
     ->middleware(['throttle:payments_notify', 'payment.ingest.signature']);
 
-Route::prefix('admin/growth/competitors')->middleware(['auth:sanctum'])->group(function () {
+Route::prefix('admin/growth/competitors')->middleware(['auth:sanctum', 'active', 'module:growth_center'])->group(function () {
     Route::get('/', [CompetitorController::class, 'index']);
     Route::post('/bulk', [CompetitorController::class, 'bulkStore']);
     Route::post('/compare', [CompetitorController::class, 'compare']);

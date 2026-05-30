@@ -6,7 +6,7 @@ use App\Enums\PublishStatus;
 use App\Enums\ServiceVisibility;
 use App\Models\Blog;
 use App\Models\BusinessProfile;
-use App\Models\GrowthPincode;
+use App\Models\PinCode;
 use App\Models\Page;
 use App\Models\PageSeo;
 use App\Models\SeoEntity;
@@ -383,11 +383,11 @@ class SeoService
      */
     protected function geoLevelUrls(): Collection
     {
-        if (! Schema::hasTable('pincodes')) {
+        if (! Schema::hasTable('pin_codes')) {
             return collect();
         }
 
-        return GrowthPincode::query()
+        return PinCode::query()
             ->whereNotNull('landing_page')
             ->pluck('landing_page');
     }

@@ -22,10 +22,13 @@ return [
     |--------------------------------------------------------------------------
     */
     'google_ads_developer_token' => env('GOOGLE_ADS_DEVELOPER_TOKEN'),
-    'google_ads_customer_id' => env('GOOGLE_ADS_CUSTOMER_ID'),
-    'google_ads_refresh_token' => env('GOOGLE_ADS_REFRESH_TOKEN'),
     'google_ads_client_id' => env('GOOGLE_ADS_CLIENT_ID'),
     'google_ads_client_secret' => env('GOOGLE_ADS_CLIENT_SECRET'),
+    'google_ads_refresh_token' => env('GOOGLE_ADS_REFRESH_TOKEN'),
+    'google_ads_customer_id' => env('GOOGLE_ADS_CUSTOMER_ID'),
+    'google_ads_login_customer_id' => env('GOOGLE_ADS_LOGIN_CUSTOMER_ID'),
+    'google_ads_api_version' => env('GOOGLE_ADS_API_VERSION', 'v18'),
+    'google_ads_cache_ttl' => (int) env('MARKETING_GOOGLE_ADS_CACHE_TTL', 3600),
 
     /*
     |--------------------------------------------------------------------------

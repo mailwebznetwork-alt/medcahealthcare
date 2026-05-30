@@ -13,6 +13,8 @@
         @include('growth-center.competitors.partials.readiness')
     @elseif (($activeTab ?? 'competitors') === 'war-room')
         @include('growth-center.competitors.partials.war-room')
+    @elseif (($activeTab ?? 'competitors') === 'hijack-opportunities')
+        @include('growth-center.competitors.partials.hijack-opportunities')
     @elseif (($activeTab ?? 'competitors') === 'seo')
         @include('growth-center.competitors.partials.seo')
     @elseif (($activeTab ?? 'competitors') === 'ga4')
@@ -172,6 +174,10 @@
                     <label class="block">
                         <span class="mom-micro mb-1 block">{{ __('Position') }}</span>
                         <input type="number" min="1" name="position" class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]">
+                    </label>
+                    <label class="block">
+                        <span class="mom-micro mb-1 block">{{ __('Our Position (optional)') }}</span>
+                        <input type="number" min="1" name="our_position" class="w-full rounded-mom-chrome border border-[rgba(255,255,255,0.06)] bg-[rgba(28,22,18,0.75)] px-3 py-2 text-sm text-[var(--text-primary)]">
                     </label>
                     <label class="block">
                         <span class="mom-micro mb-1 block">{{ __('Recorded Date') }}</span>

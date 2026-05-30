@@ -165,6 +165,45 @@
 
             <section class="mom-card p-6">
                 <h3 class="mom-section-title mb-4">{{ __('SEO') }}</h3>
+
+                @if (($hijackStrategiesForPage ?? []) !== [])
+                    <div class="mb-6 rounded-mom-chrome border border-mom-gold/30 bg-[rgba(212,175,55,0.06)] p-4">
+                        <p class="text-xs font-semibold uppercase tracking-wide text-mom-gold">{{ __('Growth Center — Hijack strategies') }}</p>
+                        <p class="mom-subtext mt-2">{{ __('Gemini-generated counter-SEO from competitor gaps. Apply to pre-fill meta tags and H1 for this page.') }}</p>
+                        <ul class="mt-4 space-y-3">
+                            @foreach ($hijackStrategiesForPage as $entry)
+                                @php
+                                    $strategy = $entry['strategy'] ?? [];
+                                @endphp
+                                <li class="rounded-mom-chrome border border-[var(--border-panel-soft)] bg-[var(--bg-card-nested)] p-3">
+                                    <div class="flex flex-wrap items-start justify-between gap-3">
+                                        <div>
+                                            <p class="text-sm font-medium text-[var(--text-primary)]">{{ $strategy['keyword'] ?? '—' }}</p>
+                                            <p class="mom-subtext mt-1">
+                                                {{ __('Priority :p · vs :competitor · gap :gap', [
+                                                    'p' => $strategy['hijack_priority'] ?? '—',
+                                                    'competitor' => $strategy['competitor_name'] ?? __('competitor'),
+                                                    'gap' => $strategy['position_gap'] ?? '—',
+                                                ]) }}
+                                            </p>
+                                            @if (! empty($strategy['meta_title']))
+                                                <p class="mt-2 text-xs text-[var(--text-secondary)]"><span class="text-[var(--text-muted)]">{{ __('Title') }}:</span> {{ $strategy['meta_title'] }}</p>
+                                            @endif
+                                        </div>
+                                        <button
+                                            type="button"
+                                            wire:click="applyHijackStrategy('{{ $entry['key'] }}')"
+                                            wire:loading.attr="disabled"
+                                            class="mom-cta-primary shrink-0 !px-3 !py-2 !text-[11px]"
+                                        >{{ __('Apply to page') }}</button>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                        @error('hijack_strategy') <p class="mt-2 text-xs text-[var(--danger)]">{{ $message }}</p> @enderror
+                    </div>
+                @endif
+
                 <div class="grid gap-4 md:grid-cols-2">
                     <div class="md:col-span-2">
                         <label class="block text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">{{ __('Meta title') }}</label>

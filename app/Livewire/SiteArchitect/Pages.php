@@ -10,6 +10,7 @@ use App\Models\PageRevision;
 use App\Models\PinCode;
 use App\Models\SiteSlugRedirect;
 use App\Services\ActivityLogService;
+use App\Services\Growth\HijackStrategyReader;
 use App\Services\Integrations\OutboundWebhookDispatcher;
 use App\Services\SiteArchitect\ServiceInsertCatalog;
 use Carbon\CarbonImmutable;
@@ -184,6 +185,9 @@ class Pages extends Component
             'readabilityHint' => $this->mode === 'form' ? $this->computeReadabilityHint() : null,
             'llmReadiness' => $this->mode === 'form' ? $this->computeLlmReadiness() : null,
             'onPageSeo' => $this->mode === 'form' ? $this->computeOnPageSeoChecklist() : null,
+            'hijackStrategiesForPage' => $this->mode === 'form'
+                ? app(HijackStrategyReader::class)->forPageKeywords($this->pageFocusKeywords())
+                : [],
         ]);
     }
 
@@ -288,6 +292,62 @@ class Pages extends Component
         if ($this->editingId === null) {
             $this->slug = Str::slug($this->title);
         }
+    }
+
+    public function applyHijackStrategy(string $strategyKey): void
+    {
+        if ($this->mode !== 'form') {
+            return;
+        }
+
+        if ($this->editingId !== null) {
+            $page = Page::query()->findOrFail($this->editingId);
+            $this->authorize('update', $page);
+        } else {
+            $this->authorize('create', Page::class);
+        }
+
+        $strategies = app(HijackStrategyReader::class)->allStrategies();
+        $strategy = $strategies[$strategyKey] ?? null;
+        if (! is_array($strategy)) {
+            $this->addError('hijack_strategy', __('That hijack strategy is no longer available.'));
+
+            return;
+        }
+
+        if (is_string($strategy['meta_title'] ?? null) && trim($strategy['meta_title']) !== '') {
+            $this->meta_title = trim($strategy['meta_title']);
+        }
+
+        if (is_string($strategy['meta_description'] ?? null) && trim($strategy['meta_description']) !== '') {
+            $this->meta_description = trim($strategy['meta_description']);
+        }
+
+        if (is_string($strategy['h1_suggestion'] ?? null) && trim($strategy['h1_suggestion']) !== '') {
+            $this->h1 = trim($strategy['h1_suggestion']);
+        }
+
+        $changes = $strategy['content_changes'] ?? [];
+        if (is_array($changes) && $changes !== []) {
+            $bullets = collect($changes)
+                ->filter(fn ($line) => is_string($line) && trim($line) !== '')
+                ->map(fn (string $line) => '- '.trim($line))
+                ->implode("\n");
+
+            $note = __('Growth hijack content edits (:keyword):', [
+                'keyword' => (string) ($strategy['keyword'] ?? ''),
+            ])."\n".$bullets;
+
+            $this->ai_context = trim($this->ai_context) !== ''
+                ? trim($this->ai_context)."\n\n".$note
+                : $note;
+        }
+
+        if (is_string($strategy['schema_hint'] ?? null) && trim($strategy['schema_hint']) !== '') {
+            $this->schema_type = $this->schema_type !== '' ? $this->schema_type : 'MedicalOrganization';
+        }
+
+        session()->flash('status', __('Hijack strategy applied — review SEO fields and save the page.'));
     }
 
     public function markContentReviewed(): void
@@ -883,6 +943,23 @@ class Pages extends Component
                 'location_keywords' => '',
             ];
         }
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function pageFocusKeywords(): array
+    {
+        $fromFocus = array_values(array_filter(
+            $this->focusKeywords,
+            fn ($kw) => is_string($kw) && trim($kw) !== ''
+        ));
+
+        if ($fromFocus !== []) {
+            return $fromFocus;
+        }
+
+        return $this->keywordsFromLegacyField($this->keywords);
     }
 
     /**

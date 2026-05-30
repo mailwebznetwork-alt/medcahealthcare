@@ -10,6 +10,7 @@ use App\Models\CompetitorKeyword;
 use App\Models\CompetitorLead;
 use App\Services\CompetitorComparisonService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Gate;
 
 class CompetitorController extends Controller
 {
@@ -19,6 +20,8 @@ class CompetitorController extends Controller
 
     public function index(): JsonResponse
     {
+        Gate::authorize('viewAny', Competitor::class);
+
         $competitors = Competitor::withCount(['keywords', 'leads'])
             ->orderByDesc('is_intercept_target')
             ->orderBy('name')
@@ -39,6 +42,8 @@ class CompetitorController extends Controller
 
     public function bulkStore(BulkStoreCompetitorRequest $request): JsonResponse
     {
+        Gate::authorize('create', Competitor::class);
+
         $validated = $request->validated();
 
         $competitors = collect($validated['competitors'])->map(function (array $data) {
@@ -62,6 +67,8 @@ class CompetitorController extends Controller
 
     public function compare(CompareCompetitorsRequest $request): JsonResponse
     {
+        Gate::authorize('viewAny', Competitor::class);
+
         $competitorIds = $request->validated('competitor_ids');
 
         $comparison = $this->comparisonService->compareCompetitors($competitorIds);
@@ -75,6 +82,8 @@ class CompetitorController extends Controller
 
     public function summary(): JsonResponse
     {
+        Gate::authorize('viewAny', Competitor::class);
+
         $totalCompetitors = Competitor::count();
         $activeCompetitors = Competitor::active()->count();
         $totalKeywords = CompetitorKeyword::count();

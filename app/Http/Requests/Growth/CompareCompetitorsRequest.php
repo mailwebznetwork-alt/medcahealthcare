@@ -2,13 +2,14 @@
 
 namespace App\Http\Requests\Growth;
 
+use App\Models\Competitor;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CompareCompetitorsRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user()?->can('viewAny', Competitor::class) ?? false;
     }
 
     public function rules(): array

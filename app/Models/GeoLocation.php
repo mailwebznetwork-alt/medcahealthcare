@@ -23,8 +23,11 @@ class GeoLocation extends Model
         ];
     }
 
-    public function pincodes(): HasMany
+    /**
+     * @return HasMany<PinCode, $this>
+     */
+    public function pinCodes(): HasMany
     {
-        return $this->hasMany(GrowthPincode::class);
+        return $this->hasMany(PinCode::class);
     }
 }

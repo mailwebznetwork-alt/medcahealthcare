@@ -4,8 +4,10 @@ namespace App\Models;
 
 use Database\Factories\PinCodeFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
 
@@ -22,6 +24,10 @@ use Illuminate\Support\Str;
     'seo_keywords',
     'slug',
     'geo_page_ready',
+    'geo_location_id',
+    'business_profile_id',
+    'landing_page',
+    'priority',
 ])]
 class PinCode extends Model
 {
@@ -66,6 +72,33 @@ class PinCode extends Model
         }
 
         return $slug;
+    }
+
+    /**
+     * Growth GEO forms use "serviceable"; Operations uses is_serviceable.
+     */
+    protected function serviceable(): Attribute
+    {
+        return Attribute::make(
+            get: fn (): bool => (bool) $this->is_serviceable,
+            set: fn (mixed $value): array => ['is_serviceable' => (bool) $value],
+        );
+    }
+
+    /**
+     * @return BelongsTo<GeoLocation, $this>
+     */
+    public function geoLocation(): BelongsTo
+    {
+        return $this->belongsTo(GeoLocation::class);
+    }
+
+    /**
+     * @return BelongsTo<BusinessProfile, $this>
+     */
+    public function businessProfile(): BelongsTo
+    {
+        return $this->belongsTo(BusinessProfile::class);
     }
 
     /**
