@@ -4,6 +4,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Lead ingest API key (POST /api/leads)
+    |--------------------------------------------------------------------------
+    | Clients must send header: X-API-KEY: <LEAD_API_KEY>
+    */
+    'lead_api_key' => env('LEAD_API_KEY'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Declarative firewall / edge rules (Security workspace)
     |--------------------------------------------------------------------------
     | Operational enforcement lives in middleware and infrastructure; this list
@@ -14,7 +22,7 @@ return [
         [
             'name' => 'Public lead ingest',
             'scope' => 'POST /api/leads',
-            'rule' => 'Rate limited per IP (see throttle:api_leads)',
+            'rule' => 'X-API-KEY header (LEAD_API_KEY) + rate limited per IP (throttle:api_leads, 5/min)',
             'status' => 'active',
         ],
         [

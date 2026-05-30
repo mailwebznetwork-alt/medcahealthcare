@@ -2,9 +2,6 @@
 
 use App\Services\Settings\MomFullBackupArchive;
 use Illuminate\Support\Facades\File;
-use Tests\TestCase;
-
-uses(TestCase::class);
 
 test('full backup archive round trips sqlite database, storage directories, and application tree', function (): void {
     $base = sys_get_temp_dir().DIRECTORY_SEPARATOR.'momfb-'.uniqid('', true);

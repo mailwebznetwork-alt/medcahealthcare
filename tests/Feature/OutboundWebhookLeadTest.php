@@ -29,7 +29,7 @@ it('sends an outbound webhook when a lead is created and the webhook integration
         'name' => 'Test User',
         'phone' => '9876543210',
         'service' => 'Home care',
-    ])->assertCreated();
+    ], ['X-API-KEY' => config('security.lead_api_key')])->assertCreated();
 
     Http::assertSent(function ($request): bool {
         return $request->url() === 'https://receiver.example/hooks/mm'

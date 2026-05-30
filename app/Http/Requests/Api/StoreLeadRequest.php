@@ -3,12 +3,28 @@
 namespace App\Http\Requests\Api;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class StoreLeadRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        $expected = config('security.lead_api_key');
+        if (! is_string($expected) || trim($expected) === '') {
+            abort(503, __('Lead ingest is not configured.'));
+        }
+
+        $provided = $this->header('X-API-KEY');
+        if (! is_string($provided) || trim($provided) === '') {
+            return false;
+        }
+
+        return hash_equals($expected, $provided);
+    }
+
+    protected function failedAuthorization(): void
+    {
+        throw new HttpException(401, __('Invalid or missing API key.'));
     }
 
     /**

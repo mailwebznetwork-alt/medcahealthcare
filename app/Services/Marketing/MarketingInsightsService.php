@@ -221,9 +221,12 @@ class MarketingInsightsService
 
         try {
             $res = Http::timeout(20)
-                ->withHeaders(['Content-Type' => 'application/json'])
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                    'x-goog-api-key' => $key,
+                ])
                 ->post(
-                    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='.$key,
+                    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
                     [
                         'contents' => [
                             ['parts' => [['text' => $prompt]]],

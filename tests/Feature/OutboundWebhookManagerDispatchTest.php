@@ -27,7 +27,7 @@ it('sends managed outbound webhooks and logs delivery when a lead is created', f
         'name' => 'Test User',
         'phone' => '9'.fake()->unique()->numerify('#########'),
         'service' => 'Home care',
-    ])->assertCreated();
+    ], ['X-API-KEY' => config('security.lead_api_key')])->assertCreated();
 
     expect(WebhookDelivery::query()->where('event_key', 'lead.created')->where('success', true)->count())->toBeGreaterThanOrEqual(1);
 
