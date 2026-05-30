@@ -545,7 +545,7 @@ class AiPulseService
         ], JSON_UNESCAPED_UNICODE) ?: '{}';
 
         $prompt = <<<TXT
-You are MarkOnMinds / Medca Growth OS — AI Pulse narrative brief.
+You are MarkOnMinds — AI Pulse narrative brief for the Medca Health Care public site.
 
 Return ONLY valid JSON with keys:
 "business_health","predictive_insights","conversion_insights","visibility_geo_aeo"

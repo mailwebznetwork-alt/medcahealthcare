@@ -21,7 +21,11 @@ return [
 
     'location_display' => env('MEDCA_LOCATION', 'Arekere Gate, Bengaluru'),
 
-    'brand_name' => 'Medca Health Care',
+    /** Public site & company display name (never MarkOnMinds on the frontend). */
+    'brand_name' => env('MEDCA_BRAND_NAME', 'Medca Health Care'),
+
+    /** Legal entity line for public footer / compliance copy. */
+    'company_legal_name' => env('MEDCA_COMPANY_LEGAL_NAME', 'Medca Healthcare Pvt Ltd.'),
 
     'tagline' => 'Care You Can Trust',
 
@@ -33,5 +37,18 @@ return [
 
     /** Optional Google Business Profile URL for the header location pill (Medca marketing shell). */
     'public_profile_url' => env('MEDCA_PUBLIC_PROFILE_URL', ''),
+
+    /**
+     * Dev/staging hosts rewritten by `medca:normalize-site-urls` toward APP_URL (or --to=).
+     *
+     * @var list<string>
+     */
+    'legacy_url_hosts' => [
+        'markonmindsplus.test',
+        'markonminds.test',
+        'medcahealthcare.test',
+        'localhost',
+        '127.0.0.1',
+    ],
 
 ];

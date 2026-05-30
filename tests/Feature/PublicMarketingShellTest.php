@@ -18,7 +18,8 @@ it('documents approximate sticky marketing header height for anchor offset math'
 
 it('shows compact centered footer line', function () {
     $this->get('/')->assertSuccessful()
-        ->assertSee('Powered by MarkOnMinds.', false)
+        ->assertSee(config('medca.company_legal_name'), false)
+        ->assertDontSee('MarkOnMinds', false)
         ->assertDontSee('Staff login', false);
 });
 

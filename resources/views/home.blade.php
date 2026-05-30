@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', config('medca.brand_name').' — '.config('app.name'))
+@section('title', config('medca.brand_name').' — '.config('medca.tagline'))
 
 @section('content')
     @include('public.partials.near-you-services', array_merge(

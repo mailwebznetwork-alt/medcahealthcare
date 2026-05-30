@@ -13,7 +13,7 @@
 
 @extends('layouts.app')
 
-@section('title', ($seo?->meta_title ?: $service->title).' — '.config('app.name'))
+@section('title', ($seo?->meta_title ?: $service->title).' — '.config('medca.brand_name'))
 
 @push('meta')
     @if (! $service->isListedPublicly())

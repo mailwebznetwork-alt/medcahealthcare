@@ -76,7 +76,7 @@
                 :class="{ '!translate-x-0': mobileNav }"
             >
                 <div class="flex h-[72px] shrink-0 items-center gap-3 border-b border-[var(--border-panel-soft)] px-6">
-                    <span class="text-[calc(1.125rem*1.3)] font-semibold leading-tight tracking-tight text-mom-wordmark">MarkOnMinds</span>
+                    <span class="text-[calc(1.125rem*1.3)] font-semibold leading-tight tracking-tight text-mom-wordmark">{{ config('app.name', 'MarkOnMinds') }}</span>
                 </div>
 
                 <x-mom-sidebar-nav :user="$user" />

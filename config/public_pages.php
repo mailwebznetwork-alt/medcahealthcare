@@ -26,4 +26,17 @@ return [
     */
     'service_detail_page_slug' => env('SERVICES_DETAIL_PAGE_SLUG', 'services-detail-template'),
 
+    /*
+    | Default public header nav (slug => label). Used when Site Architect navigation
+    | is empty; resolves to live CMS page URLs when those pages exist.
+    */
+    'default_header_nav' => [
+        'home' => 'Home',
+        'about-us' => 'About Us',
+        'services' => 'Services',
+        'locations' => 'Locations',
+        'careers' => 'Careers',
+        'contact' => 'Contact Us',
+    ],
+
 ];

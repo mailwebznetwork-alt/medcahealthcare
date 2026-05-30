@@ -19,7 +19,7 @@ class AeoService
 
         if (! $profile instanceof BusinessProfile) {
             $profile = BusinessProfile::query()->create([
-                'name' => config('app.name'),
+                'name' => config('medca.brand_name', 'Medca Health Care'),
                 'email' => config('mail.from.address'),
                 'website' => config('app.url'),
             ]);

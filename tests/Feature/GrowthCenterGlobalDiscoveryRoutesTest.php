@@ -14,7 +14,7 @@ it('serves global robots and llm endpoints', function () {
     }
 
     $profile = BusinessProfile::query()->create([
-        'name' => 'MarkOnMinds',
+        'name' => 'Medca Health Care',
         'website' => config('app.url'),
         'email' => 'hello@example.com',
     ]);
@@ -44,7 +44,7 @@ it('serves sitemap and discovery payload using page and geo data', function () {
     }
 
     $profile = BusinessProfile::query()->create([
-        'name' => 'MarkOnMinds',
+        'name' => 'Medca Health Care',
         'website' => config('app.url'),
         'email' => 'hello@example.com',
         'phone' => '9999999999',
@@ -61,7 +61,7 @@ it('serves sitemap and discovery payload using page and geo data', function () {
 
     SeoEntity::query()->create([
         'business_profile_id' => $profile->id,
-        'organization_name' => 'MarkOnMinds',
+        'organization_name' => 'Medca Health Care',
         'meta_title' => 'Healthcare in Bangalore',
     ]);
 
@@ -108,7 +108,7 @@ it('serves sitemap and discovery payload using page and geo data', function () {
         ->assertSuccessful()
         ->assertJsonPath('services.0.slug', 'services/home-care')
         ->assertJsonPath('locations.0.pincode', '560076')
-        ->assertJsonPath('business.organization_name', 'MarkOnMinds');
+        ->assertJsonPath('business.organization_name', 'Medca Health Care');
 });
 
 it('returns 404 for sitemap when sitemap is disabled', function () {
@@ -117,7 +117,7 @@ it('returns 404 for sitemap when sitemap is disabled', function () {
     }
 
     $profile = BusinessProfile::query()->create([
-        'name' => 'MarkOnMinds',
+        'name' => 'Medca Health Care',
         'website' => config('app.url'),
         'email' => 'hello@example.com',
     ]);
@@ -142,7 +142,7 @@ it('returns 404 for ai-discovery when discovery is disabled', function () {
     }
 
     $profile = BusinessProfile::query()->create([
-        'name' => 'MarkOnMinds',
+        'name' => 'Medca Health Care',
         'website' => config('app.url'),
         'email' => 'hello@example.com',
     ]);
@@ -165,7 +165,7 @@ it('serves custom llm.txt when configured', function () {
     }
 
     $profile = BusinessProfile::query()->create([
-        'name' => 'MarkOnMinds',
+        'name' => 'Medca Health Care',
         'website' => config('app.url'),
         'email' => 'hello@example.com',
     ]);

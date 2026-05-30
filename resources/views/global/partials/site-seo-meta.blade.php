@@ -27,7 +27,7 @@
     } elseif ($gEntity !== null && filled($gEntity->meta_title)) {
         $ogTitle = $gEntity->meta_title;
     } else {
-        $ogTitle = config('app.name');
+        $ogTitle = config('medca.brand_name');
     }
 
     $ogDescription = $metaDescription;
@@ -87,7 +87,7 @@
     <meta property="og:description" content="{{ \Illuminate\Support\Str::limit(strip_tags((string) $ogDescription), 320, '') }}">
 @endif
 <meta property="og:url" content="{{ url()->current() }}">
-<meta property="og:site_name" content="{{ config('app.name') }}">
+<meta property="og:site_name" content="{{ config('medca.brand_name') }}">
 @if (filled($ogImage))
     <meta property="og:image" content="{{ $ogImage }}">
 @endif

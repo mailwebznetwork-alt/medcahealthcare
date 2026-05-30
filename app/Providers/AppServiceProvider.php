@@ -39,7 +39,6 @@ use App\Policies\UserPolicy;
 use App\Services\Content\ContentRenderContext;
 use App\Services\Content\ServiceBindingRegistry;
 use App\Services\ServiceContextCollector;
-use App\Services\SiteNavigationResolver;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -150,9 +149,11 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('globalSiteSeo', $globalSiteSeo);
 
-            $view->with('publicNavHeader', app(SiteNavigationResolver::class)->headerLinks());
-            $view->with('publicNavFooter', app(SiteNavigationResolver::class)->footerLinks());
             $view->with('serviceContextCollector', app(ServiceContextCollector::class));
+        });
+
+        View::composer(['global.header', 'global.footer'], function ($view): void {
+            $view->with('marketingSettings', MarketingSetting::current());
         });
 
         Paginator::useTailwind();

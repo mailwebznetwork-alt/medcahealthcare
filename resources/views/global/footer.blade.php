@@ -1,7 +1,6 @@
 {{-- Medca minimal footer (reference: centered Call · © · Powered by line). --}}
 @php
-    /** @var array<int, array{label: string, href: string}>|null $publicNavFooter */
-    $footerNav = $publicNavFooter ?? [];
+    $footerNav = app(\App\Services\SiteNavigationResolver::class)->footerLinks();
 @endphp
 <footer class="mt-auto border-t border-slate-200 bg-white px-4 py-7 text-center sm:px-6 md:px-6 md:py-4">
     @if (count($footerNav) > 0)
@@ -24,6 +23,6 @@
             {{ __('Call') }} {{ config('medca.phone_display') }}
         </a>
         <span class="text-slate-400"> · </span>
-        <span class="text-center font-medium leading-snug text-slate-800">{{ __('© Medca Healthcare Pvt Ltd. Powered by MarkOnMinds.') }}</span>
+        <span class="text-center font-medium leading-snug text-slate-800">{{ __('© :company', ['company' => config('medca.company_legal_name')]) }}</span>
     </p>
 </footer>

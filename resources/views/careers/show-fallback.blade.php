@@ -8,7 +8,7 @@
 @endphp
 
 @section('title')
-    {{ $pageTitle }} — {{ config('app.name') }}
+    {{ $pageTitle }} — {{ config('medca.brand_name') }}
 @endsection
 
 @push('meta')

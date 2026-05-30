@@ -1,16 +1,9 @@
 @php
     $logoSrc = asset('images/medca-logo.png');
     $isSuperAdmin = auth()->check() && strtolower((string) auth()->user()?->role) === 'super_admin';
-
-    /** @var array<int, array{label: string, href: string}>|null $publicNavHeader */
-    $navItems = $publicNavHeader ?? [
-        ['label' => __('Home'), 'href' => url('/')],
-        ['label' => __('About Us'), 'href' => url('/#about')],
-        ['label' => __('Services'), 'href' => url('/#services')],
-        ['label' => __('Locations'), 'href' => url('/#locations')],
-        ['label' => __('Careers'), 'href' => route('careers.index')],
-        ['label' => __('Contact Us'), 'href' => url('/#contact')],
-    ];
+    $navItems = app(\App\Services\SiteNavigationResolver::class)->headerLinks();
+    $medcaPhoneTel = preg_replace('/\s+/', '', (string) config('medca.phone_tel'));
+    $medcaWhatsAppUrl = (string) config('medca.whatsapp_url');
 
     $medcaGmbUrl = trim((string) config('medca.public_profile_url', ''));
     $medcaGmbValid = $medcaGmbUrl !== '' && filter_var($medcaGmbUrl, FILTER_VALIDATE_URL);
@@ -219,18 +212,18 @@
                             <div class="border-t border-slate-200 bg-slate-50 p-4">
                                 <div class="grid grid-cols-2 gap-2">
                                     <a
-                                        href="tel:+918884999002"
+                                        href="tel:{{ $medcaPhoneTel }}"
                                         class="flex min-h-[52px] items-center justify-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-clinical-800 shadow-sm transition-colors duration-200 hover:bg-slate-50"
                                     >
-                                        Call Now
+                                        {{ __('Call Now') }}
                                     </a>
                                     <a
-                                        href="https://wa.me/918884999002"
+                                        href="{{ $medcaWhatsAppUrl }}"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         class="flex min-h-[52px] items-center justify-center rounded-xl border border-emerald-700/40 bg-emerald-700 px-3 text-sm font-bold text-white transition-colors duration-200 hover:bg-emerald-800"
                                     >
-                                        WhatsApp
+                                        {{ __('WhatsApp') }}
                                     </a>
                                 </div>
                             </div>

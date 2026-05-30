@@ -47,20 +47,20 @@
         <title>
             @isset($service)
                 @if (isset($page) && filled($page->meta_title))
-                    {{ $page->meta_title }} — {{ config('app.name') }}
+                    {{ $page->meta_title }} — {{ config('medca.brand_name') }}
                 @elseif (isset($page))
-                    {{ $page->title }} — {{ config('app.name') }}
+                    {{ $page->title }} — {{ config('medca.brand_name') }}
                 @else
-                    {{ $service->seo?->meta_title ?: $service->title }} — {{ config('app.name') }}
+                    {{ $service->seo?->meta_title ?: $service->title }} — {{ config('medca.brand_name') }}
                 @endif
             @elseif(isset($vacancy))
-                {{ $vacancy->seo_title ?: $vacancy->title }} — {{ config('app.name') }}
+                {{ $vacancy->seo_title ?: $vacancy->title }} — {{ config('medca.brand_name') }}
             @elseif(isset($page))
-                {{ $page->meta_title ?? $page->title }} — {{ config('app.name') }}
+                {{ $page->meta_title ?? $page->title }} — {{ config('medca.brand_name') }}
             @elseif(isset($blog))
-                {{ $blog->meta_title ?? $blog->title }} — {{ config('app.name') }}
+                {{ $blog->meta_title ?? $blog->title }} — {{ config('medca.brand_name') }}
             @else
-                @yield('title', config('app.name'))
+                @yield('title', config('medca.brand_name'))
             @endisset
         </title>
     </head>

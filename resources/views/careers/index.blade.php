@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('Careers').' — '.config('app.name'))
+@section('title', __('Careers').' — '.config('medca.brand_name'))
 
 @section('content')
     <header class="border-b border-slate-200 px-6 py-10 md:px-12">
