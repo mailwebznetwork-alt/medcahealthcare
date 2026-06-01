@@ -121,6 +121,7 @@
         @livewire('location.pincode-modal')
         @include('global.floating')
         <x-marketing.tracking-body :settings="$marketingSettings ?? null" />
+        <x-marketing.tracking-events />
         @stack('scripts')
     </body>
 </html>

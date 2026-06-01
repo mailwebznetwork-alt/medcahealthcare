@@ -650,3 +650,45 @@ body.medca-public-surface .medca-header-modern > div:nth-child(2) {
     max-width: 72rem;
     box-shadow: var(--medca-shadow-surface);
 }
+
+/* Phase 8.5 — extended header presets */
+body.medca-public-surface .medca-header-mega > div:nth-child(2) {
+    box-shadow: var(--medca-shadow-elevated);
+}
+
+body.medca-public-surface .medca-header-transparent {
+    background: transparent;
+}
+
+body.medca-public-surface .medca-header-transparent > div:first-child {
+    background: transparent;
+    border-color: transparent;
+}
+
+body.medca-public-surface .medca-header-sticky-pro {
+    backdrop-filter: blur(8px);
+}
+
+/* Block style variants (style pack assignments) */
+body.medca-public-surface .medca-block--style-2 {
+    --medca-block-accent: var(--medca-primary-hover);
+}
+
+body.medca-public-surface .medca-block--style-3 {
+    border-radius: var(--medca-radius-lg, 16px);
+}
+
+body.medca-public-surface .medca-block--style-4 {
+    box-shadow: var(--medca-shadow-surface);
+}
+
+body.medca-public-surface .medca-block--style-5 {
+    background: var(--medca-surface-muted);
+    border-radius: var(--medca-card-radius, 12px);
+    padding: var(--medca-spacing-block-gap, 2rem);
+}
+
+body.medca-public-surface .medca-carousel--style-2 .swiper,
+body.medca-public-surface .medca-carousel--style-2 [data-carousel] {
+    gap: var(--medca-carousel-gap, 1.5rem);
+}

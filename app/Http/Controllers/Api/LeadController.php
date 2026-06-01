@@ -15,7 +15,8 @@ use Illuminate\Support\Str;
 class LeadController extends Controller
 {
     public function __construct(
-        private LeadSourceResolver $sourceResolver
+        private LeadSourceResolver $sourceResolver,
+        private \App\Services\Marketing\Attribution\LeadAttributionService $attributionService,
     ) {}
 
     public function store(StoreLeadRequest $request): JsonResponse
@@ -86,6 +87,7 @@ class LeadController extends Controller
             'pin_code_id' => $data['pin_code_id'] ?? null,
             'status' => LeadStatus::New,
         ]);
+        $this->attributionService->applyToLead($lead, $data, $request);
         $lead->save();
 
         ScoreLeadPayloadJob::dispatch($lead);

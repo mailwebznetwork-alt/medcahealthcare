@@ -24,22 +24,19 @@ it('blocks publish with invalid draft colors', function () {
     expect(fn () => $repo->publishDraft($user))->toThrow(ValidationException::class);
 });
 
-it('restricts publish to super admins via livewire', function () {
-    $admin = User::factory()->create(['role' => 'admin', 'module_access' => ModuleAccess::defaultGrants()]);
+it('blocks editor from appearance settings', function () {
+    $user = User::factory()->create(['role' => 'editor', 'module_access' => ModuleAccess::defaultGrants()]);
 
-    Livewire\Livewire::actingAs($admin)
-        ->test(\App\Livewire\Settings\AppearanceSettings::class)
-        ->call('publish')
-        ->assertStatus(403);
+    $this->actingAs($user)
+        ->get(route('settings.appearance'))
+        ->assertForbidden();
 });
 
-it('rejects non-whitelisted fonts', function () {
+it('rejects invalid font names', function () {
     $user = User::factory()->create(['role' => 'admin']);
 
-    expect(fn () => app(ThemeConfigRepository::class)->saveDraftMeta(
-        'classic_healthcare',
-        'contained',
-        ['heading_font' => 'Comic Sans MS', 'body_font' => 'Comic Sans MS'],
+    expect(fn () => app(ThemeConfigRepository::class)->saveDraftTypography(
+        ['heading_font' => '<script>', 'body_font' => 'Valid Font'],
         $user,
     ))->toThrow(ValidationException::class);
 });

@@ -179,6 +179,16 @@ Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:site_arc
 
         Route::view('/block-factory', 'site-architect.block-factory-shell')->name('block-factory.index');
 
+        Route::view('/blueprint-builder', 'site-architect.blueprint-builder-shell')->name('blueprint-builder.index');
+
+        Route::view('/section-library', 'site-architect.section-library-shell')->name('section-library.index');
+
+        Route::view('/block-presets', 'site-architect.block-presets-shell')->name('block-presets.index');
+
+        Route::view('/block-studio', 'site-architect.block-studio-shell')->name('block-studio.index');
+
+        Route::view('/deployment-packages', 'site-architect.deployment-packages-shell')->name('deployment-packages.index');
+
         Route::view('/media', 'site-architect.media-library-shell')->name('media.index');
 
         Route::prefix('modules')->name('modules.')->group(function () {
@@ -262,7 +272,14 @@ Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:operatio
 
 Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:marketing', 'role:manager,admin,super_admin'])->group(function () {
     Route::view('/marketing', 'marketing.dashboard-shell')->name('modules.marketing');
+    Route::view('/marketing/intelligence', 'marketing.intelligence-shell')->name('modules.marketing.intelligence');
+    Route::get('/marketing/reports/leads/export', [\App\Http\Controllers\Marketing\MarketingReportController::class, 'exportLeads'])
+        ->name('modules.marketing.reports.leads.export');
 });
+
+Route::post('/marketing/track', [\App\Http\Controllers\MarketingTrackingController::class, 'store'])
+    ->middleware('throttle:marketing_clicks')
+    ->name('marketing.track');
 
 Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:growth_center', 'role:viewer,editor,manager,admin,super_admin'])->group(function () {
     Route::get('/growth-center', function () {
@@ -358,6 +375,7 @@ Route::middleware(['auth', 'active', 'verified', 'auto.logout', 'module:settings
     Route::get('/settings/integrations', [SettingsController::class, 'integrations'])->name('settings.integrations');
     Route::get('/settings/webhooks', [SettingsController::class, 'webhooks'])->name('settings.webhooks');
     Route::get('/settings/appearance', [SettingsController::class, 'appearance'])->name('settings.appearance');
+    Route::get('/settings/global-content', [SettingsController::class, 'globalContent'])->name('settings.global-content');
     Route::post('/settings/appearance/preview/enable', [\App\Http\Controllers\ThemePreviewController::class, 'enable'])->name('settings.appearance.preview.enable');
     Route::post('/settings/appearance/preview/disable', [\App\Http\Controllers\ThemePreviewController::class, 'disable'])->name('settings.appearance.preview.disable');
 });

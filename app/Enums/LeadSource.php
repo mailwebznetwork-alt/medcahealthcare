@@ -10,16 +10,24 @@ enum LeadSource: string
     case WhatsApp = 'whatsapp';
     case Call = 'call';
     case Gmb = 'gmb';
+    case Direct = 'direct';
+    case Referral = 'referral';
+    case Email = 'email';
+    case LinkedIn = 'linkedin';
 
     public function label(): string
     {
         return match ($this) {
             self::GoogleAds => 'Google Ads',
             self::MetaAds => 'Meta Ads',
-            self::Organic => 'Organic',
+            self::Organic => 'Organic Search',
             self::WhatsApp => 'WhatsApp',
             self::Call => 'Call',
-            self::Gmb => 'GMB',
+            self::Gmb => 'Google Business Profile',
+            self::Direct => 'Direct',
+            self::Referral => 'Referral',
+            self::Email => 'Email',
+            self::LinkedIn => 'LinkedIn',
         };
     }
 

@@ -31,8 +31,16 @@
             </div>
         </div>
 
-        @if (session('status'))
-            <p class="mom-body-text text-[var(--success)]" role="status">{{ session('status') }}</p>
+        @if ($statusMessage)
+            <p class="mom-body-text text-[var(--success)]" role="status">{{ $statusMessage }}</p>
+        @endif
+        @if ($errorMessage)
+            <p class="mom-body-text text-[var(--danger)]" role="alert">{{ $errorMessage }}</p>
+        @endif
+        @if ($hasDraft && ! $previewActive)
+            <p class="rounded-lg border border-mom-gold/40 bg-[var(--bg-surface)] px-4 py-3 text-sm text-[var(--text-secondary)]">
+                {{ __('You have unpublished draft changes. Click Enable preview to review, then Publish to make them live.') }}
+            </p>
         @endif
 
         @if ($activeTab === 'branding')
@@ -96,19 +104,26 @@
                             <span class="mom-label">{{ str_replace('_', ' ', ucfirst($key)) }}</span>
                             <div class="flex items-center gap-2">
                                 <input type="color" wire:model.live="tokens.{{ $key }}" class="h-10 w-14 cursor-pointer rounded border border-[var(--border-panel-soft)]" />
-                                <input type="text" wire:model="tokens.{{ $key }}" class="mom-input flex-1 font-mono text-xs" />
+                                <input type="text" wire:model.blur="tokens.{{ $key }}" class="mom-input flex-1 font-mono text-xs" placeholder="#0055ff" />
                             </div>
                         </label>
                     @endforeach
                     <div class="sm:col-span-2 lg:col-span-3">
-                        @if ($preview['contrast_errors'] !== [])
-                            <ul class="mb-3 list-disc pl-5 text-xs text-[var(--danger)]">
+                        @if ($contrastWarnings !== [])
+                            <ul class="mb-3 list-disc pl-5 text-xs text-[var(--warning)]">
+                                @foreach ($contrastWarnings as $warning)
+                                    <li>{{ $warning }} {{ __('(warning — you can still save draft)') }}</li>
+                                @endforeach
+                            </ul>
+                        @elseif ($preview['contrast_errors'] !== [])
+                            <ul class="mb-3 list-disc pl-5 text-xs text-[var(--warning)]">
                                 @foreach ($preview['contrast_errors'] as $error)
-                                    <li>{{ $error }}</li>
+                                    <li>{{ $error }} {{ __('(warning — publish may be blocked)') }}</li>
                                 @endforeach
                             </ul>
                         @endif
-                        <button type="submit" class="mom-cta-compact mom-cta-primary">{{ __('Save color draft') }}</button>
+                        @error('tokens') <p class="mb-2 text-xs text-[var(--danger)]">{{ $message }}</p> @enderror
+                        <button type="submit" class="mom-cta-compact mom-cta-primary" wire:loading.attr="disabled">{{ __('Save color draft') }}</button>
                     </div>
                 </form>
             </x-admin.card>
@@ -119,27 +134,52 @@
                 <form wire:submit="saveTypography" class="grid gap-4 md:grid-cols-2">
                     <label class="block">
                         <span class="mom-label">{{ __('Heading font') }}</span>
-                        <select wire:model="typography.heading_font" class="mom-input w-full">
-                            @foreach ($fontWhitelist as $font)
-                                <option value="{{ $font }}">{{ $font }}</option>
-                            @endforeach
+                        <select wire:model.live="heading_font_mode" class="mom-input mb-2 w-full">
+                            <option value="preset">{{ __('Preset (Google Fonts)') }}</option>
+                            <option value="custom">{{ __('Custom Google Font name') }}</option>
                         </select>
+                        @if ($heading_font_mode === 'preset')
+                            <select wire:model="typography.heading_font" class="mom-input w-full">
+                                @foreach ($fontWhitelist as $font)
+                                    <option value="{{ $font }}">{{ $font }}</option>
+                                @endforeach
+                            </select>
+                        @else
+                            <input type="text" wire:model="custom_heading_font" class="mom-input w-full" placeholder="e.g. Playfair Display" />
+                            <p class="mt-1 text-xs text-[var(--text-secondary)]">{{ __('Enter the exact Google Fonts family name.') }}</p>
+                        @endif
                     </label>
                     <label class="block">
                         <span class="mom-label">{{ __('Body font') }}</span>
-                        <select wire:model="typography.body_font" class="mom-input w-full">
-                            @foreach ($fontWhitelist as $font)
-                                <option value="{{ $font }}">{{ $font }}</option>
+                        <select wire:model.live="body_font_mode" class="mom-input mb-2 w-full">
+                            <option value="preset">{{ __('Preset (Google Fonts)') }}</option>
+                            <option value="custom">{{ __('Custom Google Font name') }}</option>
+                        </select>
+                        @if ($body_font_mode === 'preset')
+                            <select wire:model="typography.body_font" class="mom-input w-full">
+                                @foreach ($fontWhitelist as $font)
+                                    <option value="{{ $font }}">{{ $font }}</option>
+                                @endforeach
+                            </select>
+                        @else
+                            <input type="text" wire:model="custom_body_font" class="mom-input w-full" placeholder="e.g. Work Sans" />
+                        @endif
+                    </label>
+                    <label class="block">
+                        <span class="mom-label">{{ __('Font scale') }}</span>
+                        <select wire:model="typography.scale" class="mom-input w-full">
+                            @foreach ($fontScales as $scaleKey => $scale)
+                                <option value="{{ $scaleKey }}">{{ $scale['label'] ?? ucfirst($scaleKey) }}</option>
                             @endforeach
                         </select>
                     </label>
                     <label class="block">
                         <span class="mom-label">{{ __('Line height') }}</span>
-                        <input type="text" wire:model="typography.line_height" class="mom-input w-full" />
+                        <input type="text" wire:model="typography.line_height" class="mom-input w-full" placeholder="1.5" />
                     </label>
-                    <label class="block">
+                    <label class="block md:col-span-2">
                         <span class="mom-label">{{ __('Letter spacing') }}</span>
-                        <input type="text" wire:model="typography.letter_spacing" class="mom-input w-full" />
+                        <input type="text" wire:model="typography.letter_spacing" class="mom-input w-full" placeholder="normal" />
                     </label>
                     <div class="md:col-span-2">
                         <button type="submit" class="mom-cta-compact mom-cta-primary">{{ __('Save typography draft') }}</button>
@@ -177,8 +217,13 @@
         @endif
 
         @if ($activeTab === 'header')
-            <x-admin.card :title="__('Header presets')">
-                <form wire:submit="saveHeader" class="space-y-4">
+            <x-admin.card :title="__('Header preset')">
+                <p class="mom-body-text mb-4 text-sm text-[var(--text-secondary)]">
+                    {{ __('Logo, phone, WhatsApp, and CTA text are managed under Branding. Global tokens like') }}
+                    <code class="text-mom-gold">@{{ company_name }}</code>
+                    {{ __('are under Settings → Global Content. Header inherits your active theme and style pack on publish.') }}
+                </p>
+                <form wire:submit="saveHeader" class="space-y-6">
                     <div class="grid gap-3 md:grid-cols-2">
                         @foreach ($headerPresets as $slug => $preset)
                             <label @class(['block cursor-pointer rounded-xl border p-4 transition', 'border-mom-gold bg-[var(--bg-surface)]' => $header_preset === $slug, 'border-[var(--border-panel-soft)]' => $header_preset !== $slug])>
@@ -188,7 +233,35 @@
                             </label>
                         @endforeach
                     </div>
-                    <button type="submit" class="mom-cta-compact mom-cta-primary">{{ __('Save header draft') }}</button>
+
+                    <div class="border-t border-[var(--border-panel-soft)] pt-6">
+                        <h3 class="mb-3 text-sm font-semibold text-[var(--text-primary)]">{{ __('Header configuration') }}</h3>
+                        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                            @foreach ($headerConfigKeys as $configKey)
+                                @if ($configKey === 'sticky_behavior')
+                                    <label class="block sm:col-span-2 lg:col-span-3">
+                                        <span class="mom-label">{{ __('Sticky behaviour') }}</span>
+                                        <select wire:model="header_config.sticky_behavior" class="mom-input w-full max-w-md">
+                                            @foreach ($stickyBehaviors as $value => $label)
+                                                <option value="{{ $value }}">{{ $label }}</option>
+                                            @endforeach
+                                        </select>
+                                    </label>
+                                @else
+                                    <label class="flex items-center gap-2 rounded-lg border border-[var(--border-panel-soft)] px-3 py-2">
+                                        <input type="checkbox" wire:model="header_config.{{ $configKey }}" class="rounded border-[var(--border-panel-soft)]" />
+                                        <span class="text-sm text-[var(--text-primary)]">{{ str_replace('_', ' ', ucfirst($configKey)) }}</span>
+                                    </label>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        <button type="submit" class="mom-cta-compact mom-cta-primary">{{ __('Save header draft') }}</button>
+                        <button type="button" wire:click="enablePreview" class="mom-cta-compact mom-cta-ghost">{{ __('Preview on site') }}</button>
+                        <button type="button" wire:click="setTab('branding')" class="mom-cta-compact mom-cta-ghost">{{ __('Edit branding') }}</button>
+                    </div>
                 </form>
             </x-admin.card>
         @endif
@@ -243,7 +316,7 @@
             <x-admin.card :title="__('Live preview summary')">
                 @if ($preview['css'])<style>{!! $preview['css'] !!}</style>@endif
                 <dl class="grid gap-2 text-sm md:grid-cols-2">
-                    <div><dt class="text-[var(--text-secondary)]">{{ __('Header') }}</dt><dd>{{ $headerPresets[$header_preset]['label'] ?? $header_preset }}</dd></div>
+                    <div><dt class="text-[var(--text-secondary)]">{{ __('Header') }}</dt><dd>{{ $headerPresets[$header_preset]['label'] ?? $header_preset }} · {{ $stickyBehaviors[$header_config['sticky_behavior'] ?? 'sticky'] ?? '' }}</dd></div>
                     <div><dt class="text-[var(--text-secondary)]">{{ __('Layout') }}</dt><dd>{{ $layoutPresets[$layout_preset]['label'] ?? $layout_preset }}</dd></div>
                     <div><dt class="text-[var(--text-secondary)]">{{ __('Draft updated') }}</dt><dd>{{ $configuration->draft_updated_at?->diffForHumans() ?? '—' }}</dd></div>
                     <div><dt class="text-[var(--text-secondary)]">{{ __('Last published') }}</dt><dd>{{ $configuration->published_at?->diffForHumans() ?? '—' }}</dd></div>

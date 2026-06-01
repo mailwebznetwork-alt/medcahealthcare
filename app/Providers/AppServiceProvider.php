@@ -8,6 +8,7 @@ use App\Models\BusinessProfile;
 use App\Models\Competitor;
 use App\Models\CompetitorTracking;
 use App\Models\Lead;
+use App\Observers\LeadObserver;
 use App\Models\MarketingCampaign;
 use App\Models\ThemeConfiguration;
 use App\Policies\ThemeConfigurationPolicy;
@@ -66,6 +67,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(ServiceContextCollector::class);
         $this->app->singleton(ContentRenderContext::class);
         $this->app->singleton(ServiceBindingRegistry::class);
+
+        $this->app->bind(
+            \App\Contracts\Deployment\AiDeploymentAdvisoryInterface::class,
+            \App\Services\Deployment\NullAiDeploymentAdvisory::class
+        );
     }
 
     /**
@@ -122,6 +128,7 @@ class AppServiceProvider extends ServiceProvider
         Service::observe(ServiceObserver::class);
         CompetitorTracking::observe(CompetitorTrackingObserver::class);
         SiteKeywordRanking::observe(SiteKeywordRankingObserver::class);
+        Lead::observe(LeadObserver::class);
 
         View::composer('layouts.app', function ($view): void {
             $view->with('marketingSettings', MarketingSetting::current());
@@ -184,6 +191,12 @@ class AppServiceProvider extends ServiceProvider
 
         RateLimiter::for('payments_notify', function (Request $request) {
             return Limit::perMinute(10)->by($request->ip());
+        });
+
+        RateLimiter::for('marketing_clicks', function (Request $request) {
+            $limit = (int) config('marketing_automation.click_tracking.rate_limit_per_minute', 120);
+
+            return Limit::perMinute($limit)->by($request->ip());
         });
     }
 }

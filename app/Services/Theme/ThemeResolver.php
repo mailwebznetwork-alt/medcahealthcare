@@ -30,8 +30,13 @@ class ThemeResolver
 
     public function publicCssBlock(): string
     {
+        $colors = $this->publicTokens();
+        $shapes = $this->previewModeActive()
+            ? $this->repository->draftShapeTokens()
+            : $this->repository->publishedShapeTokens();
+
         return $this->cssBuilder->inlineStyleBlock(
-            $this->cssBuilder->publicVariables($this->publicTokens())
+            $this->cssBuilder->allPublicVariables($colors, $shapes)
         );
     }
 
@@ -66,8 +71,25 @@ class ThemeResolver
     public function headerPresetClass(): string
     {
         $presets = config('theme_management.header_presets', []);
+        $classes = $presets[$this->headerPreset()]['class'] ?? 'medca-header-classic';
+        $sticky = (string) ($this->headerConfiguration()['sticky_behavior'] ?? 'sticky');
 
-        return $presets[$this->headerPreset()]['class'] ?? 'medca-header-classic';
+        return trim($classes.' medca-header-sticky--'.str_replace('_', '-', $sticky));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function headerConfiguration(): array
+    {
+        return $this->previewModeActive()
+            ? $this->repository->draftHeaderConfiguration()
+            : $this->repository->publishedHeaderConfiguration();
+    }
+
+    public function headerConfigEnabled(string $key): bool
+    {
+        return (bool) ($this->headerConfiguration()[$key] ?? false);
     }
 
     public function layoutPreset(): string
@@ -109,6 +131,22 @@ class ThemeResolver
         ];
     }
 
+    public function googleFontsHref(): string
+    {
+        $typography = $this->typography();
+        $fonts = collect([$typography['heading_font'], $typography['body_font']])
+            ->filter(fn (string $font): bool => $font !== '' && $font !== 'inherit')
+            ->unique()
+            ->map(fn (string $font): string => str_replace(' ', '+', $font).':wght@400;500;600;700')
+            ->values();
+
+        if ($fonts->isEmpty()) {
+            return 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap';
+        }
+
+        return 'https://fonts.googleapis.com/css2?family='.$fonts->implode('&family=').'&display=swap';
+    }
+
     public function typographyCssBlock(): string
     {
         $typography = $this->typography();
@@ -116,10 +154,12 @@ class ThemeResolver
         $body = e($typography['body_font']);
         $lineHeight = e($typography['line_height']);
         $letterSpacing = e($typography['letter_spacing']);
+        $scale = config('theme_management.font_scales.'.$typography['scale'].'.base_size', '16px');
 
         return <<<CSS
 body.medca-public-surface {
     font-family: "{$body}", ui-sans-serif, system-ui, sans-serif;
+    font-size: {$scale};
     line-height: {$lineHeight};
     letter-spacing: {$letterSpacing};
 }
@@ -132,15 +172,5 @@ body.medca-public-surface h6 {
     font-family: "{$heading}", ui-sans-serif, system-ui, sans-serif;
 }
 CSS;
-    }
-
-    public function googleFontsHref(): string
-    {
-        $fonts = collect($this->typography())
-            ->unique()
-            ->map(fn (string $font): string => str_replace(' ', '+', $font).':wght@400;500;600;700')
-            ->implode('&family=');
-
-        return 'https://fonts.googleapis.com/css2?family='.$fonts.'&display=swap';
     }
 }

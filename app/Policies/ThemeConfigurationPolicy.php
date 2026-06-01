@@ -24,7 +24,7 @@ class ThemeConfigurationPolicy
 
     public function publish(User $user, ThemeConfiguration $configuration): bool
     {
-        return strtolower((string) $user->role) === 'super_admin';
+        return $this->canEditDraft($user);
     }
 
     public function preview(User $user, ThemeConfiguration $configuration): bool

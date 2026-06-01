@@ -48,6 +48,14 @@ it('keeps admin layout isolated from public theme injection', function () {
         ->assertDontSee('id="medca-theme-vars"', false);
 });
 
+it('google fonts href ignores typography scale metadata', function () {
+    $href = app(\App\Services\Theme\ThemeResolver::class)->googleFontsHref();
+
+    expect($href)->toContain('Plus+Jakarta+Sans')
+        ->and($href)->not->toContain('family=default')
+        ->and($href)->not->toContain('family=1.5');
+});
+
 it('resolves layout classes from configuration', function () {
     $repo = app(ThemeConfigRepository::class);
     $user = User::factory()->create(['role' => 'admin']);

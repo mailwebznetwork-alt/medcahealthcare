@@ -39,6 +39,11 @@ class SettingsController extends Controller
         return view('settings.appearance');
     }
 
+    public function globalContent(): View
+    {
+        return view('settings.global-content');
+    }
+
     public function backup(): View
     {
         return view('settings.backup', $this->settingsPayload());

@@ -30,3 +30,15 @@ if (config('growth.schedule_backlink_refresh_daily')) {
         ->name('backlink-intelligence-refresh')
         ->withoutOverlapping();
 }
+
+if (config('marketing_automation.enabled', true)) {
+    Schedule::job(new \App\Jobs\Marketing\AggregateMarketingAnalyticsJob())
+        ->dailyAt(config('marketing_automation.analytics.aggregate_daily_at', '01:15'))
+        ->name('marketing-analytics-aggregate')
+        ->withoutOverlapping();
+
+    Schedule::job(new \App\Jobs\Marketing\PurgeMarketingAnalyticsJob())
+        ->weeklyOn(0, '05:30')
+        ->name('marketing-analytics-retention')
+        ->withoutOverlapping();
+}

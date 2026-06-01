@@ -26,8 +26,12 @@ class LeadSourceResolver
             str_contains($utm, 'facebook') || str_contains($utm, 'fb') || str_contains($utm, 'instagram') || str_contains($utm, 'meta') => LeadSource::MetaAds,
             str_contains($utm, 'whatsapp') || str_contains($utm, 'wa') => LeadSource::WhatsApp,
             str_contains($utm, 'call') => LeadSource::Call,
-            str_contains($utm, 'gmb') || str_contains($utm, 'business') => LeadSource::Gmb,
-            $utm === 'organic' || $utm === 'direct' || $utm === '' => LeadSource::Organic,
+            str_contains($utm, 'gmb') || str_contains($utm, 'business') || str_contains($utm, 'gbp') => LeadSource::Gmb,
+            str_contains($utm, 'linkedin') || str_contains($utm, 'lnkd') => LeadSource::LinkedIn,
+            str_contains($utm, 'email') || str_contains($utm, 'newsletter') || str_contains($utm, 'mail') => LeadSource::Email,
+            str_contains($utm, 'referral') || str_contains($utm, 'referrer') => LeadSource::Referral,
+            $utm === 'direct' || str_contains($utm, '(direct)') => LeadSource::Direct,
+            $utm === 'organic' || $utm === '' => LeadSource::Organic,
             default => LeadSource::Organic,
         };
     }

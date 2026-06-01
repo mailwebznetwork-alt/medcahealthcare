@@ -2,7 +2,7 @@
     href="{{ config('medca.whatsapp_url') }}"
     target="_blank"
     rel="noopener noreferrer"
-    onclick="if(typeof gtag==='function'){gtag('event','whatsapp_click');}"
+    onclick="if(typeof gtag==='function'){gtag('event','whatsapp_click');}if(typeof medcaTrack==='function'){medcaTrack('whatsapp_click',{destination_url:this.href,element_label:'floating_whatsapp'});}"
     class="fixed bottom-28 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-md shadow-emerald-900/20 ring-1 ring-white/50 transition-colors duration-200 hover:bg-[#20bd5a] focus:outline-none focus:ring-2 focus:ring-[#25D366] focus:ring-offset-2 focus:ring-offset-slate-50"
     aria-label="{{ __('Chat on WhatsApp') }}"
 >

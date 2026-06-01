@@ -19,12 +19,17 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->validateCsrfTokens(except: [
+            'marketing/track',
+        ]);
+
         $middleware->api(prepend: [
             'throttle:60,1',
         ]);
 
         $middleware->web(append: [
             \App\Http\Middleware\EnsurePincodeDetected::class,
+            \App\Http\Middleware\CaptureMarketingAttributionMiddleware::class,
         ]);
 
         $middleware->alias([

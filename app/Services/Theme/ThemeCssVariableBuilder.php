@@ -47,6 +47,40 @@ class ThemeCssVariableBuilder
     }
 
     /**
+     * @param  array<string, string>  $shapeTokens
+     * @return array<string, string>
+     */
+    public function shapeVariables(array $shapeTokens): array
+    {
+        $registry = app(ThemeTokenRegistry::class);
+        $variables = [];
+
+        foreach (['radius', 'shadow', 'spacing', 'layout', 'carousel'] as $group) {
+            $map = $registry->cssMapForGroup($group);
+            foreach ($map as $key => $cssVar) {
+                if (isset($shapeTokens[$key]) && is_string($shapeTokens[$key]) && $shapeTokens[$key] !== '') {
+                    $variables[$cssVar] = $shapeTokens[$key];
+                }
+            }
+        }
+
+        return $variables;
+    }
+
+    /**
+     * @param  array<string, string>  $colorTokens
+     * @param  array<string, string>  $shapeTokens
+     * @return array<string, string>
+     */
+    public function allPublicVariables(array $colorTokens, array $shapeTokens = []): array
+    {
+        return array_merge(
+            $this->publicVariables($colorTokens),
+            $this->shapeVariables($shapeTokens)
+        );
+    }
+
+    /**
      * @return non-empty-string
      */
     public function inlineStyleBlock(array $variables, string $selector = 'body.medca-public-surface'): string

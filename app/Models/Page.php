@@ -48,6 +48,8 @@ class Page extends Model
         'pixel_code',
         'is_active',
         'layout_mode',
+        'block_overrides_json',
+        'deployment_meta_json',
     ];
 
     /**
@@ -65,6 +67,8 @@ class Page extends Model
             'fact_check_verified' => 'boolean',
             'is_active' => 'boolean',
             'layout_mode' => PageLayoutMode::class,
+            'block_overrides_json' => 'array',
+            'deployment_meta_json' => 'array',
             'content_reviewed_at' => 'datetime',
         ];
     }
@@ -122,7 +126,7 @@ class Page extends Model
             return [];
         }
 
-        preg_match_all('/\{\{\s*(block|module)\s*:\s*([^}]+?)\s*\}\}/', $content, $matches, PREG_SET_ORDER);
+        preg_match_all('/\{\{\s*(block|module|section)\s*:\s*([^}]+?)\s*\}\}/', $content, $matches, PREG_SET_ORDER);
         $parts = [];
         foreach ($matches as $row) {
             $parts[] = [

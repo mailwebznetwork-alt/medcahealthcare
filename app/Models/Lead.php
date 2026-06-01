@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\LeadPipelineStage;
 use App\Enums\LeadSource;
 use App\Enums\LeadStatus;
 use Illuminate\Database\Eloquent\Model;
@@ -22,8 +23,38 @@ class Lead extends Model
         'ai_intent_category',
         'source',
         'campaign',
+        'lead_source',
+        'lead_medium',
+        'lead_campaign',
+        'lead_content',
+        'lead_term',
+        'utm_source',
+        'utm_medium',
+        'utm_campaign',
+        'utm_content',
+        'utm_term',
+        'gclid',
+        'fbclid',
+        'landing_page',
+        'referrer_url',
+        'first_touch_source',
+        'first_touch_medium',
+        'first_touch_campaign',
+        'first_touch_at',
+        'last_touch_source',
+        'last_touch_medium',
+        'last_touch_campaign',
+        'device_type',
+        'browser',
+        'operating_system',
+        'country',
+        'region',
+        'city',
         'pin_code_id',
         'status',
+        'pipeline_stage',
+        'pipeline_stage_changed_at',
+        'converted_at',
         'assigned_to',
         'follow_up_date',
     ];
@@ -47,6 +78,10 @@ class Lead extends Model
         return [
             'source' => LeadSource::class,
             'status' => LeadStatus::class,
+            'pipeline_stage' => LeadPipelineStage::class,
+            'first_touch_at' => 'datetime',
+            'pipeline_stage_changed_at' => 'datetime',
+            'converted_at' => 'datetime',
             'follow_up_date' => 'date',
         ];
     }
@@ -69,6 +104,26 @@ class Lead extends Model
     public function pinCode(): BelongsTo
     {
         return $this->belongsTo(PinCode::class);
+    }
+
+    public function pipelineHistories(): HasMany
+    {
+        return $this->hasMany(LeadPipelineStageHistory::class)->orderByDesc('changed_at');
+    }
+
+    public function activities(): HasMany
+    {
+        return $this->hasMany(LeadActivity::class)->orderByDesc('occurred_at');
+    }
+
+    public function conversionEvents(): HasMany
+    {
+        return $this->hasMany(MarketingConversionEvent::class)->orderByDesc('converted_at');
+    }
+
+    public function clickEvents(): HasMany
+    {
+        return $this->hasMany(MarketingClickEvent::class)->orderByDesc('occurred_at');
     }
 
     public static function normalizePhone(string $phone): string

@@ -5,6 +5,7 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
+        "build:css": "tailwindcss -i resources/css/admin/admin.css -o public/build/assets/admin.css --minify && tailwindcss -i resources/css/public/public.css -o public/build/assets/public.css --minify",
         "dev": "vite"
     },
     "devDependencies": {

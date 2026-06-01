@@ -5,8 +5,12 @@ namespace App\Services;
 use App\Enums\PublishStatus;
 use App\Enums\ServiceVisibility;
 use App\Models\Block;
+use App\Models\Page;
 use App\Models\Service;
 use App\Services\Content\ContentRenderContext;
+use App\Services\Deployment\BlockSettingsResolver;
+use App\Services\Deployment\GlobalContentInterpolator;
+use App\Services\Deployment\SectionLibraryRepository;
 use App\Services\Content\ServiceBindingRegistry;
 use App\Services\DynamicModules\DynamicModuleRenderer;
 use Illuminate\Support\Collection;
@@ -26,7 +30,7 @@ class ContentParser
      *
      * Whitespace around the colon and inside braces is tolerant.
      */
-    private const string TOKEN_PATTERN = '/\{\{\s*(block|module|service)\s*:\s*([^}]+?)\s*\}\}/';
+    private const string TOKEN_PATTERN = '/\{\{\s*(block|module|service|section)\s*:\s*([^}]+?)\s*\}\}/';
 
     /**
      * Standalone service-token regex used to scrub leftover service tokens
@@ -61,6 +65,8 @@ class ContentParser
 
     private static function preregisterInternal(string $content, int $depth): void
     {
+        $content = app(GlobalContentInterpolator::class)->interpolate($content);
+
         if (preg_match_all(self::TOKEN_PATTERN, $content, $matches, PREG_SET_ORDER) === false) {
             return;
         }
@@ -79,6 +85,18 @@ class ContentParser
                 continue;
             }
 
+            if ($type === 'section' && $depth < self::MAX_BLOCK_DEPTH) {
+                $section = app(SectionLibraryRepository::class)->find($slug);
+                if ($section !== null) {
+                    self::preregisterInternal(
+                        app(SectionLibraryRepository::class)->expandToContent($section),
+                        $depth + 1
+                    );
+                }
+
+                continue;
+            }
+
             if ($type === 'block' && $depth < self::MAX_BLOCK_DEPTH) {
                 $block = Block::query()
                     ->where('block_slug', $slug)
@@ -86,7 +104,10 @@ class ContentParser
                     ->first(['id', 'code', 'is_active']);
 
                 if ($block !== null && is_string($block->code) && $block->code !== '') {
-                    self::preregisterInternal($block->code, $depth + 1);
+                    self::preregisterInternal(
+                        app(GlobalContentInterpolator::class)->interpolate($block->code),
+                        $depth + 1
+                    );
                 }
             }
         }
@@ -97,6 +118,8 @@ class ContentParser
         if ($content === null || trim($content) === '') {
             return '';
         }
+
+        $content = app(GlobalContentInterpolator::class)->interpolate($content);
 
         $result = preg_replace_callback(
             self::TOKEN_PATTERN,
@@ -114,6 +137,10 @@ class ContentParser
                     return '';
                 }
 
+                if ($type === 'section') {
+                    return self::renderSection($slug, $depth);
+                }
+
                 if ($type === 'block') {
                     return self::renderBlock($slug, $depth);
                 }
@@ -124,6 +151,29 @@ class ContentParser
         );
 
         return $result ?? '';
+    }
+
+    private static function renderSection(string $slug, int $depth): string
+    {
+        if ($depth >= self::MAX_BLOCK_DEPTH) {
+            return '';
+        }
+
+        $section = app(SectionLibraryRepository::class)->find($slug);
+        if ($section === null) {
+            return '';
+        }
+
+        $context = app(ContentRenderContext::class);
+        $existing = is_array($context->all()['blockOverrides'] ?? null) ? $context->all()['blockOverrides'] : [];
+        $context->merge([
+            'blockOverrides' => array_replace_recursive(
+                $existing,
+                app(SectionLibraryRepository::class)->blockOverrides($section)
+            ),
+        ]);
+
+        return self::parseInternal(app(SectionLibraryRepository::class)->expandToContent($section), $depth + 1);
     }
 
     private static function renderModule(string $key): string
@@ -153,6 +203,8 @@ class ContentParser
         if (trim($code) === '') {
             return self::wrapBlockOutput('', $customCss, $blockSlug);
         }
+
+        $code = app(GlobalContentInterpolator::class)->interpolate($code);
 
         $serviceVars = self::loadServiceVariablesFromBlockCode($code);
 
@@ -264,12 +316,65 @@ class ContentParser
             return '';
         }
 
-        return self::renderBlockCode(
+        $context = app(ContentRenderContext::class)->all();
+        $page = ($context['currentPage'] ?? null) instanceof Page ? $context['currentPage'] : null;
+        $stylePackSlug = is_string($context['stylePackSlug'] ?? null) ? $context['stylePackSlug'] : null;
+
+        $settingsVars = app(BlockSettingsResolver::class)->renderVariables(
+            $slug,
+            $block,
+            $page,
+            $stylePackSlug
+        );
+
+        return self::renderBlockCodeWithVariables(
             $code,
             $depth,
             $customCss,
-            $block->block_slug
+            $block->block_slug,
+            $settingsVars
         );
+    }
+
+    /**
+     * @param  array<string, mixed>  $extraVariables
+     */
+    public static function renderBlockCodeWithVariables(
+        string $code,
+        int $depth,
+        ?string $customCss,
+        ?string $blockSlug,
+        array $extraVariables = [],
+    ): string {
+        if (trim($code) === '') {
+            return self::wrapBlockOutput('', $customCss, $blockSlug);
+        }
+
+        $code = app(GlobalContentInterpolator::class)->interpolate($code);
+
+        $serviceVars = self::loadServiceVariablesFromBlockCode($code);
+
+        $bladeReadyCode = self::parseInternal(
+            preg_replace(self::SERVICE_TOKEN_PATTERN, '', $code) ?? '',
+            $depth + 1
+        );
+
+        $html = Blade::render($bladeReadyCode, array_merge(
+            self::buildBlockRenderVariables($serviceVars),
+            $extraVariables
+        ));
+
+        $inner = self::wrapBlockOutput($html, $customCss, $blockSlug);
+
+        if ($depth > 0) {
+            return $inner;
+        }
+
+        $wrapperClass = trim(
+            'medca-block '.(string) ($extraVariables['blockStyleClass'] ?? '')
+        );
+
+        return '<div class="'.e($wrapperClass).'" data-block-slug="'.e((string) $blockSlug).'">'.$inner.'</div>';
     }
 
     /**

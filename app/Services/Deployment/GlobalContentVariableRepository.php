@@ -1,0 +1,187 @@
+<?php
+
+namespace App\Services\Deployment;
+
+use App\Models\GlobalContentVariable;
+use App\Models\GlobalContentVariableSnapshot;
+use App\Models\User;
+use App\Services\Theme\ThemeConfigRepository;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
+
+class GlobalContentVariableRepository
+{
+    private const CACHE_KEY = 'deployment.global_content_variables.resolved';
+
+    public function __construct(
+        private readonly ThemeConfigRepository $themeRepository,
+    ) {}
+
+    /**
+     * @return list<string>
+     */
+    public function allowedKeys(): array
+    {
+        return array_keys(config('global_content_variables.keys', []));
+    }
+
+    /**
+     * Resolved key => value for interpolation (published branding + DB overrides).
+     *
+     * @return array<string, string>
+     */
+    public function resolved(): array
+    {
+        return Cache::remember(self::CACHE_KEY, 300, function (): array {
+            $definitions = config('global_content_variables.keys', []);
+            $branding = $this->themeRepository->publishedBranding();
+            $stored = Schema::hasTable('global_content_variables')
+                ? GlobalContentVariable::query()->pluck('value', 'key')->all()
+                : [];
+
+            $resolved = [];
+            foreach ($definitions as $key => $meta) {
+                $storedValue = isset($stored[$key]) ? trim((string) $stored[$key]) : '';
+                if ($storedValue !== '') {
+                    $resolved[$key] = $storedValue;
+
+                    continue;
+                }
+
+                $brandingKey = is_array($meta) ? ($meta['branding_key'] ?? null) : null;
+                if (is_string($brandingKey) && isset($branding[$brandingKey]) && (string) $branding[$brandingKey] !== '') {
+                    $resolved[$key] = (string) $branding[$brandingKey];
+
+                    continue;
+                }
+
+                $medcaKey = is_array($meta) ? ($meta['medca_key'] ?? null) : null;
+                if (is_string($medcaKey) && config('medca.'.$medcaKey) !== null) {
+                    $resolved[$key] = (string) config('medca.'.$medcaKey);
+                }
+            }
+
+            if (! isset($resolved['website_url']) || $resolved['website_url'] === '') {
+                $resolved['website_url'] = (string) config('app.url');
+            }
+
+            return $resolved;
+        });
+    }
+
+    public static function forgetCache(): void
+    {
+        Cache::forget(self::CACHE_KEY);
+    }
+
+    /**
+     * @return array<string, array{label: string, value: string}>
+     */
+    public function forEditor(): array
+    {
+        $resolved = $this->resolved();
+        $definitions = config('global_content_variables.keys', []);
+        $out = [];
+
+        foreach ($definitions as $key => $meta) {
+            $out[$key] = [
+                'label' => (string) ($meta['label'] ?? $key),
+                'value' => $resolved[$key] ?? '',
+            ];
+        }
+
+        return $out;
+    }
+
+    /**
+     * @param  array<string, string>  $values
+     */
+    public function sync(array $values, User $user): void
+    {
+        foreach ($this->allowedKeys() as $key) {
+            if (! array_key_exists($key, $values)) {
+                continue;
+            }
+
+            GlobalContentVariable::query()->updateOrCreate(
+                ['key' => $key],
+                [
+                    'label' => (string) (config("global_content_variables.keys.{$key}.label") ?? $key),
+                    'value' => (string) $values[$key],
+                    'updated_by_id' => $user->id,
+                ]
+            );
+        }
+
+        self::forgetCache();
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function exportPayload(): array
+    {
+        return $this->resolved();
+    }
+
+    /**
+     * @param  array<string, string>  $payload
+     */
+    public function importPayload(array $payload, User $user): void
+    {
+        $filtered = [];
+        foreach ($this->allowedKeys() as $key) {
+            if (isset($payload[$key])) {
+                $filtered[$key] = (string) $payload[$key];
+            }
+        }
+
+        $this->sync($filtered, $user);
+    }
+
+    public function createSnapshot(User $user): GlobalContentVariableSnapshot
+    {
+        $nextVersion = (int) GlobalContentVariableSnapshot::query()->max('version') + 1;
+
+        return GlobalContentVariableSnapshot::query()->create([
+            'version' => $nextVersion,
+            'payload_json' => $this->resolved(),
+            'created_by_id' => $user->id,
+        ]);
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection<int, GlobalContentVariableSnapshot>
+     */
+    public function snapshots(int $limit = 10): \Illuminate\Support\Collection
+    {
+        if (! Schema::hasTable('global_content_variable_snapshots')) {
+            return collect();
+        }
+
+        return GlobalContentVariableSnapshot::query()
+            ->latest('id')
+            ->limit($limit)
+            ->get();
+    }
+
+    public function restoreSnapshot(GlobalContentVariableSnapshot $snapshot, User $user): void
+    {
+        $payload = is_array($snapshot->payload_json) ? $snapshot->payload_json : [];
+        $this->importPayload($payload, $user);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function previewSample(): array
+    {
+        $resolved = $this->resolved();
+
+        return [
+            'headline' => __('Welcome to :name', ['name' => $resolved['company_name'] ?? '']),
+            'contact' => trim(($resolved['phone_number'] ?? '').' · '.($resolved['email'] ?? '')),
+            'cta' => $resolved['primary_cta'] ?? '',
+        ];
+    }
+}

@@ -15,6 +15,17 @@ return [
         'Open Sans',
         'Lato',
         'Merriweather',
+        'Poppins',
+        'Nunito',
+        'Source Sans 3',
+        'DM Sans',
+        'Manrope',
+    ],
+
+    'font_scales' => [
+        'compact' => ['label' => 'Compact', 'base_size' => '15px'],
+        'default' => ['label' => 'Default', 'base_size' => '16px'],
+        'large' => ['label' => 'Large', 'base_size' => '18px'],
     ],
 
     'header_presets' => [
@@ -43,6 +54,44 @@ return [
             'description' => 'Rounded container header with soft border.',
             'class' => 'medca-header-modern',
         ],
+        'mega_menu' => [
+            'label' => 'Mega Menu',
+            'description' => 'Wide dropdown-ready navigation row.',
+            'class' => 'medca-header-mega',
+        ],
+        'transparent' => [
+            'label' => 'Transparent',
+            'description' => 'Overlay header for hero-first pages.',
+            'class' => 'medca-header-transparent',
+        ],
+        'sticky_professional' => [
+            'label' => 'Sticky Professional',
+            'description' => 'Compact sticky bar with shrink on scroll.',
+            'class' => 'medca-header-sticky-pro',
+        ],
+    ],
+
+    /**
+     * Header configuration keys (stored in theme branding / draft_branding JSON).
+     * Phase 8.5 — preset + configuration architecture (no custom header builder).
+     */
+    'header_configuration_keys' => [
+        'show_top_bar',
+        'show_search',
+        'show_location_selector',
+        'show_branch_selector',
+        'show_social_icons',
+        'show_secondary_menu',
+        'mobile_cta_enabled',
+        'mobile_whatsapp_enabled',
+        'sticky_behavior',
+    ],
+
+    'sticky_behaviors' => [
+        'normal' => 'Normal',
+        'sticky' => 'Sticky',
+        'auto_hide' => 'Auto hide',
+        'shrink_on_scroll' => 'Shrink on scroll',
     ],
 
     'layout_presets' => [

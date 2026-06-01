@@ -5,6 +5,7 @@ namespace App\Services\Theme;
 use App\Models\ThemeConfiguration;
 use App\Models\ThemePreset;
 use App\Models\User;
+use App\Services\Deployment\GlobalContentVariableRepository;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
@@ -14,6 +15,7 @@ class ThemeConfigRepository
     public function __construct(
         private readonly ThemeContrastValidator $contrastValidator,
         private readonly ThemePresetRegistry $presetRegistry,
+        private readonly ThemeColorNormalizer $colorNormalizer,
     ) {}
 
     /**
@@ -75,6 +77,48 @@ class ThemeConfigRepository
         ];
     }
 
+    /**
+     * Header preset configuration toggles (stored in branding.header_config).
+     *
+     * @return array<string, mixed>
+     */
+    public function defaultHeaderConfiguration(): array
+    {
+        return [
+            'show_top_bar' => true,
+            'show_search' => false,
+            'show_location_selector' => true,
+            'show_branch_selector' => false,
+            'show_social_icons' => false,
+            'show_secondary_menu' => false,
+            'mobile_cta_enabled' => true,
+            'mobile_whatsapp_enabled' => true,
+            'sticky_behavior' => 'sticky',
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function publishedHeaderConfiguration(): array
+    {
+        $branding = $this->publishedBranding();
+        $stored = is_array($branding['header_config'] ?? null) ? $branding['header_config'] : [];
+
+        return array_merge($this->defaultHeaderConfiguration(), $stored);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function draftHeaderConfiguration(): array
+    {
+        $branding = $this->draftBranding();
+        $stored = is_array($branding['header_config'] ?? null) ? $branding['header_config'] : [];
+
+        return array_merge($this->defaultHeaderConfiguration(), $stored);
+    }
+
     public function configuration(): ThemeConfiguration
     {
         return ThemeConfiguration::current();
@@ -102,6 +146,29 @@ class ThemeConfigRepository
         $draft = is_array($config->draft_public) ? $config->draft_public : [];
 
         return array_merge($this->publishedPublicTokens(), $draft);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function publishedShapeTokens(): array
+    {
+        $registry = app(ThemeTokenRegistry::class);
+        $config = $this->configuration();
+        $published = is_array($config->published_shape) ? $config->published_shape : [];
+
+        return array_merge($registry->defaultShapeTokens(), $published);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function draftShapeTokens(): array
+    {
+        $config = $this->configuration();
+        $draft = is_array($config->draft_shape) ? $config->draft_shape : [];
+
+        return array_merge($this->publishedShapeTokens(), $draft);
     }
 
     /**
@@ -171,16 +238,35 @@ class ThemeConfigRepository
     /**
      * @param  array<string, string>  $tokens
      */
-    public function saveDraftPublicTokens(array $tokens, User $user): void
+    public function saveDraftPublicTokens(array $tokens, User $user, bool $strictContrast = false): void
     {
-        $errors = $this->contrastValidator->validatePublicTokens($tokens);
-        if ($errors !== []) {
-            throw ValidationException::withMessages(['tokens' => $errors]);
+        $defaults = $this->defaultPublicTokens();
+        $published = $this->publishedPublicTokens();
+        $normalized = $this->colorNormalizer->normalizeMany(array_merge($defaults, $tokens));
+
+        $invalid = array_diff_key(array_merge($defaults, $tokens), $normalized);
+        if ($invalid !== []) {
+            throw ValidationException::withMessages([
+                'tokens' => [__('One or more colors are invalid. Use hex format, e.g. #0055ff.')],
+            ]);
+        }
+
+        $contrastErrors = $this->contrastValidator->validatePublicTokens($normalized);
+        if ($contrastErrors !== [] && $strictContrast) {
+            throw ValidationException::withMessages(['tokens' => $contrastErrors]);
+        }
+
+        $diff = [];
+        foreach ($normalized as $key => $value) {
+            $baseline = $published[$key] ?? $defaults[$key] ?? null;
+            if ($baseline !== $value) {
+                $diff[$key] = $value;
+            }
         }
 
         $config = $this->configuration();
         $config->fill([
-            'draft_public' => $tokens,
+            'draft_public' => $diff !== [] ? $diff : null,
             'updated_by_id' => $user->id,
             'draft_updated_at' => now(),
         ])->save();
@@ -202,6 +288,22 @@ class ThemeConfigRepository
         ])->save();
     }
 
+    public function saveDraftTypography(array $typography, User $user): void
+    {
+        $this->assertTypography($typography);
+
+        $config = $this->configuration();
+        $merged = array_merge(
+            is_array($config->draft_typography) ? $config->draft_typography : [],
+            array_merge($this->defaultTypography(), $typography)
+        );
+        $config->fill([
+            'draft_typography' => $merged,
+            'updated_by_id' => $user->id,
+            'draft_updated_at' => now(),
+        ])->save();
+    }
+
     public function saveDraftMeta(string $headerPreset, string $layoutPreset, array $typography, User $user): void
     {
         $this->assertHeaderPreset($headerPreset);
@@ -212,7 +314,10 @@ class ThemeConfigRepository
         $config->fill([
             'draft_header_preset' => $headerPreset,
             'draft_layout_preset' => $layoutPreset,
-            'draft_typography' => array_merge($this->defaultTypography(), $typography),
+            'draft_typography' => array_merge(
+                is_array($config->draft_typography) ? $config->draft_typography : [],
+                array_merge($this->defaultTypography(), $typography)
+            ),
             'updated_by_id' => $user->id,
             'draft_updated_at' => now(),
         ])->save();
@@ -262,8 +367,12 @@ class ThemeConfigRepository
             $publishedTypography = array_merge($publishedTypography, $config->draft_typography);
         }
 
+        $existingPublished = is_array($config->published_public) ? $config->published_public : [];
+
         $config->fill([
-            'published_public' => $draftTokens !== [] ? $draftTokens : $config->published_public,
+            'published_public' => $draftTokens !== []
+                ? array_merge($existingPublished, $draftTokens)
+                : $config->published_public,
             'branding' => $publishedBranding,
             'typography' => $publishedTypography,
             'header_preset' => $config->draft_header_preset ?: $config->header_preset,
@@ -278,6 +387,7 @@ class ThemeConfigRepository
         ])->save();
 
         ThemeConfiguration::forgetCache();
+        GlobalContentVariableRepository::forgetCache();
     }
 
     public function resetDraft(): void
@@ -411,11 +521,23 @@ class ThemeConfigRepository
      */
     private function assertTypography(array $typography): void
     {
-        $whitelist = config('theme_management.font_whitelist', []);
         foreach (['heading_font', 'body_font'] as $key) {
-            if (isset($typography[$key]) && ! in_array($typography[$key], $whitelist, true)) {
-                throw ValidationException::withMessages([$key => __('Font not in whitelist.')]);
+            if (! isset($typography[$key]) || ! is_string($typography[$key])) {
+                continue;
             }
+
+            $font = trim($typography[$key]);
+            if ($font === '') {
+                throw ValidationException::withMessages([$key => __('Font name is required.')]);
+            }
+
+            if (! preg_match("/^[\\p{L}0-9 '\\-]{2,80}$/u", $font)) {
+                throw ValidationException::withMessages([$key => __('Invalid font name.')]);
+            }
+        }
+
+        if (isset($typography['scale']) && ! in_array($typography['scale'], ['compact', 'default', 'large'], true)) {
+            throw ValidationException::withMessages(['typography.scale' => __('Invalid font scale.')]);
         }
     }
 }

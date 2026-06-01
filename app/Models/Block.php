@@ -23,6 +23,7 @@ class Block extends Model
         'code',
         'custom_css',
         'schema_json',
+        'settings_json',
         'is_active',
         'is_managed',
     ];
@@ -34,6 +35,7 @@ class Block extends Model
     {
         return [
             'schema_json' => 'array',
+            'settings_json' => 'array',
             'is_active' => 'boolean',
             'is_managed' => 'boolean',
         ];

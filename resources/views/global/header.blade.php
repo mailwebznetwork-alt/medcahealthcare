@@ -10,6 +10,7 @@
     $medcaPhoneTel = preg_replace('/\s+/', '', (string) ($themeBranding['phone_tel'] ?? config('medca.phone_tel')));
     $medcaWhatsAppUrl = (string) ($themeBranding['whatsapp_url'] ?? config('medca.whatsapp_url'));
     $headerPresetClass = $themeResolver->headerPresetClass();
+    $headerConfig = $themeResolver->headerConfiguration();
     $layoutShellClass = $themeResolver->layoutShellClass();
 
     $medcaGmbUrl = trim((string) config('medca.public_profile_url', ''));
@@ -22,8 +23,9 @@
 @endphp
 
 {{-- Sticky stack: slim topbar (~32–36px) + navbar row (~78–90px min). Approximate total px: config('medca.marketing_sticky_header_approx_px'). --}}
-<header class="sticky top-0 z-40 w-full font-sans {{ $headerPresetClass }}">
-    <div class="w-full border-b border-medca-navy-border bg-medca-navy">
+<header class="sticky top-0 z-40 w-full font-sans {{ $headerPresetClass }}" data-header-preset="{{ $themeResolver->headerPreset() }}">
+    @if ($headerConfig['show_top_bar'] ?? true)
+    <div class="w-full border-b border-medca-navy-border bg-medca-navy medca-header-top-bar">
         <div @class(['mx-auto flex h-9 min-h-[32px] items-center justify-between gap-3 px-4 md:px-6 lg:px-8', $layoutShellClass])>
             <p class="min-w-0 flex-1 truncate text-left text-[11px] font-medium leading-none tracking-wide text-white md:text-xs">{{ config('medca.top_bar_claim') }}</p>
             <div class="flex shrink-0 items-center justify-end">
@@ -53,6 +55,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     <div class="w-full border-b border-slate-200 bg-white shadow-sm">
         <div @class(['mx-auto flex min-h-[78px] items-center justify-between gap-4 px-4 md:min-h-[84px] md:gap-6 md:px-6 lg:min-h-[86px] lg:gap-8 lg:px-8', $layoutShellClass])>

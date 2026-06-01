@@ -33,7 +33,11 @@ class PagePublicPreviewService
             ];
         }
 
-        $this->renderContext->set($this->presenter->variablesFor($page));
+        $this->renderContext->set(array_merge(
+            $this->presenter->variablesFor($page),
+            app(\App\Services\Deployment\StylePackResolver::class)->contextVariables($page),
+            ['currentPage' => $page],
+        ));
 
         return ['page' => $page];
     }
