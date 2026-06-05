@@ -180,3 +180,38 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - Do NOT delete tests without approval.
 
 </laravel-boost-guidelines>
+
+## Cursor Cloud specific instructions
+
+**Product:** MarkOnMinds — Laravel 13 monolith for Medca Health Care (public CMS site + authenticated admin). See `docs/platform-documentation/PLATFORM-BIBLE-MASTER.md`.
+
+**PHP:** Lockfile requires **PHP 8.4+** (Symfony 8). Ubuntu 24.04 default PHP 8.3 is insufficient; use `ppa:ondrej/php` and `php8.4` packages if the VM image does not already provide 8.4. Put Composer in `~/bin` and ensure `export PATH="$HOME/bin:$PATH"` in the agent shell (not in the VM update script).
+
+**First-time app bootstrap** (after `composer install` / `npm install` from the update script):
+
+```bash
+test -f .env || cp .env.example .env
+touch database/database.sqlite
+php artisan key:generate --no-interaction
+php artisan migrate --force --no-interaction
+npm run build
+php artisan db:seed --no-interaction   # optional: test@example.com / password
+```
+
+**Redis:** Stock `.env.example` uses `SESSION_DRIVER`, `CACHE_STORE`, and `QUEUE_CONNECTION=redis`. Start Redis before browser login (`redis-cli ping` → `PONG`). For a zero-Redis setup, switch those three to `database` (comment in `.env.example`).
+
+**Running the stack**
+
+| Goal | Command |
+|------|---------|
+| Tests only (no server/Redis/Vite) | `php artisan test` or `composer test` |
+| Lint (dirty files) | `vendor/bin/pint --dirty --format agent` |
+| Production assets (no Vite dev server) | `npm run build` |
+| Full dev (HTTP + queue + HMR) | `composer run dev` (needs Redis for default `.env`) |
+| HTTP only | `php artisan serve --host=0.0.0.0 --port=8000` |
+
+Use **tmux** for long-running `php artisan serve`, `php artisan queue:listen`, and `npm run dev`.
+
+**Hello-world check:** Public home `http://127.0.0.1:8000/` (Medca branding) → `/login` with seeded `test@example.com` / `password` → `/dashboard` (MarkOnMinds admin shell).
+
+**Gotchas:** Without `npm run build` (or `npm run dev`), `@vite` pages throw `ViteException`. PHPUnit uses in-memory SQLite and does not need Redis. `vendor/bin/pint --test` may fail on a clean checkout until style is applied with `pint` (pre-existing drift); prefer `--dirty` when changing PHP.
