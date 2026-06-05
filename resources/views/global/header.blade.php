@@ -16,7 +16,7 @@
     $medcaGmbUrl = trim((string) config('medca.public_profile_url', ''));
     $medcaGmbValid = $medcaGmbUrl !== '' && filter_var($medcaGmbUrl, FILTER_VALIDATE_URL);
 
-    $navLinkBase = 'inline-flex items-center py-2 text-xs font-medium uppercase tracking-[0.06em] transition-colors duration-200 md:text-sm focus-visible:outline-none';
+    $navLinkBase = 'inline-flex items-center whitespace-nowrap py-2 text-[14px] font-semibold uppercase tracking-[0.5px] transition-colors duration-200 focus-visible:outline-none';
     $navLinkDefault = 'text-medca-primary hover:text-medca-primary-hover focus-visible:text-medca-primary-hover';
     $navLinkActive = 'text-[#581c87] hover:text-[#3b0764] focus-visible:text-[#3b0764]';
     $navDrawerTriggerClass = 'inline-flex items-center justify-center rounded-lg border border-clinical-200 bg-white p-2 text-medca-primary shadow-sm transition-colors duration-200 hover:border-clinical-300 hover:bg-clinical-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-clinical-500/40';
@@ -83,12 +83,12 @@
 
             {{-- Desktop Navigation --}}
             <div class="hidden min-w-0 flex-1 items-center justify-end md:flex">
-                <nav class="flex min-w-0 flex-1 items-center justify-end" aria-label="{{ __('Primary') }}">
-                    <ul class="flex flex-wrap items-center justify-end">
+                <nav class="flex shrink-0 items-center justify-end" aria-label="{{ __('Primary') }}">
+                    <ul class="flex shrink-0 flex-nowrap items-center justify-end">
                         @foreach($navItems as $item)
                             @php($isNavCurrent = \App\Support\PublicNav::isCurrent($item['href']))
                             <li @class([
-                                'flex items-center px-3 md:px-4 lg:px-5',
+                                'flex shrink-0 items-center px-2 md:px-2.5 lg:px-3',
                                 'border-l border-solid border-slate-300' => ! $loop->first,
                             ])>
                                 <a
